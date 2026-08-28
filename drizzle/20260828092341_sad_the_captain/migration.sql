@@ -2,7 +2,7 @@ CREATE TABLE "transaction" (
 	"id" serial PRIMARY KEY,
 	"profile_id" uuid NOT NULL,
 	"amount" integer NOT NULL,
-	"description" text NOT NULL,
+	"description" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );

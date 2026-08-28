@@ -11,12 +11,12 @@ export function TransactionCreate() {
 	return (
 		<Create
 			transform={(data) => {
-				const amount = Math.abs(Number(data.amount));
+				const amount = type === "received" ? data.amount : -data.amount;
 
 				return {
 					...data,
-					profileId: profile?.id,
-					amount: data.received ? amount : -amount,
+					profile_id: profile?.id,
+					amount,
 				};
 			}}
 		>
@@ -38,12 +38,7 @@ export function TransactionCreate() {
 					validate={required()}
 				/>
 
-				<TextInput
-					source="description"
-					label="Description"
-					multiline
-					validate={required()}
-				/>
+				<TextInput source="description" label="Description" multiline />
 			</SimpleForm>
 		</Create>
 	);

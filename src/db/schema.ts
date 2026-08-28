@@ -23,7 +23,7 @@ export const transactions = pgTable("transaction", {
 		.references(() => profile.id),
 
 	amount: integer("amount").notNull(),
-	description: text("description").notNull(),
+	description: text("description"),
 
 	createdAt: timestamp("created_at", { withTimezone: true })
 		.defaultNow()
