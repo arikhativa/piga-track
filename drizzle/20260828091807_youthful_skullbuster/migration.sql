@@ -1,5 +1,5 @@
 CREATE TABLE "profile" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+	"id" uuid PRIMARY KEY,
 	"first_name" text NOT NULL,
 	"last_name" text NOT NULL,
 	"email" text NOT NULL UNIQUE
