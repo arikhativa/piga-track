@@ -7,6 +7,8 @@
   },
   "scripts": {
     "dev": "vite dev --port 3000",
+    "db:start": "supabase start --exclude gotrue,realtime,storage-api,imgproxy,mailpit,postgres-meta,edge-runtime,logflare,vector,supavisor",
+    "db:stop": "supabase stop",
     "generate-routes": "tsr generate",
     "build": "vite build",
     "preview": "vite preview",
@@ -38,10 +40,13 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "diacritic": "^0.0.2",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "1.0.0-rc.4",
     "inflection": "^3.0.2",
     "lodash": "^4.18.1",
     "lucide-react": "^1.35.0",
     "next-themes": "^0.4.6",
+    "postgres": "^3.4.9",
     "query-string": "^9.5.0",
     "ra-core": "^5.15.0",
     "ra-i18n-polyglot": "^5.15.0",
@@ -69,13 +74,17 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
+    "drizzle-kit": "1.0.0-rc.4",
+    "supabase": "^2.116.0",
+    "tsx": "^4.23.12",
     "typescript": "^6.0.2",
     "vite": "^8.0.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
-      "lightningcss"
+      "lightningcss",
+      "supabase"
     ]
   }
 }
