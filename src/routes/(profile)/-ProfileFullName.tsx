@@ -8,7 +8,9 @@ export function ProfileFullName() {
 			reference="profile"
 			render={({ referenceRecord }) =>
 				referenceRecord ? (
-					<Badge>
+					<Badge
+						variant={referenceRecord.first_name === "יואב" ? "blue" : "purple"}
+					>
 						{referenceRecord.first_name} {referenceRecord.last_name}
 					</Badge>
 				) : null
