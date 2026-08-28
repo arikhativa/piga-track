@@ -1,6 +1,6 @@
 import { Coins, Tags } from "lucide-react";
 import { CustomRoutes, Resource } from "ra-core";
-import { Route } from "react-router";
+import { Route } from "react-router-dom";
 import { Admin } from "#/components/admin";
 import { TooltipProvider } from "#/components/ui/tooltip";
 import { supabaseAuthProvider } from "#/lib/authProvider";
@@ -33,6 +33,7 @@ export function App() {
 		<TooltipProvider>
 			<Admin authProvider={authProvider} dataProvider={dataProvider}>
 				<CustomRoutes>
+					<Route path="/" element={<Dashboard />} />
 					<Route path="/dashboard" element={<Dashboard />} />
 				</CustomRoutes>
 				<Resource

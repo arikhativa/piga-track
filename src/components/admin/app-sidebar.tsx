@@ -1,28 +1,29 @@
-import { createElement } from "react";
+import { House, LayoutDashboard, List, Shell } from "lucide-react";
 import {
-  useCanAccess,
-  useCreatePath,
-  useGetResourceLabel,
-  useHasDashboard,
-  useResourceDefinitions,
-  useTranslate,
-  LinkBase,
-  useMatch,
+	LinkBase,
+	useCanAccess,
+	useCreatePath,
+	useGetResourceLabel,
+	useHasDashboard,
+	useMatch,
+	useResourceDefinitions,
+	useTranslate,
 } from "ra-core";
+import { createElement } from "react";
+import { Link } from "react-router-dom";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { House, List, Shell } from "lucide-react";
 
 /**
  * Navigation sidebar displaying menu items, allowing users to navigate between different sections of the application.
@@ -37,54 +38,68 @@ import { House, List, Shell } from "lucide-react";
  * @see layout.tsx
  */
 export function AppSidebar() {
-  const hasDashboard = useHasDashboard();
-  const resources = useResourceDefinitions();
-  const { openMobile, setOpenMobile } = useSidebar();
-  const handleClick = () => {
-    if (openMobile) {
-      setOpenMobile(false);
-    }
-  };
-  return (
-    <Sidebar variant="floating" collapsible="icon">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <LinkBase to="/">
-                <Shell className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
-              </LinkBase>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {hasDashboard ? (
-                <DashboardMenuItem onClick={handleClick} />
-              ) : null}
-              {Object.keys(resources)
-                .filter((name) => resources[name].hasList)
-                .map((name) => (
-                  <ResourceMenuItem
-                    key={name}
-                    name={name}
-                    onClick={handleClick}
-                  />
-                ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter />
-    </Sidebar>
-  );
+	const hasDashboard = useHasDashboard();
+	const resources = useResourceDefinitions();
+	const rootMatch = useMatch({ path: "/", end: true });
+
+	const dashboardMatch = useMatch({ path: "/dashboard", end: true });
+	const { openMobile, setOpenMobile } = useSidebar();
+	const handleClick = () => {
+		if (openMobile) {
+			setOpenMobile(false);
+		}
+	};
+	return (
+		<Sidebar variant="floating" collapsible="icon">
+			<SidebarHeader>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							asChild
+							className="data-[slot=sidebar-menu-button]:!p-1.5"
+						>
+							<LinkBase to="/">
+								<Shell className="!size-5" />
+								<span className="text-base font-semibold">Acme Inc.</span>
+							</LinkBase>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarHeader>
+			<SidebarContent>
+				<SidebarGroup>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							<SidebarMenuItem>
+								<SidebarMenuButton
+									asChild
+									isActive={!!dashboardMatch || !!rootMatch}
+								>
+									<Link to="/dashboard" onClick={handleClick}>
+										<LayoutDashboard />
+										<span>Dashboard</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+							{hasDashboard ? (
+								<DashboardMenuItem onClick={handleClick} />
+							) : null}
+							{Object.keys(resources)
+								.filter((name) => resources[name].hasList)
+								.map((name) => (
+									<ResourceMenuItem
+										key={name}
+										name={name}
+										onClick={handleClick}
+									/>
+								))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+			</SidebarContent>
+			<SidebarFooter />
+		</Sidebar>
+	);
 }
 
 /**
@@ -97,21 +112,21 @@ export function AppSidebar() {
  * <DashboardMenuItem onClick={handleClick} />
  */
 export const DashboardMenuItem = ({ onClick }: { onClick?: () => void }) => {
-  const translate = useTranslate();
-  const label = translate("ra.page.dashboard", {
-    _: "Dashboard",
-  });
-  const match = useMatch({ path: "/", end: true });
-  return (
-    <SidebarMenuItem>
-      <SidebarMenuButton asChild isActive={!!match}>
-        <LinkBase to="/" onClick={onClick}>
-          <House />
-          {label}
-        </LinkBase>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
-  );
+	const translate = useTranslate();
+	const label = translate("ra.page.dashboard", {
+		_: "Dashboard",
+	});
+	const match = useMatch({ path: "/", end: true });
+	return (
+		<SidebarMenuItem>
+			<SidebarMenuButton asChild isActive={!!match}>
+				<LinkBase to="/" onClick={onClick}>
+					<House />
+					{label}
+				</LinkBase>
+			</SidebarMenuButton>
+		</SidebarMenuItem>
+	);
 };
 
 /**
@@ -125,43 +140,43 @@ export const DashboardMenuItem = ({ onClick }: { onClick?: () => void }) => {
  * <ResourceMenuItem key={name} name="posts" onClick={handleClick} />
  */
 export const ResourceMenuItem = ({
-  name,
-  onClick,
+	name,
+	onClick,
 }: {
-  name: string;
-  onClick?: () => void;
+	name: string;
+	onClick?: () => void;
 }) => {
-  const { canAccess, isPending } = useCanAccess({
-    resource: name,
-    action: "list",
-  });
-  const resources = useResourceDefinitions();
-  const getResourceLabel = useGetResourceLabel();
-  const createPath = useCreatePath();
-  const to = createPath({
-    resource: name,
-    type: "list",
-  });
-  const match = useMatch({ path: to, end: false });
+	const { canAccess, isPending } = useCanAccess({
+		resource: name,
+		action: "list",
+	});
+	const resources = useResourceDefinitions();
+	const getResourceLabel = useGetResourceLabel();
+	const createPath = useCreatePath();
+	const to = createPath({
+		resource: name,
+		type: "list",
+	});
+	const match = useMatch({ path: to, end: false });
 
-  if (isPending) {
-    return <Skeleton className="h-8 w-full" />;
-  }
+	if (isPending) {
+		return <Skeleton className="h-8 w-full" />;
+	}
 
-  if (!resources || !resources[name] || !canAccess) return null;
+	if (!resources || !resources[name] || !canAccess) return null;
 
-  return (
-    <SidebarMenuItem>
-      <SidebarMenuButton asChild isActive={!!match}>
-        <LinkBase to={to} state={{ _scrollToTop: true }} onClick={onClick}>
-          {resources[name].icon ? (
-            createElement(resources[name].icon)
-          ) : (
-            <List />
-          )}
-          {getResourceLabel(name, 2)}
-        </LinkBase>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
-  );
+	return (
+		<SidebarMenuItem>
+			<SidebarMenuButton asChild isActive={!!match}>
+				<LinkBase to={to} state={{ _scrollToTop: true }} onClick={onClick}>
+					{resources[name].icon ? (
+						createElement(resources[name].icon)
+					) : (
+						<List />
+					)}
+					{getResourceLabel(name, 2)}
+				</LinkBase>
+			</SidebarMenuButton>
+		</SidebarMenuItem>
+	);
 };

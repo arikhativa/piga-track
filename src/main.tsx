@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router";
+import { BrowserRouter } from "react-router-dom";
 import { App } from "#/routes/App";
 
 // biome-ignore lint/style/noNonNullAssertion: react init
