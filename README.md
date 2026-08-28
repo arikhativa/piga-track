@@ -1,4 +1,5 @@
 shadcn --preset b6ae1bIzA
+pnpm dlx shadcn@latest init --preset b6ae1bIzA --base radix --template vite --rtl --pointer
 
 # Shadcn Admin kit
 
