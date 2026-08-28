@@ -1,23 +1,16 @@
-import { createRouter, RouterProvider } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
-import { routeTree } from "./routeTree.gen";
+import { BrowserRouter } from "react-router";
+import { App } from "#/routes/App";
 
-const router = createRouter({
-	routeTree,
-	defaultPreload: "intent",
-	scrollRestoration: true,
-});
-
-declare module "@tanstack/react-router" {
-	interface Register {
-		router: typeof router;
-	}
-}
-
-// biome-ignore lint/style/noNonNullAssertion: this is normal react setup
+// biome-ignore lint/style/noNonNullAssertion: react init
 const rootElement = document.getElementById("app")!;
 
 if (!rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
-	root.render(<RouterProvider router={router} />);
+
+	root.render(
+		<BrowserRouter>
+			<App />
+		</BrowserRouter>,
+	);
 }
