@@ -4,8 +4,6 @@ CREATE TABLE "transaction_tag" (
 );
 --> statement-breakpoint
 ALTER TABLE "transaction" ADD COLUMN "tag_id" integer;--> statement-breakpoint
-ALTER TABLE "transaction" ALTER COLUMN "description" DROP NOT NULL;--> statement-breakpoint
-ALTER TABLE "transaction" ADD CONSTRAINT "transaction_tag_id_key" UNIQUE("tag_id");--> statement-breakpoint
 ALTER TABLE "transaction" ADD CONSTRAINT "transaction_tag_id_transaction_tag_id_fkey" FOREIGN KEY ("tag_id") REFERENCES "transaction_tag"("id");
 
 -- RLS

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TransactionEditForm } from "#/routes/(transaction)/-TransactionEditForm";
+import { TransactionForm } from "#/routes/(transaction)/-TransactionForm";
 import { Edit } from "@/components/admin";
 
 export function TransactionEdit() {
@@ -15,7 +15,7 @@ export function TransactionEdit() {
 						: -Math.abs(Number(data.amount)),
 			})}
 		>
-			<TransactionEditForm type={type} setType={setType} />
+			<TransactionForm type={type} setType={setType} />
 		</Edit>
 	);
 }

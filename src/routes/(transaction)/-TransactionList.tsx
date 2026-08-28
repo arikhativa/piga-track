@@ -1,15 +1,10 @@
 import { Badge } from "#/components/ui/badge";
 import { ProfileFullName } from "#/routes/(profile)/-ProfileFullName";
-import { DataTable, List } from "@/components/admin";
+import { DataTable, List, ReferenceField } from "@/components/admin";
 
 export const TransactionList = () => (
 	<List>
 		<DataTable>
-			<DataTable.Col
-				source="amount"
-				render={(record) => Math.abs(record.amount)}
-			/>
-
 			<DataTable.Col
 				label="Type"
 				render={(record) => (
@@ -17,6 +12,21 @@ export const TransactionList = () => (
 						{record.amount < 0 ? "Spent" : "Received"}
 					</Badge>
 				)}
+			/>
+
+			<DataTable.Col label="Tag">
+				<ReferenceField
+					source="tag_id"
+					reference="transaction_tag"
+					render={({ referenceRecord }) =>
+						referenceRecord ? referenceRecord.value : null
+					}
+				></ReferenceField>
+			</DataTable.Col>
+
+			<DataTable.Col
+				source="amount"
+				render={(record) => Math.abs(record.amount)}
 			/>
 
 			<DataTable.Col

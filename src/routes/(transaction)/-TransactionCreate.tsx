@@ -1,8 +1,7 @@
-import { required } from "ra-core";
 import { useState } from "react";
-import { SpentReceivedTabs } from "#/components/custom-ui/SpentReceivedTabs";
 import { useProfile } from "#/hooks/use-profile";
-import { Create, SimpleForm, TextInput } from "@/components/admin";
+import { TransactionForm } from "#/routes/(transaction)/-TransactionForm";
+import { Create } from "@/components/admin";
 
 export function TransactionCreate() {
 	const profile = useProfile();
@@ -20,18 +19,7 @@ export function TransactionCreate() {
 				};
 			}}
 		>
-			<SimpleForm>
-				<SpentReceivedTabs type={type} setType={setType} />
-
-				<TextInput
-					source="amount"
-					label="Amount"
-					type="number"
-					validate={required()}
-				/>
-
-				<TextInput source="description" label="Description" multiline />
-			</SimpleForm>
+			<TransactionForm type={type} setType={setType} />
 		</Create>
 	);
 }

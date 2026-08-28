@@ -9,7 +9,6 @@ import { supabaseClient } from "#/lib/supabaseClient";
 import { TransactionCreate } from "#/routes/(transaction)/-TransactionCreate";
 import { TransactionEdit } from "#/routes/(transaction)/-TransactionEdit";
 import { TransactionList } from "#/routes/(transaction)/-TransactionList";
-import { TransactionShow } from "#/routes/(transaction)/-TransactionShow";
 import { TransactionTagCreate } from "#/routes/(transactionTag)/-TransactionTagCreate";
 import { TransactionTagEdit } from "#/routes/(transactionTag)/-TransactionTagEdit";
 import { TransactionTagList } from "#/routes/(transactionTag)/-TransactionTagList";
@@ -33,7 +32,6 @@ function Home() {
 				name="transaction"
 				list={TransactionList}
 				edit={TransactionEdit}
-				show={TransactionShow}
 				create={TransactionCreate}
 				icon={Coins}
 			/>

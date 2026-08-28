@@ -27,9 +27,7 @@ export const transactions = pgTable("transaction", {
 		.notNull()
 		.references(() => profile.id),
 
-	tagId: integer("tag_id")
-		.unique()
-		.references(() => transactionTag.id),
+	tagId: integer("tag_id").references(() => transactionTag.id),
 
 	amount: integer("amount").notNull(),
 	description: text("description"),

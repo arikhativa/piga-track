@@ -1,2 +1,2 @@
 ALTER TABLE "transaction"
-ALTER COLUMN "description" DROP NOT NULL;
+DROP CONSTRAINT "transaction_tag_id_key";

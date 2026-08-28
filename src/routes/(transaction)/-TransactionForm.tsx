@@ -4,9 +4,15 @@ import {
 	SpentReceivedTabs,
 	type SpentReceivedTabsProps,
 } from "#/components/custom-ui/SpentReceivedTabs";
-import { NumberInput, SimpleForm, TextInput } from "@/components/admin";
+import {
+	NumberInput,
+	ReferenceInput,
+	SelectInput,
+	SimpleForm,
+	TextInput,
+} from "@/components/admin";
 
-export function TransactionEditForm({ type, setType }: SpentReceivedTabsProps) {
+export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 	const record = useRecordContext();
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: this should run on init only
@@ -17,6 +23,10 @@ export function TransactionEditForm({ type, setType }: SpentReceivedTabsProps) {
 	return (
 		<SimpleForm>
 			<SpentReceivedTabs type={type} setType={setType} />
+
+			<ReferenceInput source="tag_id" reference="transaction_tag">
+				<SelectInput label="Tag" optionText="value" emptyText="No tag" />
+			</ReferenceInput>
 
 			<NumberInput
 				source="amount"
