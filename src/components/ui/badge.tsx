@@ -13,6 +13,10 @@ const badgeVariants = cva(
 					"border-transparent bg-oklch(0.212 0.019 322.12) text-oklch(0.985 0 0) [a&]:hover:bg-oklch(0.212 0.019 322.12)/90 dark:bg-oklch(0.922 0.005 325.62) dark:text-oklch(0.212 0.019 322.12) dark:[a&]:hover:bg-oklch(0.922 0.005 325.62)/90",
 				secondary:
 					"border-transparent bg-oklch(0.96 0.003 325.6) text-oklch(0.212 0.019 322.12) [a&]:hover:bg-oklch(0.96 0.003 325.6)/90 dark:bg-oklch(0.263 0.024 320.12) dark:text-oklch(0.985 0 0) dark:[a&]:hover:bg-oklch(0.263 0.024 320.12)/90",
+				pink: "border-transparent bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300",
+
+				green:
+					"border-transparent bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300",
 				destructive:
 					"border-transparent bg-oklch(0.577 0.245 27.325) text-white [a&]:hover:bg-oklch(0.577 0.245 27.325)/90 focus-visible:ring-oklch(0.577 0.245 27.325)/20 dark:focus-visible:ring-oklch(0.577 0.245 27.325)/40 dark:bg-oklch(0.577 0.245 27.325)/60 dark:bg-oklch(0.704 0.191 22.216) dark:[a&]:hover:bg-oklch(0.704 0.191 22.216)/90 dark:focus-visible:ring-oklch(0.704 0.191 22.216)/20 dark:dark:focus-visible:ring-oklch(0.704 0.191 22.216)/40 dark:dark:bg-oklch(0.704 0.191 22.216)/60",
 				outline:

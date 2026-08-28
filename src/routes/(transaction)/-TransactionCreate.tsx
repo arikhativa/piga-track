@@ -1,6 +1,6 @@
 import { required } from "ra-core";
 import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger } from "#/components/ui/tabs";
+import { SpentReceivedTabs } from "#/components/custom-ui/SpentReceivedTabs";
 import { useProfile } from "#/hooks/use-profile";
 import { Create, SimpleForm, TextInput } from "@/components/admin";
 
@@ -21,15 +21,7 @@ export function TransactionCreate() {
 			}}
 		>
 			<SimpleForm>
-				<Tabs
-					value={type}
-					onValueChange={(value) => setType(value as typeof type)}
-				>
-					<TabsList>
-						<TabsTrigger value="spent">Spent</TabsTrigger>
-						<TabsTrigger value="received">Received</TabsTrigger>
-					</TabsList>
-				</Tabs>
+				<SpentReceivedTabs type={type} setType={setType} />
 
 				<TextInput
 					source="amount"
