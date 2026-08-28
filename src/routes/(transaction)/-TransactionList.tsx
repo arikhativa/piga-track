@@ -1,4 +1,5 @@
 import { Badge } from "#/components/ui/badge";
+import { ProfileFullName } from "#/routes/(profile)/-ProfileFullName";
 import { DataTable, List } from "@/components/admin";
 
 export const TransactionList = () => (
@@ -24,6 +25,9 @@ export const TransactionList = () => (
 					new Date(record.created_at).toLocaleDateString("he-IL")
 				}
 			/>
+			<DataTable.Col label="Owner">
+				<ProfileFullName />
+			</DataTable.Col>
 		</DataTable>
 	</List>
 );
