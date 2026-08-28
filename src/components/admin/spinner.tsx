@@ -1,47 +1,49 @@
-import { cn } from "@/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const spinnerVariants = cva("flex-col items-center justify-center", {
-  variants: {
-    show: {
-      true: "flex",
-      false: "hidden",
-    },
-  },
-  defaultVariants: {
-    show: true,
-  },
+	variants: {
+		show: {
+			true: "flex",
+			false: "hidden",
+		},
+	},
+	defaultVariants: {
+		show: true,
+	},
 });
 
-const loaderVariants = cva("animate-spin text-oklch(0.212 0.019 322.12) dark:text-oklch(0.922 0.005 325.62)", {
-  variants: {
-    size: {
-      small: "size-6",
-      medium: "size-8",
-      large: "size-12",
-    },
-  },
-  defaultVariants: {
-    size: "medium",
-  },
-});
+const loaderVariants = cva(
+	"animate-spin text-oklch(0.212 0.019 322.12) dark:text-oklch(0.922 0.005 325.62)",
+	{
+		variants: {
+			size: {
+				small: "size-6",
+				medium: "size-8",
+				large: "size-12",
+			},
+		},
+		defaultVariants: {
+			size: "medium",
+		},
+	},
+);
 
 interface SpinnerContentProps
-  extends
-    VariantProps<typeof spinnerVariants>,
-    VariantProps<typeof loaderVariants> {
-  className?: string;
+	extends VariantProps<typeof spinnerVariants>,
+		VariantProps<typeof loaderVariants> {
+	className?: string;
 }
 
 /**
  * Animated spinner component for loading states.
  */
 export function Spinner({ size, show, className }: SpinnerContentProps) {
-  return (
-    <span className={spinnerVariants({ show })}>
-      <Loader2 className={cn(loaderVariants({ size }), className)} />
-    </span>
-  );
+	return (
+		<span className={spinnerVariants({ show })}>
+			<Loader2 className={cn(loaderVariants({ size }), className)} />
+		</span>
+	);
 }
