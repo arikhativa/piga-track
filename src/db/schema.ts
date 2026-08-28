@@ -15,12 +15,21 @@ export const profile = pgTable("profile", {
 	email: text("email").notNull().unique(),
 });
 
+export const transactionTag = pgTable("transaction_tag", {
+	id: serial("id").primaryKey(),
+	value: text("value").notNull(),
+});
+
 export const transactions = pgTable("transaction", {
 	id: serial("id").primaryKey(),
 
 	profileId: uuid("profile_id")
 		.notNull()
 		.references(() => profile.id),
+
+	tagId: integer("tag_id")
+		.unique()
+		.references(() => transactionTag.id),
 
 	amount: integer("amount").notNull(),
 	description: text("description"),
