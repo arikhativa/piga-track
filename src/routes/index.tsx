@@ -1,5 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Admin } from "#/components/admin";
+import { Coins } from "lucide-react";
+import { Resource } from "ra-core";
+import {
+	Admin,
+	EditGuesser,
+	ListGuesser,
+	ShowGuesser,
+} from "#/components/admin";
 import { supabaseAuthProvider } from "#/lib/authProvider";
 import { supabaseDataProvider } from "#/lib/dataProvider";
 import { supabaseClient } from "#/lib/supabaseClient";
@@ -18,6 +25,14 @@ const authProvider = supabaseAuthProvider(supabaseClient, {});
 export const Route = createFileRoute("/")({ component: Home });
 function Home() {
 	return (
-		<Admin authProvider={authProvider} dataProvider={dataProvider}></Admin>
+		<Admin authProvider={authProvider} dataProvider={dataProvider}>
+			<Resource
+				name="transaction"
+				list={ListGuesser}
+				edit={EditGuesser}
+				show={ShowGuesser}
+				icon={Coins}
+			/>
+		</Admin>
 	);
 }
