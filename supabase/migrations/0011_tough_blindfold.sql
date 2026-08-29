@@ -1,0 +1,1 @@
+ALTER TABLE "transaction_type" ADD COLUMN "base" integer DEFAULT 0 NOT NULL;

@@ -1,6 +1,10 @@
-import { useSelector } from "@tanstack/react-store";
-import { profileStore } from "#/lib/profileStore";
+import { useGetIdentity, useGetOne } from "ra-core";
+import type { Profile } from "#/db/schema";
 
 export const useProfile = () => {
-	return useSelector(profileStore, (state) => state.profile);
+	const user = useGetIdentity();
+
+	return useGetOne<Profile>("profile", {
+		id: user.data?.id as string,
+	});
 };

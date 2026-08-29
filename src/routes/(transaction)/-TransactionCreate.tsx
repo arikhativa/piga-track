@@ -4,7 +4,8 @@ import { TransactionForm } from "#/routes/(transaction)/-TransactionForm";
 import { Create } from "@/components/admin";
 
 export function TransactionCreate() {
-	const profile = useProfile();
+	const { data: profile } = useProfile();
+
 	const [type, setType] = useState<"spent" | "received">("spent");
 
 	return (

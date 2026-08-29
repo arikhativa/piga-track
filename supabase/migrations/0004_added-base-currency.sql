@@ -1,0 +1,15 @@
+INSERT INTO public.currency (id, name, iso_code, symbol) VALUES
+	(1, 'Euro', 'EUR', '€'),
+	(2, 'Australian dollar', 'AUD', '$'),
+	(3, 'United States dollar', 'USD', '$'),
+	(4, 'Canadian dollar', 'CAD', '$'),
+	(5, 'Egyptian pound', 'EGP', 'LE'),
+	(6, 'Sterling', 'GBP', '£'),
+	(7, 'Israeli new shekel', 'ILS', '₪'),
+	(8, 'Swiss franc', 'CHF', 'Fr'),
+	(9, 'New Zealand dollar', 'NZD', '$'),
+	(10, 'Swedish krona', 'SEK', 'kr'),
+	(11, 'Turkish lira', 'TRY', '₺'),
+	(12, 'Norwegian krone', 'NOK', 'kr'),
+	(13, 'Japanese yen', 'JPY', '¥'),
+	(14, 'Indian rupee', 'INR', '₹');

@@ -1,0 +1,2 @@
+ALTER TABLE "profile" ADD COLUMN "default_project_id" integer;--> statement-breakpoint
+ALTER TABLE "profile" ADD CONSTRAINT "profile_default_project_id_transaction_project_id_fk" FOREIGN KEY ("default_project_id") REFERENCES "public"."transaction_project"("id") ON DELETE no action ON UPDATE no action;

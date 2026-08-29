@@ -1,4 +1,12 @@
-import { House, LayoutDashboard, List, Shell } from "lucide-react";
+import {
+	House,
+	LayoutDashboard,
+	List,
+	Plus,
+	Settings,
+	Shell,
+	UserPen,
+} from "lucide-react";
 import {
 	LinkBase,
 	useCanAccess,
@@ -17,6 +25,7 @@ import {
 	SidebarFooter,
 	SidebarGroup,
 	SidebarGroupContent,
+	SidebarGroupLabel,
 	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
@@ -40,9 +49,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function AppSidebar() {
 	const hasDashboard = useHasDashboard();
 	const resources = useResourceDefinitions();
-	const rootMatch = useMatch({ path: "/", end: true });
 
 	const dashboardMatch = useMatch({ path: "/dashboard", end: true });
+	const defaultsMatch = useMatch({ path: "/defaults", end: true });
+
+	const mainPages = Object.keys(resources).filter(
+		(name) =>
+			resources[name].hasList && resources[name]?.options?.main === true,
+	);
+
+	const tablePages = Object.keys(resources).filter(
+		(name) =>
+			resources[name].hasList && resources[name]?.options?.table === true,
+	);
+
+	const utilsPages = Object.keys(resources).filter(
+		(name) =>
+			resources[name].hasList && resources[name]?.options?.util === true,
+	);
+
 	const { openMobile, setOpenMobile } = useSidebar();
 	const handleClick = () => {
 		if (openMobile) {
@@ -68,33 +93,91 @@ export function AppSidebar() {
 			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									asChild
-									isActive={!!dashboardMatch || !!rootMatch}
-								>
-									<Link to="/dashboard" onClick={handleClick}>
-										<LayoutDashboard />
-										<span>Dashboard</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-							{hasDashboard ? (
-								<DashboardMenuItem onClick={handleClick} />
-							) : null}
-							{Object.keys(resources)
-								.filter((name) => resources[name].hasList)
-								.map((name) => (
+					<SidebarGroup>
+						<SidebarGroupLabel>Main</SidebarGroupLabel>
+						<SidebarGroupContent>
+							<SidebarMenu>
+								{/* ----------------------------------------------------------------------------------------- */}
+								<SidebarMenuItem>
+									<SidebarMenuButton asChild isActive={!!dashboardMatch}>
+										<LinkBase to="/transaction/create" onClick={handleClick}>
+											<Plus />
+											<span>New Transaction</span>
+										</LinkBase>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+
+								<SidebarMenuItem>
+									<SidebarMenuButton asChild isActive={!!dashboardMatch}>
+										<Link to="/dashboard" onClick={handleClick}>
+											<LayoutDashboard />
+											<span>Dashboard</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+								{/* ----------------------------------------------------------------------------------------- */}
+								{hasDashboard ? (
+									<DashboardMenuItem onClick={handleClick} />
+								) : null}
+								{mainPages.map((name) => (
 									<ResourceMenuItem
 										key={name}
 										name={name}
 										onClick={handleClick}
 									/>
 								))}
-						</SidebarMenu>
-					</SidebarGroupContent>
+							</SidebarMenu>
+						</SidebarGroupContent>
+					</SidebarGroup>
+					{tablePages.length && (
+						<SidebarGroup>
+							<SidebarGroupLabel>Tables</SidebarGroupLabel>
+							<SidebarGroupContent>
+								<SidebarMenu>
+									{hasDashboard ? (
+										<DashboardMenuItem onClick={handleClick} />
+									) : null}
+									{tablePages.map((name) => (
+										<ResourceMenuItem
+											key={name}
+											name={name}
+											onClick={handleClick}
+										/>
+									))}
+								</SidebarMenu>
+							</SidebarGroupContent>
+						</SidebarGroup>
+					)}
+					{utilsPages.length && (
+						<SidebarGroup>
+							<SidebarGroupLabel>Utils</SidebarGroupLabel>
+
+							<SidebarGroupContent>
+								<SidebarMenu>
+									{hasDashboard ? (
+										<DashboardMenuItem onClick={handleClick} />
+									) : null}
+									{utilsPages.map((name) => (
+										<ResourceMenuItem
+											key={name}
+											name={name}
+											onClick={handleClick}
+										/>
+									))}
+									{/* ----------------------------------------------------------------------------------------- */}
+									<SidebarMenuItem>
+										<SidebarMenuButton asChild isActive={!!defaultsMatch}>
+											<Link to="/defaults" onClick={handleClick}>
+												<Settings />
+												<span>Defaults</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+									{/* ----------------------------------------------------------------------------------------- */}
+								</SidebarMenu>
+							</SidebarGroupContent>
+						</SidebarGroup>
+					)}
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter />

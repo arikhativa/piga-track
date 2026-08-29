@@ -1,6 +1,6 @@
-import { Coins, Tags } from "lucide-react";
+import { ChartGantt, Coins, HandCoins, PiggyBank, Tags } from "lucide-react";
 import { CustomRoutes, Resource } from "ra-core";
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 import { Admin } from "#/components/admin";
 import { TooltipProvider } from "#/components/ui/tooltip";
 import { supabaseAuthProvider } from "#/lib/authProvider";
@@ -15,7 +15,18 @@ import { TransactionTagEdit } from "#/routes/(transactionTag)/-TransactionTagEdi
 import { TransactionTagList } from "#/routes/(transactionTag)/-TransactionTagList";
 
 import "../styles.css";
+import { CurrencyCreate } from "#/routes/currency/CurrencyCreate";
+import { CurrencyEdit } from "#/routes/currency/CurrencyEdit";
+import { CurrencyList } from "#/routes/currency/CurrencyList";
 import { Dashboard } from "#/routes/dashboard/Dashboard";
+import { DefaultsBaseEdit } from "#/routes/defaults/DefaultsBaseEdit";
+import { PotCreate } from "#/routes/pot/PotCreate";
+import { PotEdit } from "#/routes/pot/PotEdit";
+import { PotList } from "#/routes/pot/PotList";
+import { ProfileBaseEdit } from "#/routes/profile/ProfileBaseEdit";
+import { ProjectCreate } from "#/routes/project/ProjectCreate";
+import { ProjectEdit } from "#/routes/project/ProjectEdit";
+import { ProjectList } from "#/routes/project/ProjectList";
 
 const instanceUrl = import.meta.env.VITE_SUPABASE_URL;
 const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -33,23 +44,57 @@ export function App() {
 		<TooltipProvider>
 			<Admin authProvider={authProvider} dataProvider={dataProvider}>
 				<CustomRoutes>
-					<Route path="/" element={<Dashboard />} />
+					<Route
+						path="/"
+						element={<Navigate to="/transaction/create" replace />}
+					/>
+					<Route path="/profile" element={<ProfileBaseEdit />} />
+					<Route path="/defaults" element={<DefaultsBaseEdit />} />
 					<Route path="/dashboard" element={<Dashboard />} />
 				</CustomRoutes>
+
+				{/* Tables */}
 				<Resource
 					name="transaction"
 					list={TransactionList}
 					edit={TransactionEdit}
 					create={TransactionCreate}
-					icon={Coins}
+					options={{ table: true }}
+					icon={HandCoins}
 				/>
 				<Resource
+					name="transaction_type"
+					options={{ label: "Money pots", table: true }}
+					list={PotList}
+					edit={PotEdit}
+					create={PotCreate}
+					icon={PiggyBank}
+				/>
+				<Resource
+					name="transaction_project"
+					options={{ label: "Projects", table: true }}
+					list={ProjectList}
+					edit={ProjectEdit}
+					create={ProjectCreate}
+					icon={ChartGantt}
+				/>
+
+				{/* Utils */}
+				<Resource
 					name="transaction_tag"
-					options={{ label: "Tags" }}
+					options={{ label: "Tags", util: true }}
 					list={TransactionTagList}
 					edit={TransactionTagEdit}
 					create={TransactionTagCreate}
 					icon={Tags}
+				/>
+				<Resource
+					name="currency"
+					options={{ util: true }}
+					list={CurrencyList}
+					edit={CurrencyEdit}
+					create={CurrencyCreate}
+					icon={Coins}
 				/>
 			</Admin>
 		</TooltipProvider>

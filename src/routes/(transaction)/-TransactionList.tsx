@@ -1,43 +1,67 @@
 import { Badge } from "#/components/ui/badge";
-import { ProfileFullName } from "#/routes/(profile)/-ProfileFullName";
+import { useCurrenciesForTransactions } from "#/hooks/use-currencies-for-transactions";
+import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, List, ReferenceField } from "@/components/admin";
 
-export const TransactionList = () => (
-	<List>
-		<DataTable>
-			<DataTable.Col
-				label="Type"
-				render={(record) => (
-					<Badge variant={record.amount < 0 ? "spent" : "received"}>
-						{record.amount < 0 ? "Spent" : "Received"}
-					</Badge>
-				)}
-			/>
+export const TransactionList = () => {
+	const { data } = useCurrenciesForTransactions();
+	return (
+		<List>
+			<DataTable>
+				<DataTable.Col
+					label="Type"
+					render={(record) => (
+						<Badge variant={record.amount < 0 ? "spent" : "received"}>
+							{record.amount < 0 ? "Spent" : "Received"}
+						</Badge>
+					)}
+				/>
 
-			<DataTable.Col label="Tag">
-				<ReferenceField
-					source="tag_id"
-					reference="transaction_tag"
-					render={({ referenceRecord }) =>
-						referenceRecord ? referenceRecord.value : null
+				<DataTable.Col
+					source="amount"
+					render={(record) => {
+						const currency = data?.find(
+							(currency) => currency.id === record.currency_id,
+						);
+
+						return (
+							<>
+								{Math.abs(record.amount)} {currency?.symbol}
+							</>
+						);
+					}}
+				/>
+
+				<DataTable.Col label="Category">
+					<ReferenceField
+						source="category_id"
+						reference="transaction_category"
+						render={({ referenceRecord }) =>
+							referenceRecord ? referenceRecord.value : null
+						}
+					></ReferenceField>
+				</DataTable.Col>
+
+				<DataTable.Col label="Project">
+					<ReferenceField
+						source="project_id"
+						reference="transaction_project"
+						render={({ referenceRecord }) =>
+							referenceRecord ? referenceRecord.value : null
+						}
+					></ReferenceField>
+				</DataTable.Col>
+
+				<DataTable.Col
+					source="created_at"
+					render={(record) =>
+						new Date(record.created_at).toLocaleDateString("he-IL")
 					}
-				></ReferenceField>
-			</DataTable.Col>
-
-			<DataTable.Col
-				source="amount"
-				render={(record) => Math.abs(record.amount)}
-			/>
-
-			<DataTable.Col
-				source="created_at"
-				render={(record) =>
-					new Date(record.created_at).toLocaleDateString("he-IL")
-				}
-			/>
-			<DataTable.Col label="Owner">
-				<ProfileFullName />
-			</DataTable.Col>
-		</DataTable>
-	</List>
-);
+				/>
+				<DataTable.Col label="Owner">
+					<ProfileFullName />
+				</DataTable.Col>
+			</DataTable>
+		</List>
+	);
+};

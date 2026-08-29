@@ -1,0 +1,4 @@
+ALTER TABLE "profile" ADD COLUMN "default_currency_id" integer DEFAULT 7 NOT NULL;--> statement-breakpoint
+ALTER TABLE "transaction" ADD COLUMN "currency_id" integer DEFAULT 7 NOT NULL;--> statement-breakpoint
+ALTER TABLE "profile" ADD CONSTRAINT "profile_default_currency_id_currency_id_fk" FOREIGN KEY ("default_currency_id") REFERENCES "public"."currency"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "transaction" ADD CONSTRAINT "transaction_currency_id_currency_id_fk" FOREIGN KEY ("currency_id") REFERENCES "public"."currency"("id") ON DELETE no action ON UPDATE no action;

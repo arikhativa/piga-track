@@ -22,6 +22,125 @@
       "when": 1787997325741,
       "tag": "0002_rls-v1",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788015373554,
+      "tag": "0003_outstanding_hardball",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1788015473517,
+      "tag": "0004_added-base-currency",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788015569511,
+      "tag": "0005_parched_nextwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788015590938,
+      "tag": "0006_rls-v2",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788022273599,
+      "tag": "0007_broad_winter_soldier",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1788022303707,
+      "tag": "0008_init_transaction_type",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788022387950,
+      "tag": "0009_rls-v3",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788022854542,
+      "tag": "0010_previous_tag",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788075754431,
+      "tag": "0011_tough_blindfold",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1788076325330,
+      "tag": "0012_salty_alice",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1788076351308,
+      "tag": "0013_init_category",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1788078517485,
+      "tag": "0014_omniscient_pyro",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1788078528539,
+      "tag": "0015_rls-v4",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1788079057828,
+      "tag": "0016_mixed_ultragirl",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1788079071723,
+      "tag": "0017_rls-v5",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1788079510074,
+      "tag": "0018_slippery_zodiak",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1788079720109,
+      "tag": "0019_simple_zodiak",
+      "breakpoints": true
     }
   ]
 }
