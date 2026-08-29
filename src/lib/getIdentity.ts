@@ -4,11 +4,16 @@ import { setProfile } from "#/lib/profileStore";
 import { supabaseClient } from "#/lib/supabaseClient";
 
 export async function getIdentity(user: User): Promise<UserIdentity> {
-	const { data } = await supabaseClient
+	const { data, error } = await supabaseClient
 		.from("profile")
 		.select("id, first_name, last_name, email")
 		.eq("id", user.id)
 		.single();
+
+	if (error) {
+		console.error("getIdentity profile error:", error);
+		throw error;
+	}
 
 	if (!data) {
 		throw new Error("Profile not found");
