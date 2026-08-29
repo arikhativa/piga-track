@@ -18,11 +18,9 @@ import "../styles.css";
 import { Dashboard } from "#/routes/dashboard/Dashboard";
 
 const instanceUrl = import.meta.env.VITE_SUPABASE_URL;
-const apiKey = import.meta.env.VITE_SUPABASE_API_KEY;
 
 const dataProvider = supabaseDataProvider({
 	instanceUrl,
-	apiKey,
 	supabaseClient,
 });
 
