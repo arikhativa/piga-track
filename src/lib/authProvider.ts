@@ -13,6 +13,12 @@ export const supabaseAuthProvider = (
 				const { error } =
 					await client.auth.signInWithPassword(emailPasswordParams);
 
+				const {
+					data: { session },
+				} = await client.auth.getSession();
+
+				console.log("SESSION AFTER LOGIN:", session);
+
 				if (error) {
 					throw error;
 				}
@@ -178,10 +184,14 @@ export const supabaseAuthProvider = (
 
 	if (typeof getIdentity === "function") {
 		authProvider.getIdentity = async () => {
-			const { data } = await client.auth.getUser();
+			const { data, error } = await client.auth.getUser();
+
+			console.log("Maybe error", error);
 			if (data.user == null) {
+				console.log("EEE");
 				throw new Error();
 			}
+			console.log("data.user:", data.user);
 
 			const identity = await getIdentity(data.user);
 			return identity;
