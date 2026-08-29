@@ -9,6 +9,7 @@ export function TransactionCreate() {
 
 	return (
 		<Create
+			redirect={"create"}
 			transform={(data) => {
 				const amount = type === "received" ? data.amount : -data.amount;
 

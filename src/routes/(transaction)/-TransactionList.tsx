@@ -8,7 +8,7 @@ export const TransactionList = () => (
 			<DataTable.Col
 				label="Type"
 				render={(record) => (
-					<Badge variant={record.amount < 0 ? "pink" : "green"}>
+					<Badge variant={record.amount < 0 ? "spent" : "received"}>
 						{record.amount < 0 ? "Spent" : "Received"}
 					</Badge>
 				)}

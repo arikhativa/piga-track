@@ -7,7 +7,6 @@ import { supabaseAuthProvider } from "#/lib/authProvider";
 import { supabaseDataProvider } from "#/lib/dataProvider";
 import { getIdentity } from "#/lib/getIdentity";
 import { supabaseClient } from "#/lib/supabaseClient";
-import { Dashboard } from "#/routes/(dashboard)/-Dashboard";
 import { TransactionCreate } from "#/routes/(transaction)/-TransactionCreate";
 import { TransactionEdit } from "#/routes/(transaction)/-TransactionEdit";
 import { TransactionList } from "#/routes/(transaction)/-TransactionList";
@@ -16,6 +15,7 @@ import { TransactionTagEdit } from "#/routes/(transactionTag)/-TransactionTagEdi
 import { TransactionTagList } from "#/routes/(transactionTag)/-TransactionTagList";
 
 import "../styles.css";
+import { Dashboard } from "#/routes/dashboard/Dashboard";
 
 const instanceUrl = import.meta.env.VITE_SUPABASE_URL;
 const apiKey = import.meta.env.VITE_SUPABASE_API_KEY;

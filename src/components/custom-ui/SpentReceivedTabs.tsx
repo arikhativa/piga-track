@@ -12,14 +12,14 @@ export function SpentReceivedTabs({ type, setType }: SpentReceivedTabsProps) {
 			<TabsList>
 				<TabsTrigger
 					value="spent"
-					className="data-[state=active]:bg-pink-100 data-[state=active]:text-pink-700 dark:data-[state=active]:bg-pink-950 dark:data-[state=active]:text-pink-300"
+					className="dark:hover:text-pink-700 hover:text-pink-700 data-active:bg-pink-100 data-active:text-pink-700 dark:data-active:bg-pink-950 dark:data-active:text-pink-300"
 				>
 					Spent
 				</TabsTrigger>
 
 				<TabsTrigger
 					value="received"
-					className="data-[state=active]:bg-green-100 data-[state=active]:text-green-700 dark:data-[state=active]:bg-green-950 dark:data-[state=active]:text-green-300"
+					className="dark:hover:text-green-700 hover:text-green-700 data-active:bg-green-100 data-active:text-green-700 dark:data-active:bg-green-950 dark:data-active:text-green-300"
 				>
 					Received
 				</TabsTrigger>

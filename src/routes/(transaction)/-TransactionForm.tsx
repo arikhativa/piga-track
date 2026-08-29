@@ -5,6 +5,7 @@ import {
 	type SpentReceivedTabsProps,
 } from "#/components/custom-ui/SpentReceivedTabs";
 import {
+	DateInput,
 	NumberInput,
 	ReferenceInput,
 	SelectInput,
@@ -23,11 +24,9 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 	return (
 		<SimpleForm>
 			<SpentReceivedTabs type={type} setType={setType} />
-
 			<ReferenceInput source="tag_id" reference="transaction_tag">
 				<SelectInput label="Tag" optionText="value" emptyText="No tag" />
 			</ReferenceInput>
-
 			<NumberInput
 				source="amount"
 				label="Amount"
@@ -35,7 +34,7 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 				validate={required()}
 				format={(value) => Math.abs(Number(value))}
 			/>
-
+			<DateInput source="created_at" />
 			<TextInput source="description" label="Description" multiline />
 		</SimpleForm>
 	);
