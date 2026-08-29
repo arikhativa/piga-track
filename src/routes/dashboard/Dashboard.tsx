@@ -3,8 +3,15 @@ import { useTransactionData } from "#/hooks/use-transaction-data";
 import { BarChartCard } from "#/routes/dashboard/BarChart";
 
 export function Dashboard() {
-	const from = new Date("2026-06-01");
-	const to = new Date("2026-10-31");
+	const to = new Date();
+	const from = new Date();
+
+	from.setMonth(from.getMonth() - 5);
+	from.setDate(1);
+	from.setHours(0, 0, 0, 0);
+
+	to.setHours(23, 59, 59, 999);
+
 	const { data, isPending, error } = useTransactionData({
 		from,
 		to,
@@ -27,13 +34,15 @@ export function Dashboard() {
 
 		return Array.from(months, ([month, value]) => ({
 			month,
-			value,
+			value: value * -1,
 		}));
 	}, [data, isPending, error]);
 
 	return (
-		<div className="w-200">
-			<BarChartCard title="Transactions By Month" data={chartData} />
+		<div className="w-full justify-center flex items-center h-full">
+			<div className="w-full  max-h-200">
+				<BarChartCard title="Expenses By Month" data={chartData} />
+			</div>
 		</div>
 	);
 }

@@ -18,14 +18,19 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: this should run on init only
 	useEffect(() => {
-		setType(record?.amount < 0 ? "spent" : "received");
+		setType(record?.amount > 0 ? "received" : "spent");
 	}, []);
 
 	return (
 		<SimpleForm>
 			<SpentReceivedTabs type={type} setType={setType} />
 			<ReferenceInput source="tag_id" reference="transaction_tag">
-				<SelectInput label="Tag" optionText="value" emptyText="No tag" />
+				<SelectInput
+					label="Tag"
+					optionText="value"
+					emptyText="No tag"
+					validate={required()}
+				/>
 			</ReferenceInput>
 			<NumberInput
 				source="amount"
@@ -34,7 +39,11 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 				validate={required()}
 				format={(value) => Math.abs(Number(value))}
 			/>
-			<DateInput source="created_at" />
+			<DateInput
+				source="created_at"
+				defaultValue={new Date().toISOString()}
+				validate={required()}
+			/>
 			<TextInput source="description" label="Description" multiline />
 		</SimpleForm>
 	);

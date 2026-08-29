@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 import {
 	Card,
@@ -31,8 +31,12 @@ const chartData = [
 
 const chartConfig = {
 	desktop: {
-		label: "Amount",
+		label: "Desktop",
 		color: "var(--chart-1)",
+	},
+	mobile: {
+		label: "Mobile",
+		color: "var(--chart-2)",
 	},
 } satisfies ChartConfig;
 
@@ -44,11 +48,10 @@ interface ChartData {
 interface BarChartCard {
 	title: string;
 	desc?: string;
-	config?: ChartConfig;
 	data: ChartData[];
 }
 
-export function BarChartCard({ title, desc, config, data }: BarChartCard) {
+export function BarChartCard({ title, desc, data }: BarChartCard) {
 	return (
 		<Card>
 			<CardHeader>
@@ -70,7 +73,14 @@ export function BarChartCard({ title, desc, config, data }: BarChartCard) {
 							cursor={false}
 							content={<ChartTooltipContent hideLabel />}
 						/>
-						<Bar dataKey="value" fill="var(--chart-1)" radius={8} />
+						<Bar dataKey="value" fill="var(--chart-2)" radius={8}>
+							<LabelList
+								position="top"
+								offset={12}
+								className="fill-foreground"
+								fontSize={12}
+							/>
+						</Bar>
 					</BarChart>
 				</ChartContainer>
 			</CardContent>
