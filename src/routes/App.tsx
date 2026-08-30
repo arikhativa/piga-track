@@ -1,4 +1,11 @@
-import { ChartGantt, Coins, HandCoins, PiggyBank, Tags } from "lucide-react";
+import {
+	Bookmark,
+	ChartGantt,
+	Coins,
+	HandCoins,
+	PiggyBank,
+	Tags,
+} from "lucide-react";
 import { CustomRoutes, Resource } from "ra-core";
 import { Navigate, Route } from "react-router-dom";
 import { Admin } from "#/components/admin";
@@ -15,6 +22,9 @@ import { TransactionTagEdit } from "#/routes/(transactionTag)/-TransactionTagEdi
 import { TransactionTagList } from "#/routes/(transactionTag)/-TransactionTagList";
 
 import "../styles.css";
+import { CategoryCreate } from "#/routes/category/CategoryCreate";
+import { CategoryEdit } from "#/routes/category/CategoryEdit";
+import { CategoryList } from "#/routes/category/CategoryList";
 import { CurrencyCreate } from "#/routes/currency/CurrencyCreate";
 import { CurrencyEdit } from "#/routes/currency/CurrencyEdit";
 import { CurrencyList } from "#/routes/currency/CurrencyList";
@@ -62,6 +72,15 @@ export function App() {
 					options={{ table: true }}
 					icon={HandCoins}
 				/>
+				<Resource
+					name="transaction_category"
+					options={{ label: "Categories", table: true }}
+					list={CategoryList}
+					edit={CategoryEdit}
+					create={CategoryCreate}
+					icon={Bookmark}
+				/>
+
 				<Resource
 					name="transaction_type"
 					options={{ label: "Money pots", table: true }}
