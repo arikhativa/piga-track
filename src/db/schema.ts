@@ -1,6 +1,7 @@
 import type { InferSelectModel } from "drizzle-orm";
 import {
 	integer,
+	numeric,
 	pgTable,
 	serial,
 	text,
@@ -95,7 +96,11 @@ export const transaction = pgTable("transaction", {
 		.default(CASH_ID)
 		.references(() => transactionType.id),
 
-	amount: integer("amount").notNull(),
+	amount: numeric("amount", {
+		precision: 12,
+		scale: 2,
+	}).notNull(),
+
 	description: text("description"),
 
 	created_at: timestamp("created_at", { withTimezone: true })

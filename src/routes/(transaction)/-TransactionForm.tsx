@@ -69,7 +69,7 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 
 			<ReferenceInput source="project_id" reference="transaction_project">
 				<SelectInput
-					defaultValue={profile?.default_project_id || ""}
+					defaultValue={profile?.default_project_id ?? undefined}
 					optionText={projectOptionText}
 					label="Project"
 				/>
