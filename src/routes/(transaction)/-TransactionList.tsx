@@ -6,7 +6,7 @@ import { DataTable, List, ReferenceField } from "@/components/admin";
 export const TransactionList = () => {
 	const { data } = useCurrenciesForTransactions();
 	return (
-		<List>
+		<List sort={{ field: "created_at", order: "DESC" }}>
 			<DataTable>
 				<DataTable.Col
 					label="Type"
