@@ -74,6 +74,16 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 					label="Project"
 				/>
 			</ReferenceInput>
+
+			<ReferenceInput source="profile_id" reference="profile">
+				<SelectInput
+					label="Owner"
+					defaultValue={profile?.id}
+					optionText={(profile) => `${profile.first_name} ${profile.last_name}`}
+					validate={required()}
+				/>
+			</ReferenceInput>
+
 			<TextInput source="description" label="Description" multiline />
 		</SimpleForm>
 	);

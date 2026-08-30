@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { useProfile } from "#/hooks/use-profile";
 import { TransactionForm } from "#/routes/(transaction)/-TransactionForm";
 import { Create } from "@/components/admin";
 
 export function TransactionCreate() {
-	const { data: profile } = useProfile();
-
 	const [type, setType] = useState<"spent" | "received">("spent");
 
 	return (
@@ -16,7 +13,6 @@ export function TransactionCreate() {
 
 				return {
 					...data,
-					profile_id: profile?.id,
 					amount,
 				};
 			}}
