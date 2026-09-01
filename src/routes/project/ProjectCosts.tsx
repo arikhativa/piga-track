@@ -32,5 +32,5 @@ export const ProjectCosts = ({ record }: { record?: TransactionProject }) => {
 	if (isPending) return "...";
 	if (error) return "Error";
 
-	return Math.abs(balance ?? 0).toFixed(2);
+	return Math.abs(balance || 0).toFixed(2);
 };

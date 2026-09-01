@@ -5,11 +5,19 @@ import { DataTable, List } from "@/components/admin";
 export const ProjectList = () => (
 	<List>
 		<DataTable>
-			<DataTable.Col source="value" />
+			<DataTable.Col label="Name" source="value" />
 			<DataTable.Col
-				label="Costs in ₪"
+				source="created_at"
+				render={(record) =>
+					new Date(record.created_at).toLocaleDateString("he-IL")
+				}
+			/>
+			<DataTable.Col
+				label="Sum of Costs"
 				render={(record: TransactionProject) => (
-					<ProjectCosts record={record} />
+					<>
+						<ProjectCosts record={record} /> ₪
+					</>
 				)}
 			/>
 		</DataTable>

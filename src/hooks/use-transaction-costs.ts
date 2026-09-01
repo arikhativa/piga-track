@@ -57,12 +57,14 @@ export function useTransactionCosts(projectId?: number) {
 	const rates = ratesQuery.data ?? {};
 
 	const balance = transactions?.reduce((sum, transaction) => {
+		const amount = Number(transaction.amount);
+
 		const currency = currencies?.find(
 			(currency) => currency.id === transaction.currency_id,
 		);
 
 		if (!currency || currency.iso_code === BASE_CURRENCY) {
-			return sum + transaction.amount;
+			return sum + amount;
 		}
 
 		const transactionDate = new Date(transaction.created_at)
@@ -73,7 +75,7 @@ export function useTransactionCosts(projectId?: number) {
 
 		if (!rate) return sum;
 
-		return sum + transaction.amount * rate;
+		return sum + amount * rate;
 	}, 0);
 
 	return {

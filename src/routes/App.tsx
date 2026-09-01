@@ -37,6 +37,7 @@ import { ProfileBaseEdit } from "#/routes/profile/ProfileBaseEdit";
 import { ProjectCreate } from "#/routes/project/ProjectCreate";
 import { ProjectEdit } from "#/routes/project/ProjectEdit";
 import { ProjectList } from "#/routes/project/ProjectList";
+import { ProjectShow } from "#/routes/project/ProjectShow";
 
 const instanceUrl = import.meta.env.VITE_SUPABASE_URL;
 const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -94,6 +95,7 @@ export function App() {
 					options={{ label: "Projects", table: true }}
 					list={ProjectList}
 					edit={ProjectEdit}
+					show={ProjectShow}
 					create={ProjectCreate}
 					icon={ChartGantt}
 				/>
