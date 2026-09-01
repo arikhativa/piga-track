@@ -5,6 +5,7 @@ import {
 	type SpentReceivedTabsProps,
 } from "#/components/custom-ui/SpentReceivedTabs";
 import { DynamicSelect } from "#/components/form/DynamicSelect";
+import { Separator } from "#/components/ui/separator";
 import { useProfile } from "#/hooks/use-profile";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
@@ -19,6 +20,7 @@ import {
 
 export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 	const record = useRecordContext();
+
 	const { data: profile } = useProfile();
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: this should run on init only
@@ -28,61 +30,83 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 
 	return (
 		<SimpleForm>
-			<SpentReceivedTabs type={type} setType={setType} />
-			<NumberInput
-				source="amount"
-				label="Amount"
-				type="number"
-				validate={required()}
-				format={(value) => Math.abs(Number(value))}
-			/>
-			<ReferenceInput source="category_id" reference="transaction_category">
-				<DynamicSelect label="Category" optionText="value" />
-			</ReferenceInput>
+			<div className="flex justify-center items-end gap-4">
+				<SpentReceivedTabs type={type} setType={setType} />
+				<NumberInput
+					autoFocus
+					source="amount"
+					label="Amount"
+					type="number"
+					validate={required()}
+					format={(value) => Math.abs(Number(value))}
+				/>
+			</div>
 
-			<ReferenceInput source="tag_id" reference="transaction_tag">
-				<DynamicSelect label="Tag" optionText="value" />
-			</ReferenceInput>
+			<Separator />
 
-			<DateInput
-				source="created_at"
-				defaultValue={new Date().toISOString()}
-				validate={required()}
-			/>
+			<div className="grid grid-cols-2 gap-4">
+				<ReferenceInput source="category_id" reference="transaction_category">
+					<DynamicSelect
+						defaultValue={profile?.default_category_id}
+						label="Category"
+						optionText="value"
+					/>
+				</ReferenceInput>
 
-			<ReferenceInput source="currency_id" reference="currency">
-				<SelectInput
-					defaultValue={profile?.default_currency_id}
-					label="Currency"
-					optionText={currencyOptionText}
+				<ReferenceInput source="tag_id" reference="transaction_tag">
+					<DynamicSelect label="Content" optionText="value" />
+				</ReferenceInput>
+
+				<ReferenceInput source="project_id" reference="transaction_project">
+					<SelectInput
+						defaultValue={profile?.default_project_id ?? undefined}
+						optionText={projectOptionText}
+						label="Project"
+					/>
+				</ReferenceInput>
+			</div>
+
+			<Separator />
+
+			<div className="grid grid-cols-2 gap-4">
+				<DateInput
+					source="created_at"
+					defaultValue={new Date().toISOString()}
 					validate={required()}
 				/>
-			</ReferenceInput>
 
-			<ReferenceInput source="transaction_type_id" reference="transaction_type">
-				<SelectInput
-					defaultValue={profile?.default_transaction_type_id}
-					label="Type"
-					validate={required()}
-				/>
-			</ReferenceInput>
+				<ReferenceInput source="currency_id" reference="currency">
+					<SelectInput
+						defaultValue={profile?.default_currency_id}
+						label="Currency"
+						optionText={currencyOptionText}
+						validate={required()}
+					/>
+				</ReferenceInput>
+				<ReferenceInput
+					source="transaction_type_id"
+					reference="transaction_type"
+				>
+					<SelectInput
+						defaultValue={profile?.default_transaction_type_id}
+						label="Type"
+						validate={required()}
+					/>
+				</ReferenceInput>
 
-			<ReferenceInput source="project_id" reference="transaction_project">
-				<SelectInput
-					defaultValue={profile?.default_project_id ?? undefined}
-					optionText={projectOptionText}
-					label="Project"
-				/>
-			</ReferenceInput>
+				<ReferenceInput source="profile_id" reference="profile">
+					<SelectInput
+						label="Owner"
+						defaultValue={profile?.id}
+						optionText={(profile) =>
+							`${profile.first_name} ${profile.last_name}`
+						}
+						validate={required()}
+					/>
+				</ReferenceInput>
+			</div>
 
-			<ReferenceInput source="profile_id" reference="profile">
-				<SelectInput
-					label="Owner"
-					defaultValue={profile?.id}
-					optionText={(profile) => `${profile.first_name} ${profile.last_name}`}
-					validate={required()}
-				/>
-			</ReferenceInput>
+			<Separator />
 
 			<TextInput source="description" label="Description" multiline />
 		</SimpleForm>

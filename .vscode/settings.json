@@ -1,4 +1,8 @@
 {
+	"js/ts.preferences.autoImportSpecifierExcludeRegexes": [
+		"^radix-ui$",
+		"^@radix-ui/.*$"
+	],
 	"files.watcherExclude": {
 		"**/routeTree.gen.ts": true
 	},
