@@ -1,6 +1,6 @@
 import { useMemo } from "react";
+import { BarChartCard } from "#/components/charts/BarChartCard";
 import { useTransactionData } from "#/hooks/use-transaction-data";
-import { BarChartCard } from "#/routes/dashboard/BarChart";
 
 export function Dashboard() {
 	const to = new Date();
@@ -28,8 +28,9 @@ export function Dashboard() {
 			const month = date.toLocaleString("en-US", {
 				month: "long",
 			});
+			const amount = Number(transaction.amount);
 
-			months.set(month, (months.get(month) ?? 0) + transaction.amount);
+			months.set(month, (months.get(month) ?? 0) + amount);
 		}
 
 		return Array.from(months, ([month, value]) => ({

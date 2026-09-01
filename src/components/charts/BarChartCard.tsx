@@ -1,13 +1,11 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 import {
 	Card,
 	CardContent,
 	CardDescription,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
@@ -19,15 +17,6 @@ import {
 } from "@/components/ui/chart";
 
 export const description = "A bar chart";
-
-const chartData = [
-	{ month: "January", value: 186 },
-	{ month: "February", value: 305 },
-	{ month: "March", value: 237 },
-	{ month: "April", value: 73 },
-	{ month: "May", value: 209 },
-	{ month: "June", value: 214 },
-];
 
 const chartConfig = {
 	desktop: {
