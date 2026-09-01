@@ -33,7 +33,6 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 			<div className="flex justify-center items-end gap-4">
 				<SpentReceivedTabs type={type} setType={setType} />
 				<NumberInput
-					autoFocus
 					source="amount"
 					label="Amount"
 					type="number"
