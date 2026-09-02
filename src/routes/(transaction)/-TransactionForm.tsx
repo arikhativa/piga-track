@@ -46,16 +46,16 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 			<Separator />
 
 			<div className="grid grid-cols-2 gap-4">
+				<ReferenceInput source="tag_id" reference="transaction_tag">
+					<DynamicSelect label="Content" optionText="value" />
+				</ReferenceInput>
+
 				<ReferenceInput source="category_id" reference="transaction_category">
 					<DynamicSelect
 						defaultValue={profile?.default_category_id}
 						label="Category"
 						optionText="value"
 					/>
-				</ReferenceInput>
-
-				<ReferenceInput source="tag_id" reference="transaction_tag">
-					<DynamicSelect label="Content" optionText="value" />
 				</ReferenceInput>
 
 				<ReferenceInput source="project_id" reference="transaction_project">
@@ -65,12 +65,23 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 						label="Project"
 					/>
 				</ReferenceInput>
+				<ReferenceInput source="profile_id" reference="profile">
+					<SelectInput
+						label="Owner"
+						defaultValue={profile?.id}
+						optionText={(profile) =>
+							`${profile.first_name} ${profile.last_name}`
+						}
+						validate={required()}
+					/>
+				</ReferenceInput>
 			</div>
 
 			<Separator />
 
 			<div className="grid grid-cols-2 gap-4">
 				<DateTimeInput
+					className=" col-span-2"
 					source="created_at"
 					defaultValue={new Date().toISOString()}
 					validate={required()}
@@ -91,17 +102,6 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 					<SelectInput
 						defaultValue={profile?.default_transaction_type_id}
 						label="Type"
-						validate={required()}
-					/>
-				</ReferenceInput>
-
-				<ReferenceInput source="profile_id" reference="profile">
-					<SelectInput
-						label="Owner"
-						defaultValue={profile?.id}
-						optionText={(profile) =>
-							`${profile.first_name} ${profile.last_name}`
-						}
 						validate={required()}
 					/>
 				</ReferenceInput>
