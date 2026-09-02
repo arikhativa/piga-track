@@ -24,16 +24,17 @@ export function useProjectCurrencyTotals(projectId?: TransactionProject["id"]) {
 	const totals: Record<string, number> = {};
 
 	for (const transaction of transactionsQuery.data ?? []) {
-		const isoCode = currencyById.get(transaction.currency_id);
+		const symbol = currencyById.get(transaction.currency_id);
 
-		if (!isoCode) continue;
+		if (!symbol) continue;
 
 		const amount = Number(transaction.amount);
 
-		totals[isoCode] = (totals[isoCode] ?? 0) + amount;
+		totals[symbol] = (totals[symbol] ?? 0) + amount;
 	}
 
-	for (const [currency, total] of Object.entries(totals)) {
+	for (const aaa of Object.entries(totals)) {
+		const [currency, total] = aaa;
 		totals[currency] = Number(total.toFixed(2));
 	}
 

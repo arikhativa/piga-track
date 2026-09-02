@@ -9,7 +9,6 @@ import { Separator } from "#/components/ui/separator";
 import { useProfile } from "#/hooks/use-profile";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
-import { toSmallDate } from "#/lib/format/toSmallDate";
 import {
 	DateTimeInput,
 	NumberInput,

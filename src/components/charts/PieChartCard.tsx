@@ -12,6 +12,7 @@ import {
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
+	getColorKey,
 } from "@/components/ui/chart";
 
 export const description = "A pie chart with a custom label";
@@ -38,7 +39,7 @@ export function PieChartCard({ title, desc, data }: PieChartCardProps) {
 		...top.map(([name, value]) => ({
 			name,
 			value: Math.abs(value),
-			fill: `var(--color-${name})`,
+			fill: `var(--color-${getColorKey(name)})`,
 		})),
 		...(rest.length > 0
 			? [
