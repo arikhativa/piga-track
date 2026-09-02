@@ -33,6 +33,10 @@ export function useProjectCurrencyTotals(projectId?: TransactionProject["id"]) {
 		totals[isoCode] = (totals[isoCode] ?? 0) + amount;
 	}
 
+	for (const [currency, total] of Object.entries(totals)) {
+		totals[currency] = Number(total.toFixed(2));
+	}
+
 	return {
 		...transactionsQuery,
 		data: totals,
