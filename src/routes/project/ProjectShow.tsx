@@ -14,7 +14,7 @@ export function ProjectShow() {
 				>
 					<TransactionDataTable
 						bulkActionButtons={false}
-						colToHide={["project"]}
+						colToHide={["project", "category"]}
 					/>
 				</ReferenceManyField>
 			</article>

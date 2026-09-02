@@ -154,16 +154,6 @@ export function AppSidebar() {
 
 							<SidebarGroupContent>
 								<SidebarMenu>
-									{hasDashboard ? (
-										<DashboardMenuItem onClick={handleClick} />
-									) : null}
-									{utilsPages.map((name) => (
-										<ResourceMenuItem
-											key={name}
-											name={name}
-											onClick={handleClick}
-										/>
-									))}
 									{/* ----------------------------------------------------------------------------------------- */}
 									<SidebarMenuItem>
 										<SidebarMenuButton asChild isActive={!!defaultsMatch}>
@@ -174,6 +164,16 @@ export function AppSidebar() {
 										</SidebarMenuButton>
 									</SidebarMenuItem>
 									{/* ----------------------------------------------------------------------------------------- */}
+									{hasDashboard ? (
+										<DashboardMenuItem onClick={handleClick} />
+									) : null}
+									{utilsPages.map((name) => (
+										<ResourceMenuItem
+											key={name}
+											name={name}
+											onClick={handleClick}
+										/>
+									))}
 								</SidebarMenu>
 							</SidebarGroupContent>
 						</SidebarGroup>

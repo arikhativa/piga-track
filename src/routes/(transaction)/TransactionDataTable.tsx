@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import { Badge } from "#/components/ui/badge";
 import { useCurrenciesForTransactions } from "#/hooks/use-currencies-for-transactions";
+import { toSmallDate } from "#/lib/format/toSmallDate";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, ReferenceField } from "@/components/admin";
 
-type ColToHideOptions = "project";
+type ColToHideOptions = "project" | "category" | "tag";
 
 export const TransactionDataTable = ({
 	colToHide,
@@ -39,16 +40,29 @@ export const TransactionDataTable = ({
 					);
 				}}
 			/>
+			{colToHide?.includes("tag") ? null : (
+				<DataTable.Col label="Content">
+					<ReferenceField
+						source="tag_id"
+						reference="transaction_tag"
+						render={({ referenceRecord }) =>
+							referenceRecord ? referenceRecord.value : null
+						}
+					></ReferenceField>
+				</DataTable.Col>
+			)}
 
-			<DataTable.Col label="Category">
-				<ReferenceField
-					source="category_id"
-					reference="transaction_category"
-					render={({ referenceRecord }) =>
-						referenceRecord ? referenceRecord.value : null
-					}
-				></ReferenceField>
-			</DataTable.Col>
+			{colToHide?.includes("category") ? null : (
+				<DataTable.Col label="Category">
+					<ReferenceField
+						source="category_id"
+						reference="transaction_category"
+						render={({ referenceRecord }) =>
+							referenceRecord ? referenceRecord.value : null
+						}
+					></ReferenceField>
+				</DataTable.Col>
+			)}
 
 			{colToHide?.includes("project") ? null : (
 				<DataTable.Col label="Project">
@@ -64,9 +78,7 @@ export const TransactionDataTable = ({
 
 			<DataTable.Col
 				source="created_at"
-				render={(record) =>
-					new Date(record.created_at).toLocaleDateString("he-IL")
-				}
+				render={(record) => toSmallDate(record.created_at)}
 			/>
 			<DataTable.Col label="Owner">
 				<ProfileFullName />

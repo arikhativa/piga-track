@@ -277,27 +277,13 @@ export const SelectInput = (props: SelectInputProps) => {
 							)}
 							disabled={field.disabled}
 							aria-labelledby={labelId}
+							onClear={
+								field.value && field.value !== emptyValue
+									? () => field.onChange(emptyValue)
+									: undefined
+							}
 						>
 							<SelectValue placeholder={renderEmptyItemOption()} />
-
-							{field.value && field.value !== emptyValue ? (
-								<div
-									role="button"
-									tabIndex={0}
-									className="p-1 ms-auto pointer-events-auto text-oklch(0.542 0.034 322.5) opacity-50 hover:opacity-100 dark:text-oklch(0.711 0.019 323.02)"
-									onPointerDown={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-									}}
-									onClick={(e) => {
-										e.preventDefault();
-										e.stopPropagation();
-										field.onChange(emptyValue);
-									}}
-								>
-									<X className="h-4 w-4" />
-								</div>
-							) : null}
 						</SelectTrigger>
 						<SelectContent>
 							{finalChoices?.map((choice) => {
