@@ -9,8 +9,9 @@ import { Separator } from "#/components/ui/separator";
 import { useProfile } from "#/hooks/use-profile";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
+import { toSmallDate } from "#/lib/format/toSmallDate";
 import {
-	DateInput,
+	DateTimeInput,
 	NumberInput,
 	ReferenceInput,
 	SelectInput,
@@ -69,7 +70,7 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 			<Separator />
 
 			<div className="grid grid-cols-2 gap-4">
-				<DateInput
+				<DateTimeInput
 					source="created_at"
 					defaultValue={new Date().toISOString()}
 					validate={required()}

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Badge } from "#/components/ui/badge";
 import { useCurrenciesForTransactions } from "#/hooks/use-currencies-for-transactions";
-import { toSmallDate } from "#/lib/format/toSmallDate";
+import { toSmallDate, toTime } from "#/lib/format/toSmallDate";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, ReferenceField } from "@/components/admin";
 
@@ -80,6 +80,12 @@ export const TransactionDataTable = ({
 				source="created_at"
 				render={(record) => toSmallDate(record.created_at)}
 			/>
+
+			<DataTable.Col
+				label="Time"
+				render={(record) => toTime(record.created_at)}
+			/>
+
 			<DataTable.Col label="Owner">
 				<ProfileFullName />
 			</DataTable.Col>
