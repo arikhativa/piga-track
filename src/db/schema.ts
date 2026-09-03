@@ -113,6 +113,7 @@ export const transaction = pgTable("transaction", {
 });
 
 export type TransactionCategory = InferSelectModel<typeof transactionCategory>;
+export type TransactionTag = InferSelectModel<typeof transactionTag>;
 export type TransactionProject = InferSelectModel<typeof transactionProject>;
 export type TransactionType = InferSelectModel<typeof transactionType>;
 export type Profile = InferSelectModel<typeof profile>;

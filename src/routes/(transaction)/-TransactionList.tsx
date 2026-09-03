@@ -1,3 +1,4 @@
+import { transactionExporter } from "#/lib/exporter/transactionExporter";
 import { categoryOptionText } from "#/lib/form/categoryOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
 import { TransactionDataTable } from "#/routes/(transaction)/TransactionDataTable";
@@ -24,6 +25,7 @@ const transactionFilters = [
 export const TransactionList = () => {
 	return (
 		<List
+			exporter={transactionExporter}
 			filters={transactionFilters}
 			sort={{ field: "created_at", order: "DESC" }}
 		>

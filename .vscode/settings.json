@@ -36,5 +36,5 @@
 	"editor.codeActionsOnSave": {
 		"source.organizeImports.biome": "explicit"
 	},
-	"cSpell.words": ["Gantt", "postgrest", "raphiniert"]
+	"cSpell.words": ["Gantt", "jsonexport", "postgrest", "raphiniert"]
 }

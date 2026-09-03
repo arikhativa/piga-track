@@ -95,6 +95,9 @@ importers:
       inflection:
         specifier: ^3.0.2
         version: 3.0.2
+      jsonexport:
+        specifier: ^3.2.0
+        version: 3.2.0
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -177,6 +180,9 @@ importers:
       '@tanstack/router-cli':
         specifier: ^1.132.0
         version: 1.167.33
+      '@types/jsonexport':
+        specifier: ^3.0.5
+        version: 3.0.5
       '@types/node':
         specifier: ^22.10.2
         version: 22.20.1
@@ -2235,6 +2241,9 @@ packages:
 
   '@types/d3-timer@3.0.2':
     resolution: {integrity: sha512-Ps3T8E8dZDam6fUyNiMkekK3XUsaUEik+idO9/YjPtfj2qruF8tFBXS7XhtE4iIXBLxhmLjP3SXpLhVf21I9Lw==}
+
+  '@types/jsonexport@3.0.5':
+    resolution: {integrity: sha512-+zDVaDqNguePOU11YNEsuf/ZRS1ciHeKVYGjfvDFmgG6aCy/s4W4Wy1MiXJIbiyMJLuakGLENCndvmGZpVTV1w==}
 
   '@types/node@22.20.1':
     resolution: {integrity: sha512-EANqOCF9QFyra+4pfxUcX9STKJpCLjMbObVzljIJomAWSnuSIEAvyzEU53GaajbXJEgdh0iEcPL+DGvpUd4k1Q==}
@@ -6106,6 +6115,10 @@ snapshots:
   '@types/d3-time@3.0.4': {}
 
   '@types/d3-timer@3.0.2': {}
+
+  '@types/jsonexport@3.0.5':
+    dependencies:
+      '@types/node': 22.20.1
 
   '@types/node@22.20.1':
     dependencies:
