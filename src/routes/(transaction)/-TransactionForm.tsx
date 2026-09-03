@@ -5,6 +5,7 @@ import {
 	type SpentReceivedTabsProps,
 } from "#/components/custom-ui/SpentReceivedTabs";
 import { DynamicSelect } from "#/components/form/DynamicSelect";
+import { ResetDateTimeButton } from "#/components/form/ResetDateTimeButton";
 import { Separator } from "#/components/ui/separator";
 import { useProfile } from "#/hooks/use-profile";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
@@ -79,13 +80,15 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 			<Separator />
 
 			<div className="grid grid-cols-2 gap-4">
-				<DateTimeInput
-					className=" col-span-2"
-					source="created_at"
-					defaultValue={new Date().toISOString()}
-					validate={required()}
-				/>
-
+				<div className="col-span-2 flex items-end gap-4">
+					<DateTimeInput
+						className="flex-1"
+						source="created_at"
+						defaultValue={new Date().toISOString()}
+						validate={required()}
+					/>
+					<ResetDateTimeButton />
+				</div>
 				<ReferenceInput source="currency_id" reference="currency">
 					<SelectInput
 						defaultValue={profile?.default_currency_id}

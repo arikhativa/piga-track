@@ -143,7 +143,11 @@ export function DynamicSelect({
 				<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
 			</Button>
 
-			<CommandDialog open={open} onOpenChange={setOpen}>
+			<CommandDialog
+				open={open}
+				onOpenChange={setOpen}
+				className="top-4 translate-y-0 sm:top-[50%] sm:translate-y-[-50%]"
+			>
 				<Command shouldFilter={false}>
 					<CommandInput
 						placeholder="Search or create..."
