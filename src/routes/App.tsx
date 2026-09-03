@@ -7,7 +7,7 @@ import {
 	Tags,
 } from "lucide-react";
 import { CustomRoutes, Resource } from "ra-core";
-import { Navigate, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { Admin } from "#/components/admin";
 import { TooltipProvider } from "#/components/ui/tooltip";
 import { supabaseAuthProvider } from "#/lib/authProvider";
@@ -30,6 +30,7 @@ import { CurrencyEdit } from "#/routes/currency/CurrencyEdit";
 import { CurrencyList } from "#/routes/currency/CurrencyList";
 import { Dashboard } from "#/routes/dashboard/Dashboard";
 import { DefaultsBaseEdit } from "#/routes/defaults/DefaultsBaseEdit";
+import { Home } from "#/routes/home/Home";
 import { PotCreate } from "#/routes/pot/PotCreate";
 import { PotEdit } from "#/routes/pot/PotEdit";
 import { PotList } from "#/routes/pot/PotList";
@@ -55,10 +56,7 @@ export function App() {
 		<TooltipProvider>
 			<Admin authProvider={authProvider} dataProvider={dataProvider}>
 				<CustomRoutes>
-					<Route
-						path="/"
-						element={<Navigate to="/transaction/create" replace />}
-					/>
+					<Route path="/" element={<Home />} />
 					<Route path="/profile" element={<ProfileBaseEdit />} />
 					<Route path="/defaults" element={<DefaultsBaseEdit />} />
 					<Route path="/dashboard" element={<Dashboard />} />
