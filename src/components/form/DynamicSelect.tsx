@@ -15,17 +15,13 @@ import { InputHelperText } from "@/components/admin/input-helper-text";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
+	CommandDialog,
 	CommandEmpty,
 	CommandGroup,
 	CommandInput,
 	CommandItem,
 	CommandList,
 } from "@/components/ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 type DynamicSelectProps = ChoicesProps &
@@ -121,79 +117,77 @@ export function DynamicSelect({
 				</FormLabel>
 			)}
 
-			<Popover open={open} onOpenChange={setOpen}>
-				<PopoverTrigger asChild>
-					<Button
-						type="button"
-						variant="ghost"
-						role="combobox"
-						aria-expanded={open}
-						className={cn(
-							"justify-between h-8 w-full min-w-0 rounded-2xl border border-transparent",
-							"bg-input/50 px-2.5 py-1",
-							"text-base font-normal transition-[color,box-shadow] duration-200",
-							"outline-none",
-							"hover:bg-input/70",
-							"focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30",
-							"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-							"md:text-sm",
+			<Button
+				type="button"
+				variant="ghost"
+				role="combobox"
+				aria-expanded={open}
+				onClick={() => setOpen(true)}
+				className={cn(
+					"h-8 w-full min-w-0 justify-between rounded-2xl",
+					"border border-transparent",
+					"bg-input/50 px-2.5 py-1",
+					"text-base font-normal transition-[color,box-shadow] duration-200",
+					"outline-none",
+					"hover:bg-input/70",
+					"focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30",
+					"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+					"md:text-sm",
+				)}
+				disabled={field.disabled || isPending}
+			>
+				<span className={cn(!selectedChoice && "text-muted-foreground")}>
+					{selectedChoice ? getChoiceText(selectedChoice) : emptyText}
+				</span>
+
+				<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+			</Button>
+
+			<CommandDialog open={open} onOpenChange={setOpen}>
+				<Command shouldFilter={false}>
+					<CommandInput
+						placeholder="Search or create..."
+						value={search}
+						onValueChange={setSearch}
+					/>
+
+					<CommandList>
+						{filteredChoices.length === 0 && !search && (
+							<CommandEmpty>No tags found.</CommandEmpty>
 						)}
-						disabled={field.disabled || isPending}
-					>
-						<span className={cn(!selectedChoice && "text-muted-foreground")}>
-							{selectedChoice ? getChoiceText(selectedChoice) : emptyText}
-						</span>
 
-						<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-					</Button>
-				</PopoverTrigger>
+						<CommandGroup>
+							{filteredChoices.map((choice) => {
+								const value = getChoiceValue(choice);
+								const selected = String(value) === String(field.value);
 
-				<PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-					<Command shouldFilter={false}>
-						<CommandInput
-							placeholder="Search or create..."
-							value={search}
-							onValueChange={setSearch}
-						/>
-
-						<CommandList>
-							{filteredChoices.length === 0 && !search && (
-								<CommandEmpty>No tags found.</CommandEmpty>
-							)}
-
-							<CommandGroup>
-								{filteredChoices.map((choice) => {
-									const value = getChoiceValue(choice);
-									const selected = String(value) === String(field.value);
-
-									return (
-										<CommandItem
-											key={value}
-											value={String(value)}
-											onSelect={() => handleSelect(choice)}
-										>
-											<Check
-												className={cn(
-													"mr-2 size-4",
-													selected ? "opacity-100" : "opacity-0",
-												)}
-											/>
-											{getChoiceText(choice)}
-										</CommandItem>
-									);
-								})}
-
-								{search.trim() && !hasExactMatch && (
-									<CommandItem onSelect={handleCreate}>
-										<Plus className="mr-2 size-4" />
-										Create "{search}"
+								return (
+									<CommandItem
+										key={value}
+										value={String(value)}
+										onSelect={() => handleSelect(choice)}
+									>
+										<Check
+											className={cn(
+												"mr-2 size-4",
+												selected ? "opacity-100" : "opacity-0",
+											)}
+										/>
+										{getChoiceText(choice)}
 									</CommandItem>
-								)}
-							</CommandGroup>
-						</CommandList>
-					</Command>
-				</PopoverContent>
-			</Popover>
+								);
+							})}
+
+							{search.trim() && !hasExactMatch && (
+								<CommandItem onSelect={handleCreate}>
+									<Plus className="mr-2 size-4" />
+									Create "{search}"
+								</CommandItem>
+							)}
+						</CommandGroup>
+					</CommandList>
+				</Command>
+			</CommandDialog>
 
 			<InputHelperText helperText={helperText} />
 			<FormError />
