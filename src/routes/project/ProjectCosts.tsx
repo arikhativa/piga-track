@@ -36,6 +36,8 @@ export const ProjectCosts = ({ record }: { record?: TransactionProject }) => {
 
 	const { data: transactions } = useProjectTransactions(record?.id);
 
+	console.log("transactions", transactions?.length);
+
 	const { data: exchangeRates } = useQuery({
 		queryKey: ["exchange-rates", record?.id],
 		queryFn: async () => {
