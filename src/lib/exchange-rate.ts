@@ -36,6 +36,21 @@ export const getExchangeRate = async (isoCode: string, date: string) => {
 	return data?.rate ?? null;
 };
 
+export const getExchangeRates = async (fromDate: string, toDate: string) => {
+	const { data, error } = await supabaseClient
+		.from("exchange_rate")
+		.select("*")
+		.gte("date", fromDate)
+		.lte("date", toDate)
+		.order("date", { ascending: true });
+
+	if (error) {
+		throw error;
+	}
+
+	return data;
+};
+
 export const insertExchangeRate = async (
 	isoCode: string,
 	date: string,
