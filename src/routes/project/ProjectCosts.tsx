@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { useGetList } from "ra-core";
 import { useMemo } from "react";
-import type { Transaction, TransactionProject } from "#/db/schema";
+import type { TransactionProject } from "#/db/schema";
 import { useCurrencyList } from "#/hooks/use-currency-list";
+import { useProjectTransactions } from "#/hooks/use-project-transactions";
 import { getExchangeRates } from "#/lib/exchange-rate";
 import { toDateString } from "#/lib/format/toDateString";
 
@@ -34,11 +34,7 @@ import { toDateString } from "#/lib/format/toDateString";
 export const ProjectCosts = ({ record }: { record?: TransactionProject }) => {
 	const { data: currencies } = useCurrencyList();
 
-	const { data: transactions } = useGetList<Transaction>("transaction", {
-		filter: {
-			project_id: record?.id,
-		},
-	});
+	const { data: transactions } = useProjectTransactions(record?.id);
 
 	const { data: exchangeRates } = useQuery({
 		queryKey: ["exchange-rates", record?.id],
