@@ -19,6 +19,7 @@ import {
 } from "ra-core";
 import { createElement } from "react";
 import { Link } from "react-router-dom";
+import PixelIcon from "#/components/icon/lord pigafetta";
 import {
 	Sidebar,
 	SidebarContent,
@@ -81,11 +82,11 @@ export function AppSidebar() {
 					<SidebarMenuItem>
 						<SidebarMenuButton
 							asChild
-							className="data-[slot=sidebar-menu-button]:!p-1.5"
+							className="data-[slot=sidebar-menu-button]:!p-1.5 h-fit"
 						>
 							<LinkBase to="/">
-								<Shell className="!size-5" />
-								<span className="text-base font-semibold">Acme Inc.</span>
+								<PixelIcon className="!size-11 h-full" />
+								<span className="text-base font-semibold">Lord Pigafetta</span>
 							</LinkBase>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
