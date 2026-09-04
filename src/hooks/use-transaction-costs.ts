@@ -1,6 +1,6 @@
 import { useGetList } from "ra-core";
 import type { Transaction } from "#/db/schema";
-import { useCurrenciesForTransactions } from "#/hooks/use-currencies-for-transactions";
+import { useCurrencyList } from "#/hooks/use-currency-list";
 import { useExchangeRates } from "#/hooks/use-exchange-rates";
 import { BASE_CURRENCY } from "#/lib/constant";
 
@@ -19,7 +19,7 @@ export function useTransactionCosts(projectId?: number) {
 		data: currencies,
 		isPending: currenciesPending,
 		error: currenciesError,
-	} = useCurrenciesForTransactions();
+	} = useCurrencyList();
 
 	const exchangeRateRequests =
 		transactions && currencies

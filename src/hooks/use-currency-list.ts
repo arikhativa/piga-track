@@ -1,7 +1,7 @@
 import { useGetList } from "ra-core";
 import type { Currency } from "#/db/schema";
 
-export function useCurrenciesForTransactions() {
+export function useCurrencyList() {
 	return useGetList<Currency>("currency", {
 		pagination: {
 			page: 1,

@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 import { Badge } from "#/components/ui/badge";
-import { useCurrenciesForTransactions } from "#/hooks/use-currencies-for-transactions";
+import type { Transaction } from "#/db/schema";
+import { useCurrencyList } from "#/hooks/use-currency-list";
+import { toDateString } from "#/lib/format/toDateString";
 import { toSmallDate, toTime } from "#/lib/format/toSmallDate";
+import { AmountInNis } from "#/routes/(transaction)/AmountInNis";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, ReferenceField } from "@/components/admin";
 
@@ -14,9 +17,9 @@ export const TransactionDataTable = ({
 	colToHide?: ColToHideOptions[];
 	bulkActionButtons?: ReactNode;
 }) => {
-	const { data } = useCurrenciesForTransactions();
+	const { data } = useCurrencyList();
 	return (
-		<DataTable bulkActionButtons={bulkActionButtons}>
+		<DataTable<Transaction> bulkActionButtons={bulkActionButtons}>
 			<DataTable.Col
 				label="Type"
 				render={(record) => (
@@ -40,6 +43,29 @@ export const TransactionDataTable = ({
 					);
 				}}
 			/>
+
+			<DataTable.Col
+				source="amount"
+				label="NIS"
+				render={(record: Transaction) => {
+					const currency = data?.find(
+						(currency) => currency.id === record.currency_id,
+					);
+
+					if (!currency?.iso_code) {
+						return "...";
+					}
+
+					return (
+						<AmountInNis
+							amount={record.amount}
+							isoCode={currency.iso_code}
+							date={toDateString(record.created_at)}
+						/>
+					);
+				}}
+			/>
+
 			{colToHide?.includes("tag") ? null : (
 				<DataTable.Col label="Content">
 					<ReferenceField

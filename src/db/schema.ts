@@ -1,8 +1,10 @@
 import type { InferSelectModel } from "drizzle-orm";
 import {
+	date,
 	integer,
 	numeric,
 	pgTable,
+	primaryKey,
 	serial,
 	text,
 	timestamp,
@@ -65,6 +67,27 @@ export const currency = pgTable("currency", {
 	symbol: text("symbol").notNull(),
 });
 
+export const exchangeRate = pgTable(
+	"exchange_rate",
+	{
+		isoCode: text("iso_code")
+			.notNull()
+			.references(() => currency.iso_code),
+
+		date: date("date").notNull(),
+
+		rate: numeric("rate", {
+			precision: 12,
+			scale: 6,
+		}).notNull(),
+	},
+	(table) => [
+		primaryKey({
+			columns: [table.date, table.isoCode],
+		}),
+	],
+);
+
 export const transactionType = pgTable("transaction_type", {
 	id: serial("id").primaryKey(),
 	name: text("name").notNull(),
@@ -112,6 +135,7 @@ export const transaction = pgTable("transaction", {
 		.notNull(),
 });
 
+export type ExchangeRate = InferSelectModel<typeof exchangeRate>;
 export type TransactionCategory = InferSelectModel<typeof transactionCategory>;
 export type TransactionTag = InferSelectModel<typeof transactionTag>;
 export type TransactionProject = InferSelectModel<typeof transactionProject>;
