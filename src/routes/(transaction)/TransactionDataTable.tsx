@@ -13,8 +13,10 @@ type ColToHideOptions = "project" | "category" | "tag";
 export const TransactionDataTable = ({
 	colToHide,
 	bulkActionButtons,
+	disableSortCreatedAt,
 }: {
 	colToHide?: ColToHideOptions[];
+	disableSortCreatedAt?: boolean;
 	bulkActionButtons?: ReactNode;
 }) => {
 	const { data } = useCurrencyList();
@@ -106,6 +108,7 @@ export const TransactionDataTable = ({
 			)}
 
 			<DataTable.Col
+				disableSort={disableSortCreatedAt}
 				source="created_at"
 				render={(record) => (
 					<div>{`${toSmallDate(record.created_at)} - ${toTime(record.created_at)}`}</div>
