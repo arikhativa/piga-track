@@ -1,4 +1,5 @@
 import { useExchangeRate } from "#/hooks/use-exchange-rate";
+import { NIS } from "#/lib/constant";
 
 type AmountInNisProps = {
 	amount: string;
@@ -19,5 +20,5 @@ export const AmountInNis = ({ amount, isoCode, date }: AmountInNisProps) => {
 		return "...";
 	}
 
-	return `${amountInNis.toFixed(2)} ₪`;
+	return `${amountInNis.toFixed(2)} ${NIS}`;
 };

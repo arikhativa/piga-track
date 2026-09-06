@@ -1,5 +1,5 @@
 import { LabelList, Pie, PieChart } from "recharts";
-
+import { cn } from "#/lib/utils";
 import {
 	Card,
 	CardContent,
@@ -21,11 +21,17 @@ interface PieChartCardProps {
 	title: string;
 	desc?: string;
 	data: Record<string, number>;
+	className?: string;
 }
 
 const MAX_ITEMS = 5;
 
-export function PieChartCard({ title, desc, data }: PieChartCardProps) {
+export function PieChartCard({
+	title,
+	desc,
+	data,
+	className,
+}: PieChartCardProps) {
 	const entries = Object.entries(data).sort(
 		([, a], [, b]) => Math.abs(b) - Math.abs(a),
 	);
@@ -69,7 +75,7 @@ export function PieChartCard({ title, desc, data }: PieChartCardProps) {
 	});
 
 	return (
-		<Card className="flex flex-col">
+		<Card className={cn("flex flex-col", className)}>
 			<CardHeader>
 				<CardTitle>{title}</CardTitle>
 				{desc ? <CardDescription>{desc}</CardDescription> : null}
@@ -78,7 +84,7 @@ export function PieChartCard({ title, desc, data }: PieChartCardProps) {
 			<CardContent className="flex-1 pb-0">
 				<ChartContainer
 					config={chartConfig}
-					className="mx-auto aspect-square max-h-62.5 px-0"
+					className="mx-auto aspect-square w-full max-w-62.5 min-w-0"
 				>
 					<PieChart>
 						<ChartTooltip
