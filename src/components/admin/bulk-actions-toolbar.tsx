@@ -70,7 +70,7 @@ export const BulkActionsToolbar = ({
         >
           <X />
         </Button>
-        <span className="text-sm text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)">
+        <span className="text-sm text-muted-foreground">
           <Translate
             i18nKey="ra.action.bulk_actions"
             options={{ smart_count: selectedIds.length }}

@@ -124,15 +124,14 @@ export function DynamicSelect({
 				aria-expanded={open}
 				onClick={() => setOpen(true)}
 				className={cn(
-					"h-8 w-full min-w-0 justify-between rounded-2xl",
-					"border border-transparent",
-					"bg-input/50 px-2.5 py-1",
-					"text-base font-normal transition-[color,box-shadow] duration-200",
+					"h-9 w-full min-w-0 justify-between",
+					"rounded-md border border-input bg-transparent",
+					"px-2.5 py-2 text-sm font-normal whitespace-nowrap",
+					"shadow-xs transition-[color,box-shadow]",
 					"outline-none",
-					"hover:bg-input/70",
-					"focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30",
-					"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-					"md:text-sm",
+					"hover:bg-input/50",
+					"focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+					"disabled:cursor-not-allowed disabled:opacity-50",
 				)}
 				disabled={field.disabled || isPending}
 			>

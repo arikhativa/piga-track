@@ -56,7 +56,7 @@ export const DeleteButton = (props: DeleteButtonProps) => {
     redirect = "list",
     successMessage,
     variant = "outline",
-    className = "cursor-pointer hover:bg-oklch(0.577 0.245 27.325)/10! text-destructive! border-destructive! focus-visible:ring-oklch(0.577 0.245 27.325)/20 dark:focus-visible:ring-oklch(0.577 0.245 27.325)/40 dark:hover:bg-oklch(0.704 0.191 22.216)/10! dark:focus-visible:ring-oklch(0.704 0.191 22.216)/20 dark:dark:focus-visible:ring-oklch(0.704 0.191 22.216)/40",
+    className = "cursor-pointer hover:bg-destructive/10! text-destructive! border-destructive! focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
   } = props;
   const record = useRecordContext(props);
   const resource = useResourceContext(props);

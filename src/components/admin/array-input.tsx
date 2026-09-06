@@ -85,7 +85,7 @@ export const ArrayInput = (props: ArrayInputProps) => {
       name={finalSource}
       {...sanitizeInputRestProps(rest)}
     >
-      <Label className="text-oklch(0.542 0.034 322.5) text-sm dark:text-oklch(0.711 0.019 323.02)" id={labelId}>
+      <Label className="text-muted-foreground text-sm" id={labelId}>
         <FieldTitle
           label={label}
           source={arraySource}

@@ -1,6 +1,6 @@
 import type { RaRecord } from "ra-core";
 import { useFieldValue, useTranslate } from "ra-core";
-import type * as React from "react";
+import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import type { FieldProps } from "@/lib/field.type.ts";
 
@@ -61,5 +61,16 @@ export const BadgeField = <RecordType extends RaRecord = RaRecord>({
 export interface BadgeFieldProps<RecordType extends RaRecord = RaRecord>
 	extends FieldProps<RecordType>,
 		BadgeProps {
-	variant?: "default" | "outline" | "secondary" | "destructive";
+	variant?:
+		| "default"
+		| "outline"
+		| "secondary"
+		| "destructive"
+		| "spent"
+		| "received"
+		| "slate"
+		| "blue"
+		| "red"
+		| "yellow"
+		| "purple";
 }

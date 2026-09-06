@@ -45,7 +45,7 @@ export const SearchInput = (inProps: SearchInputProps) => {
 
   if (label) {
     throw new Error(
-      "<SearchInput> isn't designed to be used with a label prop. Use <TextInput> if you need label.",
+      "<SearchInput> isn't designed to be used with a label prop. Use <TextInput> if you need a label.",
     );
   }
 
@@ -62,14 +62,14 @@ export const SearchInput = (inProps: SearchInputProps) => {
         inputClassName={cn("pr-8", showClearButton ? "pr-16" : "pr-8")}
         {...rest}
       />
-      <Search className="absolute end-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-oklch(0.542 0.034 322.5) pointer-events-none dark:text-oklch(0.711 0.019 323.02)" />
+      <Search className="absolute end-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
       {showClearButton && (
         <Button
           type="button"
           variant="ghost"
           size="sm"
           onClick={handleClear}
-          className="absolute end-8 top-1/2 transform -translate-y-1/2 h-6 w-6 rounded-full p-0 text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)"
+          className="absolute end-8 top-1/2 transform -translate-y-1/2 h-6 w-6 rounded-full p-0 text-muted-foreground"
           aria-label={translate("ra.action.clear_search", {
             _: "Clear search",
           })}

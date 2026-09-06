@@ -97,7 +97,7 @@ ${components
         component,
       )}";`,
   )
-  .join("")}
+  .join("\n")}
 
 export const ${capitalize(singularize(resource))}Edit = () => (
     <Edit>
@@ -124,7 +124,7 @@ const editFieldTypes: InferredTypeMap = {
     ) => `        <SimpleForm>
 ${children
   .map((child) => `            ${child.getRepresentation()}`)
-  .join("")}
+  .join("\n")}
         </SimpleForm>`,
   },
   reference: {

@@ -23,8 +23,11 @@ export const TransactionDataTable = ({
 			<DataTable.Col
 				label="Type"
 				render={(record) => (
-					<Badge variant={record.amount < 0 ? "spent" : "received"}>
-						{record.amount < 0 ? "Spent" : "Received"}
+					<Badge
+						className="aspect-square rounded-full"
+						variant={record.amount < 0 ? "spent" : "received"}
+					>
+						{record.amount < 0 ? "-" : "+"}
 					</Badge>
 				)}
 			/>
@@ -104,12 +107,9 @@ export const TransactionDataTable = ({
 
 			<DataTable.Col
 				source="created_at"
-				render={(record) => toSmallDate(record.created_at)}
-			/>
-
-			<DataTable.Col
-				label="Time"
-				render={(record) => toTime(record.created_at)}
+				render={(record) => (
+					<div>{`${toSmallDate(record.created_at)} - ${toTime(record.created_at)}`}</div>
+				)}
 			/>
 
 			<DataTable.Col label="Owner">

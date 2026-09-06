@@ -231,11 +231,11 @@ export const FileInput = (props: FileInputProps) => {
       <div
         {...getRootProps({
           className: cn(
-            "border-2 border-dashed border-oklch(0.96 0.003 325.6) rounded-lg p-6 text-center transition-colors dark:border-oklch(0.263 0.024 320.12)",
-            "hover:border-oklch(0.711 0.019 323.02) focus:outline-none dark:hover:border-oklch(0.542 0.034 322.5)",
+            "border-2 border-dashed border-muted rounded-lg p-6 text-center transition-colors",
+            "hover:border-sidebar-ring focus:outline-none",
             disabled || readOnly
-              ? "bg-oklch(0.96 0.003 325.6) cursor-not-allowed dark:bg-oklch(0.263 0.024 320.12)"
-              : "bg-oklch(0.96 0.003 325.6) text-oklch(0.542 0.034 322.5) cursor-pointer dark:bg-oklch(0.263 0.024 320.12) dark:text-oklch(0.711 0.019 323.02)",
+              ? "bg-muted cursor-not-allowed"
+              : "bg-muted text-muted-foreground cursor-pointer",
           ),
         })}
       >

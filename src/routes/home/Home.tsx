@@ -5,11 +5,9 @@ import { Button } from "@/components/ui/button";
 export function Home() {
 	return (
 		<div className="flex items-center justify-center min-h-[60vh]">
-			<Button asChild>
-				<Link to="/transaction/create">
-					<Plus />
-					<p>New Transaction</p>
-				</Link>
+			<Button render={<Link to="/transaction/create" />}>
+				<Plus />
+				<span>New Transaction</span>
 			</Button>
 		</div>
 	);

@@ -132,7 +132,7 @@ export const ListPagination = ({
           </SelectContent>
         </Select>
       </div>
-      <div className="text-sm text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)">
+      <div className="text-sm text-muted-foreground">
         <Translate
           i18nKey="ra.navigation.page_range_info"
           options={{
@@ -166,7 +166,7 @@ export const ListPagination = ({
                     _: "Previous",
                   })}
                   size="16"
-                  className="text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)"
+                  className="text-muted-foreground"
                 />
               </span>
             )}
@@ -253,7 +253,7 @@ export const ListPagination = ({
                 <ChevronRightIcon
                   aria-label={translate("ra.navigation.next", { _: "Next" })}
                   size="16"
-                  className="text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)"
+                  className="text-muted-foreground"
                 />
               </span>
             )}

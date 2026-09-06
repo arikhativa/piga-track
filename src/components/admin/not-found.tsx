@@ -13,11 +13,11 @@ export const NotFound = () => {
   }
   return (
     <div className="flex min-h-[50vh] flex-1 flex-col items-center justify-center gap-2 text-center">
-      <SearchX className="h-16 w-16 text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)" />
+      <SearchX className="h-16 w-16 text-muted-foreground" />
       <h1 className="text-2xl font-semibold">
         <Translate i18nKey="ra.page.not_found" />
       </h1>
-      <p className="max-w-xl text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)">
+      <p className="max-w-xl text-muted-foreground">
         <Translate i18nKey="ra.message.not_found" />
       </p>
       <Button className="mt-3 cursor-pointer" onClick={goBack}>

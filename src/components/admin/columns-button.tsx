@@ -1,42 +1,43 @@
-import * as PopoverPrimitive from "@radix-ui/react-popover";
+import type { ComponentProps, ReactNode } from "react";
+import { useState, useEffect, Children } from "react";
+import { createPortal } from "react-dom";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as diacritic from "diacritic";
-import { Columns, Search } from "lucide-react";
-import {
-	DataTableColumnFilterContext,
-	DataTableColumnRankContext,
-	type ExtractRecordPaths,
-	type HintedString,
-	type Identifier,
-	type RaRecord,
-	type SortPayload,
-	useDataTableColumnFilterContext,
-	useDataTableColumnRankContext,
-	useDataTableStoreContext,
-	useResourceContext,
-	useStore,
-	useTranslate,
-	useTranslateLabel,
+import type {
+  RaRecord,
+  Identifier,
+  SortPayload,
+  HintedString,
+  ExtractRecordPaths,
 } from "ra-core";
 import {
-	Children,
-	type ComponentProps,
-	type ReactNode,
-	useEffect,
-	useState,
-} from "react";
-import { createPortal } from "react-dom";
-import { FieldToggle } from "@/components/admin/field-toggle";
+  useDataTableStoreContext,
+  useStore,
+  useTranslate,
+  useResourceContext,
+  useDataTableColumnRankContext,
+  useDataTableColumnFilterContext,
+  useTranslateLabel,
+  DataTableColumnRankContext,
+  DataTableColumnFilterContext,
+} from "ra-core";
+import { Columns, Search } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import { FieldToggle } from "@/components/admin/field-toggle";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 /**
@@ -65,61 +66,64 @@ import { cn } from "@/lib/utils";
  * );
  */
 export const ColumnsButton = (props: ColumnsButtonProps) => {
-	const { className, storeKey: _, ...rest } = props;
-	const resource = useResourceContext(props);
-	const storeKey = props.storeKey || `${resource}.datatable`;
+  const { className, storeKey: _, ...rest } = props;
+  const resource = useResourceContext(props);
+  const storeKey = props.storeKey || `${resource}.datatable`;
 
-	const [open, setOpen] = useState(false);
-	const isMobile = useIsMobile();
-	const translate = useTranslate();
+  const [open, setOpen] = useState(false);
+  const isMobile = useIsMobile();
+  const translate = useTranslate();
 
-	const title = translate("ra.action.select_columns", { _: "Columns" });
+  const title = translate("ra.action.select_columns", { _: "Columns" });
 
-	return (
-		<span className={cn("inline-flex", className)}>
-			<Popover open={open} onOpenChange={setOpen}>
-				<PopoverTrigger asChild>
-					{isMobile ? (
-						<Tooltip>
-							<TooltipTrigger asChild>
-								<Button
-									variant="ghost"
-									size="icon"
-									aria-label={title}
-									{...rest}
-								>
-									<Columns className="size-4" />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>{title}</TooltipContent>
-						</Tooltip>
-					) : (
-						<Button variant="outline" className="cursor-pointer" {...rest}>
-							<Columns />
-							{title}
-						</Button>
-					)}
-				</PopoverTrigger>
-				<PopoverPrimitive.Portal forceMount>
-					<div className={open ? "block" : "hidden"}>
-						<PopoverPrimitive.Content
-							data-slot="popover-content"
-							sideOffset={4}
-							align="start"
-							className="bg-oklch(1 0 0) text-oklch(0.145 0.008 326) data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border border-oklch(0.922 0.005 325.62) shadow-md outline-hidden p-0 min-w-[200px] dark:bg-oklch(0.212 0.019 322.12) dark:text-oklch(0.985 0 0) dark:border-oklch(1 0 0 / 10%)"
-						>
-							<div id={`${storeKey}-columnsSelector`} className="p-2" />
-						</PopoverPrimitive.Content>
-					</div>
-				</PopoverPrimitive.Portal>
-			</Popover>
-		</span>
-	);
+  return (
+    <span className={cn("inline-flex", className)}>
+      <Popover open={open} onOpenChange={setOpen}>
+        {isMobile ? (
+          // Base UI defaults tooltips to a 600ms open delay; the provider keeps
+          // them instant without app-level setup.
+          <TooltipProvider delay={0}>
+            <Tooltip>
+              <PopoverTrigger
+                render={
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={title}
+                        {...rest}
+                      />
+                    }
+                  />
+                }
+              >
+                <Columns className="size-4" />
+              </PopoverTrigger>
+              <TooltipContent>{title}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <PopoverTrigger
+            render={
+              <Button variant="outline" className="cursor-pointer" {...rest} />
+            }
+          >
+            <Columns />
+            {title}
+          </PopoverTrigger>
+        )}
+        <PopoverContent align="start" className="w-72 min-w-[200px] p-0">
+          <div id={`${storeKey}-columnsSelector`} className="p-2" />
+        </PopoverContent>
+      </Popover>
+    </span>
+  );
 };
 
 export interface ColumnsButtonProps extends ComponentProps<typeof Button> {
-	resource?: string;
-	storeKey?: string;
+  resource?: string;
+  storeKey?: string;
 }
 
 /**
@@ -128,218 +132,224 @@ export interface ColumnsButtonProps extends ComponentProps<typeof Button> {
  * @see ColumnsButton
  */
 export const ColumnsSelector = ({ children }: ColumnsSelectorProps) => {
-	const translate = useTranslate();
-	const { storeKey, defaultHiddenColumns } = useDataTableStoreContext();
-	const [columnRanks, setColumnRanks] = useStore<number[] | undefined>(
-		`${storeKey}_columnRanks`,
-	);
-	const [_hiddenColumns, setHiddenColumns] = useStore<string[]>(
-		storeKey,
-		defaultHiddenColumns,
-	);
-	const elementId = `${storeKey}-columnsSelector`;
+  const translate = useTranslate();
+  const { storeKey, defaultHiddenColumns } = useDataTableStoreContext();
+  const [columnRanks, setColumnRanks] = useStore<number[] | undefined>(
+    `${storeKey}_columnRanks`,
+  );
+  const [_hiddenColumns, setHiddenColumns] = useStore<string[]>(
+    storeKey,
+    defaultHiddenColumns,
+  );
+  const elementId = `${storeKey}-columnsSelector`;
 
-	const [container, setContainer] = useState<HTMLElement | null>(() =>
-		typeof document !== "undefined" ? document.getElementById(elementId) : null,
-	);
+  const [container, setContainer] = useState<HTMLElement | null>(null);
 
-	// on first mount, we don't have the container yet, so we wait for it
-	useEffect(() => {
-		if (
-			container &&
-			typeof document !== "undefined" &&
-			document.body.contains(container)
-		)
-			return;
-		// look for the container in the DOM every 100ms
-		const interval = setInterval(() => {
-			const target = document.getElementById(elementId);
-			if (target) setContainer(target);
-		}, 100);
-		// stop looking after 500ms
-		const timeout = setTimeout(() => clearInterval(interval), 500);
-		return () => {
-			clearInterval(interval);
-			clearTimeout(timeout);
-		};
-	}, [elementId, container]);
+  // Track the portal container across popover mount/unmount cycles.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
 
-	const [columnFilter, setColumnFilter] = useState<string>("");
+    const resolveContainer = () => {
+      const target = document.getElementById(elementId);
+      setContainer((current) => {
+        if (target === current) return current;
+        if (target) return target;
+        if (current && !document.body.contains(current)) return null;
+        return current;
+      });
+    };
 
-	if (!container) return null;
+    resolveContainer();
 
-	const childrenArray = Children.toArray(children);
-	const paddedColumnRanks = padRanks(columnRanks ?? [], childrenArray.length);
-	const shouldDisplaySearchInput = childrenArray.length > 5;
+    const observer = new MutationObserver(resolveContainer);
 
-	return createPortal(
-		<div>
-			{shouldDisplaySearchInput && (
-				<div className="relative p-1">
-					<Input
-						value={columnFilter}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							setColumnFilter(e.target.value);
-						}}
-						placeholder={translate("ra.action.search_columns", {
-							_: "Search columns",
-						})}
-						className="pe-8"
-					/>
-					<Search className="absolute end-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-oklch(0.542 0.034 322.5) pointer-events-none dark:text-oklch(0.711 0.019 323.02)" />
-					{columnFilter && (
-						<button
-							onClick={() => setColumnFilter("")}
-							className="absolute end-8 top-2 h-4 w-4 text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)"
-							aria-label="Clear"
-						>
-							×
-						</button>
-					)}
-				</div>
-			)}
-			<ul className="max-h-[50vh] p-1 overflow-auto">
-				{paddedColumnRanks.map((position, index) => (
-					<DataTableColumnRankContext.Provider value={position} key={index}>
-						<DataTableColumnFilterContext.Provider
-							value={columnFilter}
-							key={index}
-						>
-							{childrenArray[position]}
-						</DataTableColumnFilterContext.Provider>
-					</DataTableColumnRankContext.Provider>
-				))}
-			</ul>
-			<div className="text-center py-1">
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={() => {
-						setColumnRanks(undefined);
-						setHiddenColumns(defaultHiddenColumns);
-					}}
-				>
-					Reset
-				</Button>
-			</div>
-		</div>,
-		container,
-	);
+    // The popover renders its content in a portal appended to <body>, so
+    // watching body's direct children is enough to catch it opening and
+    // closing. Watching the whole subtree instead would run this on every DOM
+    // mutation of the list for as long as the view is mounted.
+    observer.observe(document.body, { childList: true });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [elementId]);
+
+  const [columnFilter, setColumnFilter] = useState<string>("");
+
+  if (!container) return null;
+
+  const childrenArray = Children.toArray(children);
+  const paddedColumnRanks = padRanks(columnRanks ?? [], childrenArray.length);
+  const shouldDisplaySearchInput = childrenArray.length > 5;
+
+  return createPortal(
+    <div>
+      {shouldDisplaySearchInput && (
+        <div className="relative p-1">
+          <Input
+            value={columnFilter}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setColumnFilter(e.target.value);
+            }}
+            placeholder={translate("ra.action.search_columns", {
+              _: "Search columns",
+            })}
+            className="pe-8"
+          />
+          <Search className="absolute end-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          {columnFilter && (
+            <button
+              onClick={() => setColumnFilter("")}
+              className="absolute end-8 top-2 h-4 w-4 text-muted-foreground"
+              aria-label="Clear"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      )}
+      <ul className="max-h-[50vh] p-1 overflow-auto">
+        {paddedColumnRanks.map((position, index) => (
+          <DataTableColumnRankContext.Provider value={position} key={index}>
+            <DataTableColumnFilterContext.Provider
+              value={columnFilter}
+              key={index}
+            >
+              {childrenArray[position]}
+            </DataTableColumnFilterContext.Provider>
+          </DataTableColumnRankContext.Provider>
+        ))}
+      </ul>
+      <div className="text-center py-1">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setColumnRanks(undefined);
+            setHiddenColumns(defaultHiddenColumns);
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+    </div>,
+    container,
+  );
 };
 
 interface ColumnsSelectorProps {
-	children?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const ColumnsSelectorItem = <
-	RecordType extends RaRecord<Identifier> = RaRecord<Identifier>,
+  RecordType extends RaRecord<Identifier> = RaRecord<Identifier>,
 >({
-	source,
-	label,
+  source,
+  label,
 }: ColumnsSelectorItemProps<RecordType>) => {
-	const resource = useResourceContext();
-	const { storeKey, defaultHiddenColumns } = useDataTableStoreContext();
-	const [hiddenColumns, setHiddenColumns] = useStore<string[]>(
-		storeKey,
-		defaultHiddenColumns,
-	);
-	const columnRank = useDataTableColumnRankContext();
-	const [columnRanks, setColumnRanks] = useStore<number[]>(
-		`${storeKey}_columnRanks`,
-	);
-	const columnFilter = useDataTableColumnFilterContext();
-	const translateLabel = useTranslateLabel();
-	if (!source && !label) return null;
-	const fieldLabel = translateLabel({
-		label: typeof label === "string" ? label : undefined,
-		resource,
-		source,
-	}) as string;
-	const isColumnHidden = hiddenColumns.includes(source!);
-	const isColumnFiltered = fieldLabelMatchesFilter(fieldLabel, columnFilter);
+  const resource = useResourceContext();
+  const { storeKey, defaultHiddenColumns } = useDataTableStoreContext();
+  const [hiddenColumns, setHiddenColumns] = useStore<string[]>(
+    storeKey,
+    defaultHiddenColumns,
+  );
+  const columnRank = useDataTableColumnRankContext();
+  const [columnRanks, setColumnRanks] = useStore<number[]>(
+    `${storeKey}_columnRanks`,
+  );
+  const columnFilter = useDataTableColumnFilterContext();
+  const translateLabel = useTranslateLabel();
+  if (!source && !label) return null;
+  const fieldLabel = translateLabel({
+    label: typeof label === "string" ? label : undefined,
+    resource,
+    source,
+  }) as string;
+  const isColumnHidden = hiddenColumns.includes(source!);
+  const isColumnFiltered = fieldLabelMatchesFilter(fieldLabel, columnFilter);
 
-	const handleMove = (
-		index1: number | string,
-		index2: number | string | null,
-	) => {
-		const colRanks = !columnRanks
-			? padRanks([], Math.max(Number(index1), Number(index2 || 0)) + 1)
-			: Math.max(Number(index1), Number(index2 || 0)) > columnRanks.length - 1
-				? padRanks(
-						columnRanks,
-						Math.max(Number(index1), Number(index2 || 0)) + 1,
-					)
-				: columnRanks;
-		const index1Pos = colRanks.findIndex((index) => index == Number(index1));
-		const index2Pos = colRanks.findIndex((index) => index == Number(index2));
-		if (index1Pos === -1 || index2Pos === -1) {
-			return;
-		}
-		let newColumnRanks;
-		if (index1Pos > index2Pos) {
-			newColumnRanks = [
-				...colRanks.slice(0, index2Pos),
-				colRanks[index1Pos],
-				...colRanks.slice(index2Pos, index1Pos),
-				...colRanks.slice(index1Pos + 1),
-			];
-		} else {
-			newColumnRanks = [
-				...colRanks.slice(0, index1Pos),
-				...colRanks.slice(index1Pos + 1, index2Pos + 1),
-				colRanks[index1Pos],
-				...colRanks.slice(index2Pos + 1),
-			];
-		}
-		setColumnRanks(newColumnRanks);
-	};
+  const handleMove = (
+    index1: number | string,
+    index2: number | string | null,
+  ) => {
+    const colRanks = !columnRanks
+      ? padRanks([], Math.max(Number(index1), Number(index2 || 0)) + 1)
+      : Math.max(Number(index1), Number(index2 || 0)) > columnRanks.length - 1
+        ? padRanks(
+            columnRanks,
+            Math.max(Number(index1), Number(index2 || 0)) + 1,
+          )
+        : columnRanks;
+    const index1Pos = colRanks.findIndex((index) => index == Number(index1));
+    const index2Pos = colRanks.findIndex((index) => index == Number(index2));
+    if (index1Pos === -1 || index2Pos === -1) {
+      return;
+    }
+    let newColumnRanks;
+    if (index1Pos > index2Pos) {
+      newColumnRanks = [
+        ...colRanks.slice(0, index2Pos),
+        colRanks[index1Pos],
+        ...colRanks.slice(index2Pos, index1Pos),
+        ...colRanks.slice(index1Pos + 1),
+      ];
+    } else {
+      newColumnRanks = [
+        ...colRanks.slice(0, index1Pos),
+        ...colRanks.slice(index1Pos + 1, index2Pos + 1),
+        colRanks[index1Pos],
+        ...colRanks.slice(index2Pos + 1),
+      ];
+    }
+    setColumnRanks(newColumnRanks);
+  };
 
-	return isColumnFiltered ? (
-		<FieldToggle
-			key={columnRank}
-			source={source!}
-			label={fieldLabel}
-			index={String(columnRank)}
-			selected={!isColumnHidden}
-			onToggle={() =>
-				isColumnHidden
-					? setHiddenColumns(
-							hiddenColumns.filter((column) => column !== source!),
-						)
-					: setHiddenColumns([...hiddenColumns, source!])
-			}
-			onMove={handleMove}
-		/>
-	) : null;
+  return isColumnFiltered ? (
+    <FieldToggle
+      key={columnRank}
+      source={source!}
+      label={fieldLabel}
+      index={String(columnRank)}
+      selected={!isColumnHidden}
+      onToggle={() =>
+        isColumnHidden
+          ? setHiddenColumns(
+              hiddenColumns.filter((column) => column !== source!),
+            )
+          : setHiddenColumns([...hiddenColumns, source!])
+      }
+      onMove={handleMove}
+    />
+  ) : null;
 };
 
 // this is the same interface as DataTableColumnProps
 // but we copied it here to avoid circular dependencies with data-table
 export interface ColumnsSelectorItemProps<
-	RecordType extends RaRecord<Identifier> = RaRecord<Identifier>,
+  RecordType extends RaRecord<Identifier> = RaRecord<Identifier>,
 > {
-	className?: string;
-	cellClassName?: string;
-	headerClassName?: string;
-	conditionalClassName?: (record: RecordType) => string | false | undefined;
-	children?: ReactNode;
-	render?: (record: RecordType) => React.ReactNode;
-	field?: React.ElementType;
-	source?: NoInfer<HintedString<ExtractRecordPaths<RecordType>>>;
-	label?: React.ReactNode;
-	disableSort?: boolean;
-	sortByOrder?: SortPayload["order"];
+  className?: string;
+  cellClassName?: string;
+  headerClassName?: string;
+  conditionalClassName?: (record: RecordType) => string | false | undefined;
+  children?: ReactNode;
+  render?: (record: RecordType) => React.ReactNode;
+  field?: React.ElementType;
+  source?: NoInfer<HintedString<ExtractRecordPaths<RecordType>>>;
+  label?: React.ReactNode;
+  disableSort?: boolean;
+  sortByOrder?: SortPayload["order"];
 }
 // Function to help with column ranking
 const padRanks = (ranks: number[], length: number) =>
-	ranks.concat(
-		Array.from({ length: length - ranks.length }, (_, i) => ranks.length + i),
-	);
+  ranks.concat(
+    Array.from({ length: length - ranks.length }, (_, i) => ranks.length + i),
+  );
 
 const fieldLabelMatchesFilter = (fieldLabel: string, columnFilter?: string) =>
-	columnFilter
-		? diacritic
-				.clean(fieldLabel)
-				.toLowerCase()
-				.includes(diacritic.clean(columnFilter).toLowerCase())
-		: true;
+  columnFilter
+    ? diacritic
+        .clean(fieldLabel)
+        .toLowerCase()
+        .includes(diacritic.clean(columnFilter).toLowerCase())
+    : true;

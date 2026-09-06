@@ -4,11 +4,11 @@ import { useCallback, useEffect, useState, isValidElement } from "react";
 import get from "lodash/get";
 import isEqual from "lodash/isEqual";
 import queryString from "query-string";
+import type { SavedQuery } from "ra-core";
 import {
   extractValidSavedQueries,
   FieldTitle,
   FilterLiveForm,
-  type SavedQuery,
   useFilterContext,
   useListContext,
   useNavigate,
@@ -78,7 +78,7 @@ export const FilterFormBase = (props: FilterFormBaseProps) => {
           (filter.props as any).defaultValue
         ) {
           throw new Error(
-            "Cannot use alwaysOn and defaultValue on a filter input. Please set the filterDefaultValues props <List> element instead.",
+            "Cannot use alwaysOn and defaultValue on a filter input. Please set the filterDefaultValues props on the <List> element instead.",
           );
         }
       });
@@ -234,7 +234,7 @@ export const FilterButton = (props: FilterButtonProps) => {
   const translate = useTranslate();
   if (!resource && !disableSaveQuery) {
     throw new Error(
-      "<FilterButton> must be called inside a ResourceContextProvider, or provide resource prop",
+      "<FilterButton> must be called inside a ResourceContextProvider, or must provide a resource prop",
     );
   }
   const [savedQueries] = useSavedQueries(resource || "");
@@ -328,17 +328,19 @@ export const FilterButton = (props: FilterButtonProps) => {
   return (
     <div className={cn("inline-block", className)} {...rest}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            className="add-filter"
-            variant={variant}
-            size={size}
-            aria-haspopup="true"
-          >
-            <Filter className="h-4 w-4" />
-            {translate("ra.action.add_filter")}
-          </Button>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              type="button"
+              className="add-filter"
+              variant={variant}
+              size={size}
+              aria-haspopup="true"
+            />
+          }
+        >
+          <Filter className="h-4 w-4" />
+          {translate("ra.action.add_filter")}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
           {allTogglableFilters
@@ -475,7 +477,7 @@ export const FilterButtonMenuItem = React.forwardRef<
   return (
     <div
       className={cn(
-        "new-filter-item flex items-center px-2 py-1.5 text-sm cursor-pointer hover:bg-oklch(0.96 0.003 325.6) rounded-sm dark:hover:bg-oklch(0.263 0.024 320.12)",
+        "new-filter-item flex items-center px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded-sm",
         filter.props.disabled && "opacity-50 cursor-not-allowed",
       )}
       data-key={filter.props.source}

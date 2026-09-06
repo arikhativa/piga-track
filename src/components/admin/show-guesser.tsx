@@ -91,7 +91,7 @@ ${components
         component,
       )}";`,
   )
-  .join("")}
+  .join("\n")}
 
 export const ${capitalize(singularize(resource))}Show = () => (
     <Show>
@@ -120,7 +120,7 @@ const showFieldTypes: InferredTypeMap = {
     ) => `        <div className="flex flex-col gap-4">
 ${children
   .map((child) => `            ${child.getRepresentation()}`)
-  .join("")}
+  .join("\n")}
         </div>`,
   },
   reference: {

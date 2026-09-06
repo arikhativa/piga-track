@@ -145,7 +145,7 @@ export const FieldToggle = (props: FieldToggleProps) => {
         </span>
       </label>
       {onMove && (
-        <GripVertical className="cursor-move dragIcon w-4 h-4 text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)" />
+        <GripVertical className="cursor-move dragIcon w-4 h-4 text-muted-foreground" />
       )}
     </li>
   );

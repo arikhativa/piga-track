@@ -14,9 +14,9 @@ export const GuesserEmpty = ({
 
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-2 text-center">
-      <FileQuestion className="h-16 w-16 text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)" />
+      <FileQuestion className="h-16 w-16 text-muted-foreground" />
       <h2 className="text-2xl font-semibold">{resolvedTitle}</h2>
-      <p className="text-oklch(0.542 0.034 322.5) dark:text-oklch(0.711 0.019 323.02)">{resolvedMessage}</p>
+      <p className="text-muted-foreground">{resolvedMessage}</p>
     </div>
   );
 };

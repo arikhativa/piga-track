@@ -152,7 +152,7 @@ export const RemoveSavedQueryDialog = ({
           </DialogTitle>
           <DialogDescription>
             {translate("ra.saved_queries.remove_message", {
-              _: "Are you sure want to remove that item from your list of saved queries?",
+              _: "Are you sure you want to remove that item from your list of saved queries?",
             })}
           </DialogDescription>
         </DialogHeader>

@@ -44,10 +44,7 @@ export const Error = (props: InternalErrorProps & {}) => {
       </div>
       {process.env.NODE_ENV !== "production" && (
         <>
-          <Accordion
-            type="multiple"
-            className="mt-1 p-2 bg-oklch(0.96 0.003 325.6) w-full lg:w-150 dark:bg-oklch(0.263 0.024 320.12)"
-          >
+          <Accordion multiple className="mt-1 p-2 bg-secondary w-full lg:w-150">
             <AccordionItem value="error">
               <AccordionTrigger className="py-2">
                 <Translate i18nKey={errorMessage}>{errorMessage}</Translate>
@@ -58,34 +55,34 @@ export const Error = (props: InternalErrorProps & {}) => {
             </AccordionItem>
           </Accordion>
 
-          <p className="text-center">
+          <p className="text-center ">
             Need help with this error? Try the following:
           </p>
           <div>
             <ul className="list-disc">
               <li>
-                Check the{""}
+                Check the{" "}
                 <a
-                  className="text-oklch(0.212 0.019 322.12) underline-offset-4 hover:underline dark:text-oklch(0.922 0.005 325.62)"
+                  className="text-primary underline-offset-4 hover:underline"
                   href="https://marmelab.com/shadcn-admin-kit/docs"
                 >
                   shadcn-admin-kit documentation
                 </a>
               </li>
               <li>
-                Search on{""}
+                Search on{" "}
                 <a
-                  className="text-oklch(0.212 0.019 322.12) underline-offset-4 hover:underline dark:text-oklch(0.922 0.005 325.62)"
+                  className="text-primary underline-offset-4 hover:underline"
                   href="https://stackoverflow.com/questions/tagged/shadcn-admin-kit"
                 >
                   StackOverflow
-                </a>{""}
+                </a>{" "}
                 for community answers
               </li>
               <li>
-                Get help from the core team via{""}
+                Get help from the core team via{" "}
                 <a
-                  className="text-oklch(0.212 0.019 322.12) underline-offset-4 hover:underline dark:text-oklch(0.922 0.005 325.62)"
+                  className="text-primary underline-offset-4 hover:underline"
                   href="https://marmelab.com/shadcn-admin-kit/"
                 >
                   Shadcn Enterprise Edition
@@ -106,8 +103,7 @@ export const Error = (props: InternalErrorProps & {}) => {
 };
 
 interface InternalErrorProps
-  extends Omit<HtmlHTMLAttributes<HTMLDivElement>, "title">,
-    FallbackProps {
+  extends Omit<HtmlHTMLAttributes<HTMLDivElement>, "title">, FallbackProps {
   className?: string;
   errorInfo?: ErrorInfo;
 }

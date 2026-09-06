@@ -165,7 +165,7 @@ export const SelectInput = (props: SelectInputProps) => {
 	const renderEmptyItemOption = useCallback(() => {
 		return typeof emptyText === "string"
 			? emptyText === ""
-				? "" // em space, forces the display of an empty line of normal height
+				? " " // em space, forces the display of an empty line of normal height
 				: translate(emptyText, { _: emptyText })
 			: emptyText;
 	}, [emptyText, translate]);
@@ -237,12 +237,6 @@ export const SelectInput = (props: SelectInputProps) => {
 		finalChoices = [...finalChoices, createItem];
 	}
 
-	// Handle reset functionality
-	const handleReset = (e: React.MouseEvent<HTMLDivElement>) => {
-		e.stopPropagation();
-		field.onChange(emptyValue);
-	};
-
 	return (
 		<>
 			<FormField
@@ -263,18 +257,14 @@ export const SelectInput = (props: SelectInputProps) => {
 				)}
 				<div className="relative">
 					<Select
-						//FIXME https://github.com/radix-ui/primitives/issues/3135
-						// Setting a key based on the value fixes an issue where onValueChange
-						// was called with an empty string when the controlled value was changed.
-						// See: https://github.com/radix-ui/primitives/issues/3135#issuecomment-2916908248
+						// Re-mounting the select when the controlled value changes avoids a stale
+						// internal state edge case where onValueChange can briefly receive "".
 						key={`select:${field.value?.toString() ?? emptyValue}`}
 						value={field.value?.toString() || emptyValue}
 						onValueChange={handleChangeWithCreateSupport}
 					>
 						<SelectTrigger
-							className={cn(
-								"w-full transition-all hover:bg-oklch(0.96 0.003 325.6) dark:hover:bg-oklch(0.263 0.024 320.12)",
-							)}
+							className={cn("w-full transition-all hover:bg-accent")}
 							disabled={field.disabled}
 							aria-labelledby={labelId}
 							onClear={
@@ -283,7 +273,18 @@ export const SelectInput = (props: SelectInputProps) => {
 									: undefined
 							}
 						>
-							<SelectValue placeholder={renderEmptyItemOption()} />
+							<SelectValue placeholder={renderEmptyItemOption()}>
+								{(value: string | null) => {
+									if (!value || value === emptyValue) {
+										return renderEmptyItemOption();
+									}
+									const choice = finalChoices?.find(
+										(choice) =>
+											choice && getChoiceValue(choice)?.toString() === value,
+									);
+									return choice ? renderMenuItemOption(choice) : value;
+								}}
+							</SelectValue>
 						</SelectTrigger>
 						<SelectContent>
 							{finalChoices?.map((choice) => {

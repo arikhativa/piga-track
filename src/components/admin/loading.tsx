@@ -22,10 +22,10 @@ export const Loading = (props: LoadingProps) => {
     <div className="flex flex-col justify-center items-center h-full" {...rest}>
       <div className="text-center font-sans color-muted pt-1 pb-1">
         <Spinner size="large" className="width-9 height-9" />
-        <h5 className="mt-3 text-2xl text-oklch(0.212 0.019 322.12) dark:text-oklch(0.985 0 0)">
+        <h5 className="mt-3 text-2xl text-secondary-foreground">
           <Translate i18nKey={loadingPrimary}>{loadingPrimary}</Translate>
         </h5>
-        <p className="text-oklch(0.212 0.019 322.12) dark:text-oklch(0.922 0.005 325.62)">
+        <p className="text-primary">
           <Translate i18nKey={loadingSecondary}>{loadingSecondary}</Translate>
         </p>
       </div>

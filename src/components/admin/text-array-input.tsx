@@ -124,7 +124,7 @@ export const TextArrayInput = (props: TextArrayInputProps) => {
       )}
       <FormControl>
         <div
-          className="group rounded-md bg-oklch(1 0 0) shadow-xs dark:bg-oklch(0.922 0.005 325.62)/30 border border-oklch(0.922 0.005 325.62) px-3 py-1.75 text-sm transition-all ring-offset-oklch(1 0 0) focus-within:border-oklch(0.711 0.019 323.02) focus-within:ring-oklch(0.711 0.019 323.02)/50 focus-within:ring-[3px] dark:bg-oklch(0.145 0.008 326) dark:dark:bg-oklch(1 0 0 / 15%)/30 dark:border-oklch(1 0 0 / 10%) dark:border-oklch(1 0 0 / 15%) dark:ring-offset-oklch(0.145 0.008 326) dark:focus-within:border-oklch(0.542 0.034 322.5) dark:focus-within:ring-oklch(0.542 0.034 322.5)/50"
+          className="group rounded-md bg-background shadow-xs dark:bg-input/30 border border-input px-3 py-1.75 text-sm transition-all ring-offset-background focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]"
           {...rest}
         >
           <div className="flex flex-wrap gap-1">
@@ -132,7 +132,7 @@ export const TextArrayInput = (props: TextArrayInputProps) => {
               <Badge key={`${value}-${index}`} variant="outline">
                 {value}
                 <button
-                  className="ms-1 cursor-pointer rounded-full outline-none ring-offset-oklch(1 0 0) focus:ring-2 focus:ring-oklch(0.711 0.019 323.02) focus:ring-offset-2 dark:ring-offset-oklch(0.145 0.008 326) dark:focus:ring-oklch(0.542 0.034 322.5)"
+                  className="ms-1 cursor-pointer rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleRemoveValue(index);
@@ -169,7 +169,7 @@ export const TextArrayInput = (props: TextArrayInputProps) => {
               placeholder={values.length === 0 ? placeholder : undefined}
               disabled={disabled}
               readOnly={readOnly}
-              className="ms-2 flex-1 bg-transparent outline-none placeholder:text-oklch(0.542 0.034 322.5) dark:placeholder:text-oklch(0.711 0.019 323.02)"
+              className="ms-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />
           </div>
         </div>
