@@ -237,6 +237,12 @@ export const SelectInput = (props: SelectInputProps) => {
 		finalChoices = [...finalChoices, createItem];
 	}
 
+	// Handle reset functionality
+	const handleReset = (e: React.MouseEvent<HTMLDivElement>) => {
+		e.stopPropagation();
+		field.onChange(emptyValue);
+	};
+
 	return (
 		<>
 			<FormField
@@ -263,29 +269,36 @@ export const SelectInput = (props: SelectInputProps) => {
 						value={field.value?.toString() || emptyValue}
 						onValueChange={handleChangeWithCreateSupport}
 					>
-						<SelectTrigger
-							className={cn("w-full transition-all hover:bg-accent")}
-							disabled={field.disabled}
-							aria-labelledby={labelId}
-							onClear={
-								field.value && field.value !== emptyValue
-									? () => field.onChange(emptyValue)
-									: undefined
-							}
-						>
-							<SelectValue placeholder={renderEmptyItemOption()}>
-								{(value: string | null) => {
-									if (!value || value === emptyValue) {
-										return renderEmptyItemOption();
-									}
-									const choice = finalChoices?.find(
-										(choice) =>
-											choice && getChoiceValue(choice)?.toString() === value,
-									);
-									return choice ? renderMenuItemOption(choice) : value;
-								}}
-							</SelectValue>
-						</SelectTrigger>
+						<div className="flex gap-4 items-center">
+							<SelectTrigger
+								className={cn("w-full transition-all hover:bg-accent")}
+								disabled={field.disabled}
+								aria-labelledby={labelId}
+							>
+								<SelectValue placeholder={renderEmptyItemOption()}>
+									{(value: string | null) => {
+										if (!value || value === emptyValue) {
+											return renderEmptyItemOption();
+										}
+										const choice = finalChoices?.find(
+											(choice) =>
+												choice && getChoiceValue(choice)?.toString() === value,
+										);
+										return choice ? renderMenuItemOption(choice) : value;
+									}}
+								</SelectValue>
+							</SelectTrigger>
+
+							{field.value && field.value !== emptyValue ? (
+								<div
+									role="button"
+									className="p-0 ml-auto pointer-events-auto hover:bg-transparent text-muted-foreground opacity-50 hover:opacity-100"
+									onClick={handleReset}
+								>
+									<X className="h-4 w-4" />
+								</div>
+							) : null}
+						</div>
 						<SelectContent>
 							{finalChoices?.map((choice) => {
 								if (!choice) return null;
