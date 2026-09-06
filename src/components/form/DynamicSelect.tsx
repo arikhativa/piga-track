@@ -24,6 +24,9 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
+// TODO: do not show "add" when there are ops to select from
+// TODO: hijeck the back button so it only closes the dialog
+
 type DynamicSelectProps = ChoicesProps &
 	Partial<InputProps> & {
 		label?: string;
