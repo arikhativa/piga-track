@@ -1,11 +1,5 @@
-import {
-	House,
-	LayoutDashboard,
-	List,
-	Plus,
-	Settings,
-	Shell,
-} from "lucide-react";
+import { cn } from "cn";
+import { House, LayoutDashboard, List, Plus, Settings } from "lucide-react";
 import {
 	LinkBase,
 	useCanAccess,
@@ -66,7 +60,7 @@ export function AppSidebar() {
 			resources[name].hasList && resources[name]?.options?.util === true,
 	);
 
-	const { openMobile, setOpenMobile } = useSidebar();
+	const { openMobile, setOpenMobile, state } = useSidebar();
 
 	const handleClick = () => {
 		if (openMobile) {
@@ -81,10 +75,20 @@ export function AppSidebar() {
 					<SidebarMenuItem>
 						<SidebarMenuButton
 							render={<LinkBase to="/" />}
-							className="data-[slot=sidebar-menu-button]:!p-1.5 h-fit"
+							className={cn(
+								"data-[slot=sidebar-menu-button]:!p-1.5 h-fit",
+								state === "expanded" ? "" : "flex justify-center items-center",
+							)}
 						>
-							<PixelIcon className="!size-11 h-full" />
-							<span className="text-base font-semibold">Lord Pigafetta</span>
+							<PixelIcon
+								className={cn(
+									"h-full",
+									state === "expanded" ? "size-11! " : "size-7!",
+								)}
+							/>
+							{state === "expanded" && (
+								<span className="text-base font-semibold">Lord Pigafetta</span>
+							)}
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>

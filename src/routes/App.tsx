@@ -72,23 +72,6 @@ export function App() {
 					icon={HandCoins}
 				/>
 				<Resource
-					name="transaction_category"
-					options={{ label: "Categories", table: true }}
-					list={CategoryList}
-					edit={CategoryEdit}
-					create={CategoryCreate}
-					icon={Bookmark}
-				/>
-
-				<Resource
-					name="transaction_type"
-					options={{ label: "Money pots", table: true }}
-					list={PotList}
-					edit={PotEdit}
-					create={PotCreate}
-					icon={PiggyBank}
-				/>
-				<Resource
 					name="transaction_project"
 					options={{ label: "Projects", table: true }}
 					list={ProjectList}
@@ -96,6 +79,14 @@ export function App() {
 					show={ProjectShow}
 					create={ProjectCreate}
 					icon={ChartGantt}
+				/>
+				<Resource
+					name="transaction_category"
+					options={{ label: "Categories", table: true }}
+					list={CategoryList}
+					edit={CategoryEdit}
+					create={CategoryCreate}
+					icon={Bookmark}
 				/>
 
 				{/* Utils */}
@@ -114,6 +105,14 @@ export function App() {
 					edit={CurrencyEdit}
 					create={CurrencyCreate}
 					icon={Coins}
+				/>
+				<Resource
+					name="transaction_type"
+					options={{ label: "Money pots", util: true }}
+					list={PotList}
+					edit={PotEdit}
+					create={PotCreate}
+					icon={PiggyBank}
 				/>
 			</Admin>
 		</TooltipProvider>

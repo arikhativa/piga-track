@@ -96,6 +96,8 @@ body {
   --sidebar-accent-foreground: oklch(0.212 0.019 322.12);
   --sidebar-border: oklch(0.922 0.005 325.62);
   --sidebar-ring: oklch(0.711 0.019 323.02);
+
+  --glare-color: oklch(84.297% 0.05781 325.998 / 0.589);
 }
 
 .dark {
@@ -130,6 +132,8 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.542 0.034 322.5);
+
+  --glare-color: oklch(84.297% 0.05781 325.998 / 0.589);
 }
 
 @layer base {
