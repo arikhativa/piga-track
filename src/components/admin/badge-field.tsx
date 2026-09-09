@@ -68,6 +68,7 @@ export interface BadgeFieldProps<RecordType extends RaRecord = RaRecord>
 		| "destructive"
 		| "spent"
 		| "received"
+		| "green"
 		| "slate"
 		| "blue"
 		| "red"

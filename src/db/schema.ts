@@ -3,6 +3,7 @@ import {
 	date,
 	integer,
 	numeric,
+	pgEnum,
 	pgTable,
 	primaryKey,
 	serial,
@@ -14,6 +15,11 @@ import {
 export const NIS_ID = 7 as const; // NOTE: this is nis - it will be in DB cus there is a mig before this
 const CASH_ID = 1 as const; // NOTE: this is cash - there is a custom mig for this
 const MARKET_ID = 1 as const; // NOTE: defend here supabase/migrations/0013_init_category.sql
+
+const AMOUNT = numeric("amount", {
+	precision: 12,
+	scale: 2,
+});
 
 export const profile = pgTable("profile", {
 	id: uuid("id").primaryKey(),
@@ -119,10 +125,7 @@ export const transaction = pgTable("transaction", {
 		.default(CASH_ID)
 		.references(() => transactionType.id),
 
-	amount: numeric("amount", {
-		precision: 12,
-		scale: 2,
-	}).notNull(),
+	amount: AMOUNT.notNull(),
 
 	description: text("description"),
 
@@ -170,10 +173,84 @@ export const importProfile = pgTable("import_profile", {
 		.notNull(),
 });
 
+export const importBatchStatusEnum = pgEnum("import_batch_status", [
+	"draft",
+	"approved",
+	"cancelled",
+]);
+
+export const importBatch = pgTable("import_batch", {
+	id: serial("id").primaryKey(),
+
+	import_profile_id: integer("import_profile_id")
+		.notNull()
+		.references(() => importProfile.id),
+
+	batch_name: text("batch_name").notNull(),
+
+	status: importBatchStatusEnum("status").notNull().default("draft"),
+
+	created_at: timestamp("created_at", { withTimezone: true })
+		.defaultNow()
+		.notNull(),
+
+	updated_at: timestamp("updated_at", { withTimezone: true })
+		.defaultNow()
+		.notNull(),
+});
+
+export const importRowStatusEnum = pgEnum("import_row_status", [
+	"pending",
+	"merged",
+	"dropped",
+]);
+
+export const importRow = pgTable("import_row", {
+	id: serial("id").primaryKey(),
+
+	import_batch_id: integer("import_batch_id")
+		.notNull()
+		.references(() => importBatch.id),
+
+	row_number: integer("row_number").notNull(),
+
+	date: date("date"),
+
+	amount: AMOUNT,
+
+	description: text("description"),
+
+	tag_id: integer("tag_id").references(() => transactionTag.id),
+
+	category_id: integer("category_id").references(() => transactionCategory.id),
+
+	project_id: integer("project_id").references(() => transactionProject.id),
+
+	status: importRowStatusEnum("status").notNull().default("pending"),
+
+	transaction_id: integer("transaction_id").references(() => transaction.id),
+
+	duplicate_transaction_id: integer("duplicate_transaction_id").references(
+		() => transaction.id,
+	),
+
+	created_at: timestamp("created_at", { withTimezone: true })
+		.defaultNow()
+		.notNull(),
+
+	updated_at: timestamp("updated_at", { withTimezone: true })
+		.defaultNow()
+		.notNull(),
+});
+
 // ============================================================================
 //	Types
 // ============================================================================
 
+export type ImportBatchStatusEnum =
+	(typeof importBatchStatusEnum.enumValues)[number];
+export type ImportRow = InferSelectModel<typeof importRow>;
+export type ImportBatch = InferSelectModel<typeof importBatch>;
 export type ImportProfile = InferSelectModel<typeof importProfile>;
 export type ExchangeRate = InferSelectModel<typeof exchangeRate>;
 export type TransactionCategory = InferSelectModel<typeof transactionCategory>;

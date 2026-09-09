@@ -4,6 +4,7 @@ import {
 	Coins,
 	FileSliders,
 	HandCoins,
+	Import,
 	PiggyBank,
 	Tags,
 } from "lucide-react";
@@ -32,7 +33,8 @@ import { CurrencyList } from "#/routes/currency/CurrencyList";
 import { Dashboard } from "#/routes/dashboard/Dashboard";
 import { DefaultsBaseEdit } from "#/routes/defaults/DefaultsBaseEdit";
 import { Home } from "#/routes/home/Home";
-import { ImportCSV } from "#/routes/importCSV/importCSV";
+import { ImportBatchCreate } from "#/routes/importBatch/ImportBatchCreate";
+import { ImportBatchList } from "#/routes/importBatch/ImportBatchList";
 import { ImportProfileCreate } from "#/routes/importProfile/ImportProfileCreate";
 import { ImportProfileEdit } from "#/routes/importProfile/ImportProfileEdit";
 import { ImportProfileList } from "#/routes/importProfile/ImportProfileList";
@@ -65,7 +67,6 @@ export function App() {
 					<Route path="/profile" element={<ProfileBaseEdit />} />
 					<Route path="/defaults" element={<DefaultsBaseEdit />} />
 					<Route path="/dashboard" element={<Dashboard />} />
-					<Route path="/import-csv" element={<ImportCSV />} />
 				</CustomRoutes>
 
 				{/* Tables */}
@@ -97,8 +98,15 @@ export function App() {
 
 				{/* Import */}
 				<Resource
+					name="import_batch"
+					options={{ importCSV: true, label: "Batch" }}
+					create={ImportBatchCreate}
+					list={ImportBatchList}
+					icon={Import}
+				/>
+				<Resource
 					name="import_profile"
-					options={{ importCSV: true }}
+					options={{ importCSV: true, label: "Import Profile" }}
 					list={ImportProfileList}
 					edit={ImportProfileEdit}
 					create={ImportProfileCreate}

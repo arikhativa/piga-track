@@ -1,12 +1,5 @@
 import { cn } from "cn";
-import {
-	House,
-	Import,
-	LayoutDashboard,
-	List,
-	Plus,
-	Settings,
-} from "lucide-react";
+import { House, LayoutDashboard, List, Plus, Settings } from "lucide-react";
 import {
 	LinkBase,
 	useCanAccess,
@@ -41,11 +34,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function AppSidebar() {
 	const hasDashboard = useHasDashboard();
 	const resources = useResourceDefinitions();
-
-	const importCSVMatch = useMatch({
-		path: "/import-csv",
-		end: true,
-	});
 
 	const dashboardMatch = useMatch({
 		path: "/dashboard",
@@ -187,19 +175,6 @@ export function AppSidebar() {
 
 						<SidebarGroupContent>
 							<SidebarMenu>
-								{/* ----------------------------------------------------------------------------------------- */}
-
-								<SidebarMenuItem>
-									<SidebarMenuButton
-										render={<LinkBase to="/import-csv" onClick={handleClick} />}
-										isActive={!!importCSVMatch}
-									>
-										<Import />
-										<span>Upload File</span>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-								{/* ----------------------------------------------------------------------------------------- */}
-
 								{importCSVPages.map((name) => (
 									<ResourceMenuItem
 										key={name}
