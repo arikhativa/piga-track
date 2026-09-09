@@ -31,6 +31,7 @@ import { CurrencyList } from "#/routes/currency/CurrencyList";
 import { Dashboard } from "#/routes/dashboard/Dashboard";
 import { DefaultsBaseEdit } from "#/routes/defaults/DefaultsBaseEdit";
 import { Home } from "#/routes/home/Home";
+import { ImportCSV } from "#/routes/importCSV/importCSV";
 import { PotCreate } from "#/routes/pot/PotCreate";
 import { PotEdit } from "#/routes/pot/PotEdit";
 import { PotList } from "#/routes/pot/PotList";
@@ -60,6 +61,7 @@ export function App() {
 					<Route path="/profile" element={<ProfileBaseEdit />} />
 					<Route path="/defaults" element={<DefaultsBaseEdit />} />
 					<Route path="/dashboard" element={<Dashboard />} />
+					<Route path="/import-csv" element={<ImportCSV />} />
 				</CustomRoutes>
 
 				{/* Tables */}

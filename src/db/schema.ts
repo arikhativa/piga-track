@@ -135,6 +135,50 @@ export const transaction = pgTable("transaction", {
 		.notNull(),
 });
 
+// ============================================================================
+//	Import
+// ============================================================================
+
+export const importProfile = pgTable("import_profile", {
+	id: serial("id").primaryKey(),
+
+	profile_id: uuid("profile_id")
+		.notNull()
+		.references(() => profile.id),
+
+	name: text("name").notNull(),
+
+	currency_id: integer("currency_id")
+		.notNull()
+		.default(NIS_ID)
+		.references(() => currency.id),
+
+	start_row: integer("start_row"),
+
+	date_column: text("date_column"),
+
+	positive_amount_column: text("positive_amount_column"),
+
+	negative_amount_column: text("negative_amount_column"),
+
+	tag_column: text("tag_column"),
+
+	description_column: text("description_column"),
+
+	created_at: timestamp("created_at", { withTimezone: true })
+		.defaultNow()
+		.notNull(),
+
+	updated_at: timestamp("updated_at", { withTimezone: true })
+		.defaultNow()
+		.notNull(),
+});
+
+// ============================================================================
+//	Types
+// ============================================================================
+
+export type ImportProfile = InferSelectModel<typeof importProfile>;
 export type ExchangeRate = InferSelectModel<typeof exchangeRate>;
 export type TransactionCategory = InferSelectModel<typeof transactionCategory>;
 export type TransactionTag = InferSelectModel<typeof transactionTag>;

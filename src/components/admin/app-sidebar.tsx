@@ -1,5 +1,12 @@
 import { cn } from "cn";
-import { House, LayoutDashboard, List, Plus, Settings } from "lucide-react";
+import {
+	House,
+	Import,
+	LayoutDashboard,
+	List,
+	Plus,
+	Settings,
+} from "lucide-react";
 import {
 	LinkBase,
 	useCanAccess,
@@ -34,6 +41,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function AppSidebar() {
 	const hasDashboard = useHasDashboard();
 	const resources = useResourceDefinitions();
+
+	const importCSVMatch = useMatch({
+		path: "/import-csv",
+		end: true,
+	});
 
 	const dashboardMatch = useMatch({
 		path: "/dashboard",
@@ -76,7 +88,7 @@ export function AppSidebar() {
 						<SidebarMenuButton
 							render={<LinkBase to="/" />}
 							className={cn(
-								"data-[slot=sidebar-menu-button]:!p-1.5 h-fit",
+								"data-[slot=sidebar-menu-button]:p-1.5! h-fit",
 								state === "expanded" ? "" : "flex justify-center items-center",
 							)}
 						>
@@ -172,6 +184,18 @@ export function AppSidebar() {
 							<SidebarMenu>
 								{/* ----------------------------------------------------------------------------------------- */}
 
+								<SidebarMenuItem>
+									<SidebarMenuButton
+										render={<LinkBase to="/import-csv" onClick={handleClick} />}
+										isActive={!!importCSVMatch}
+									>
+										<Import />
+										<span>Import</span>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+								{/* ----------------------------------------------------------------------------------------- */}
+
+								{/* ----------------------------------------------------------------------------------------- */}
 								<SidebarMenuItem>
 									<SidebarMenuButton
 										render={<LinkBase to="/defaults" onClick={handleClick} />}
