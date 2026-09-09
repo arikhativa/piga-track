@@ -250,6 +250,7 @@ export const importRow = pgTable("import_row", {
 export type ImportBatchStatusEnum =
 	(typeof importBatchStatusEnum.enumValues)[number];
 export type ImportRow = InferSelectModel<typeof importRow>;
+export type ImportRowInsert = typeof importRow.$inferInsert;
 export type ImportBatch = InferSelectModel<typeof importBatch>;
 export type ImportProfile = InferSelectModel<typeof importProfile>;
 export type ExchangeRate = InferSelectModel<typeof exchangeRate>;
