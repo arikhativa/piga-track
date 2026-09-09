@@ -72,6 +72,11 @@ export function AppSidebar() {
 			resources[name].hasList && resources[name]?.options?.util === true,
 	);
 
+	const importCSVPages = Object.keys(resources).filter(
+		(name) =>
+			resources[name].hasList && resources[name]?.options?.importCSV === true,
+	);
+
 	const { openMobile, setOpenMobile, state } = useSidebar();
 
 	const handleClick = () => {
@@ -176,9 +181,9 @@ export function AppSidebar() {
 				)}
 
 				{/* Utils */}
-				{utilsPages.length > 0 && (
+				{importCSVPages.length > 0 && (
 					<SidebarGroup>
-						<SidebarGroupLabel>Utils</SidebarGroupLabel>
+						<SidebarGroupLabel>Import</SidebarGroupLabel>
 
 						<SidebarGroupContent>
 							<SidebarMenu>
@@ -190,11 +195,30 @@ export function AppSidebar() {
 										isActive={!!importCSVMatch}
 									>
 										<Import />
-										<span>Import</span>
+										<span>Upload File</span>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 								{/* ----------------------------------------------------------------------------------------- */}
 
+								{importCSVPages.map((name) => (
+									<ResourceMenuItem
+										key={name}
+										name={name}
+										onClick={handleClick}
+									/>
+								))}
+							</SidebarMenu>
+						</SidebarGroupContent>
+					</SidebarGroup>
+				)}
+
+				{/* Utils */}
+				{utilsPages.length > 0 && (
+					<SidebarGroup>
+						<SidebarGroupLabel>Utils</SidebarGroupLabel>
+
+						<SidebarGroupContent>
+							<SidebarMenu>
 								{/* ----------------------------------------------------------------------------------------- */}
 								<SidebarMenuItem>
 									<SidebarMenuButton

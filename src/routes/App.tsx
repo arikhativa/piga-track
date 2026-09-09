@@ -2,6 +2,7 @@ import {
 	Bookmark,
 	ChartGantt,
 	Coins,
+	FileSliders,
 	HandCoins,
 	PiggyBank,
 	Tags,
@@ -32,6 +33,9 @@ import { Dashboard } from "#/routes/dashboard/Dashboard";
 import { DefaultsBaseEdit } from "#/routes/defaults/DefaultsBaseEdit";
 import { Home } from "#/routes/home/Home";
 import { ImportCSV } from "#/routes/importCSV/importCSV";
+import { ImportProfileCreate } from "#/routes/importProfile/ImportProfileCreate";
+import { ImportProfileEdit } from "#/routes/importProfile/ImportProfileEdit";
+import { ImportProfileList } from "#/routes/importProfile/ImportProfileList";
 import { PotCreate } from "#/routes/pot/PotCreate";
 import { PotEdit } from "#/routes/pot/PotEdit";
 import { PotList } from "#/routes/pot/PotList";
@@ -89,6 +93,16 @@ export function App() {
 					edit={CategoryEdit}
 					create={CategoryCreate}
 					icon={Bookmark}
+				/>
+
+				{/* Import */}
+				<Resource
+					name="import_profile"
+					options={{ importCSV: true }}
+					list={ImportProfileList}
+					edit={ImportProfileEdit}
+					create={ImportProfileCreate}
+					icon={FileSliders}
 				/>
 
 				{/* Utils */}

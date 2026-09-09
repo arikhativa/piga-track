@@ -11,7 +11,7 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 
-const NIS_ID = 7 as const; // NOTE: this is nis - it will be in DB cus there is a mig before this
+export const NIS_ID = 7 as const; // NOTE: this is nis - it will be in DB cus there is a mig before this
 const CASH_ID = 1 as const; // NOTE: this is cash - there is a custom mig for this
 const MARKET_ID = 1 as const; // NOTE: defend here supabase/migrations/0013_init_category.sql
 
@@ -141,10 +141,6 @@ export const transaction = pgTable("transaction", {
 
 export const importProfile = pgTable("import_profile", {
 	id: serial("id").primaryKey(),
-
-	profile_id: uuid("profile_id")
-		.notNull()
-		.references(() => profile.id),
 
 	name: text("name").notNull(),
 

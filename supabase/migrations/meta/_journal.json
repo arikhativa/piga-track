@@ -169,6 +169,20 @@
       "when": 1788527052307,
       "tag": "0023_rls-v7",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1788966299225,
+      "tag": "0024_boring_ultron",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1788966310202,
+      "tag": "0025_rls-v8",
+      "breakpoints": true
     }
   ]
 }
