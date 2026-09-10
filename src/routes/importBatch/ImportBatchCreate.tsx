@@ -1,12 +1,11 @@
-import { CreateBase, required } from "ra-core";
+import { required } from "ra-core";
 import { Spinner } from "#/components/admin/spinner";
 import { useImportProfiles } from "#/hooks/use-import-profiles";
 import { importProfileOptionText } from "#/lib/form/importProfileOptionText";
-import { createImportBatch } from "#/lib/importer/createImportBatch";
 import { parseImportRow } from "#/lib/importer/parseImportRow";
 import { readSpreadsheet } from "#/lib/importer/readSpreadsheet";
 import {
-	CreateView,
+	Create,
 	FileField,
 	FileInput,
 	ReferenceInput,
@@ -23,60 +22,53 @@ export function ImportBatchCreate() {
 	}
 
 	return (
-		<CreateBase>
-			<CreateView title="Create Import Batch">
-				<SimpleForm
-					onSubmit={async (data: any) => {
-						try {
-							const file = data.file?.rawFile;
+		<Create
+			transform={async (data) => {
+				const file = data.file?.rawFile;
 
-							if (!file) {
-								throw new Error("Please select a file.");
-							}
+				if (!file) {
+					throw new Error("Please select a file.");
+				}
 
-							const profile = profileList.find(
-								(profile) => profile.id === Number(data.import_profile_id),
-							);
+				const importProfile = profileList.find(
+					(profile) => profile.id === Number(data.import_profile_id),
+				);
 
-							if (!profile) {
-								throw new Error("Import profile not found.");
-							}
+				if (!importProfile) {
+					throw new Error("Import profile not found.");
+				}
 
-							const rows = await readSpreadsheet(file);
-							const parsed = parseImportRow(rows, profile);
+				const spreadsheet = await readSpreadsheet(file);
+				const rows = parseImportRow(spreadsheet, importProfile);
 
-							await createImportBatch({
-								batch_name: data.batch_name,
-								import_profile_id: Number(data.import_profile_id),
-								rows: parsed,
-							});
-						} catch (error) {
-							console.error("Failed to create import batch:", error);
-							throw error;
-						}
+				return {
+					batch_name: data.batch_name,
+					import_profile_id: Number(data.import_profile_id),
+					rows,
+				};
+			}}
+		>
+			<SimpleForm>
+				<TextInput source="batch_name" />
+
+				<ReferenceInput source="import_profile_id" reference="import_profile">
+					<SelectInput
+						optionText={importProfileOptionText}
+						validate={required()}
+					/>
+				</ReferenceInput>
+
+				<FileInput
+					validate={required()}
+					source="file"
+					accept={{
+						"text/csv": [".csv"],
+						"text/xls": [".xls"],
 					}}
 				>
-					<TextInput source="batch_name" />
-
-					<ReferenceInput source="import_profile_id" reference="import_profile">
-						<SelectInput
-							optionText={importProfileOptionText}
-							validate={required()}
-						/>
-					</ReferenceInput>
-
-					<FileInput
-						validate={required()}
-						source="file"
-						accept={{
-							"text/csv": [".csv"],
-							"text/xls": [".xls"],
-						}}
-					>
-						<FileField source="src" title="title" />
-					</FileInput>
-				</SimpleForm>
-			</CreateView>
-		</CreateBase>
+					<FileField source="src" title="title" />
+				</FileInput>
+			</SimpleForm>
+		</Create>
 	);
 }

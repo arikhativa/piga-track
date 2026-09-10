@@ -35,6 +35,7 @@ import { DefaultsBaseEdit } from "#/routes/defaults/DefaultsBaseEdit";
 import { Home } from "#/routes/home/Home";
 import { ImportBatchCreate } from "#/routes/importBatch/ImportBatchCreate";
 import { ImportBatchList } from "#/routes/importBatch/ImportBatchList";
+import { ImportBatchShow } from "#/routes/importBatch/ImportBatchShow";
 import { ImportProfileCreate } from "#/routes/importProfile/ImportProfileCreate";
 import { ImportProfileEdit } from "#/routes/importProfile/ImportProfileEdit";
 import { ImportProfileList } from "#/routes/importProfile/ImportProfileList";
@@ -102,6 +103,7 @@ export function App() {
 					options={{ importCSV: true, label: "Batch" }}
 					create={ImportBatchCreate}
 					list={ImportBatchList}
+					show={ImportBatchShow}
 					icon={Import}
 				/>
 				<Resource
