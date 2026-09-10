@@ -1,16 +1,17 @@
 import type { ImportRow, Profile } from "#/db/schema";
 import { supabaseClient } from "#/lib/supabaseClient";
 
-interface MergeImportRowPrams {
+type ImportRowAction = "merge" | "drop" | "undo";
+
+interface ImportRowActionParams {
     import_row_id: ImportRow["id"];
     profile_id: Profile["id"];
+    action: ImportRowAction;
 }
 
-export async function mergeImportRow(
-    input: MergeImportRowPrams,
-) {
+export async function importRowAction(input: ImportRowActionParams) {
     const { data, error } = await supabaseClient.functions.invoke(
-        "merge-import-row",
+        "import-row-action",
         {
             body: input,
         },

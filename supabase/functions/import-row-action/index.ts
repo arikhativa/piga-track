@@ -237,14 +237,17 @@ const importRow = pgTable("import_row", {
 const schema = z.object({
   import_row_id: z.number().int().positive(),
   profile_id: z.uuid(),
+  action: z.enum(["merge", "drop", "undo"]),
 });
 
 Deno.serve(async (req) => {
-  console.log("HI");
   try {
     const connectionString = Deno.env.get("DATABASE_URL")!;
 
-    const client = postgres(connectionString, { prepare: false });
+    const client = postgres(connectionString, {
+      prepare: false,
+    });
+
     const db = drizzle({ client });
 
     const body = schema.parse(await req.json());
@@ -260,58 +263,119 @@ Deno.serve(async (req) => {
         throw new Error("Import row not found");
       }
 
-      if (row.status !== "pending") {
-        throw new Error("Import row is not pending");
+      // MERGE
+      if (body.action === "merge") {
+        if (row.status !== "pending") {
+          throw new Error("Import row is not pending");
+        }
+
+        const [batch] = await tx
+          .select()
+          .from(importBatch)
+          .where(eq(importBatch.id, row.import_batch_id))
+          .limit(1);
+
+        if (!batch) {
+          throw new Error("Import batch not found");
+        }
+
+        const [profile] = await tx
+          .select()
+          .from(importProfile)
+          .where(eq(importProfile.id, batch.import_profile_id))
+          .limit(1);
+
+        if (!profile) {
+          throw new Error("Import profile not found");
+        }
+
+        const [newTransaction] = await tx
+          .insert(transaction)
+          .values({
+            profile_id: body.profile_id,
+            tag_id: row.tag_id,
+            project_id: row.project_id,
+            category_id: row.category_id,
+            currency_id: profile.currency_id,
+            amount: row.amount!,
+            description: row.description,
+          })
+          .returning();
+
+        await tx
+          .update(importRow)
+          .set({
+            transaction_id: newTransaction.id,
+            status: "merged",
+            updated_at: new Date(),
+          })
+          .where(eq(importRow.id, row.id));
+
+        return newTransaction;
       }
 
-      const [batch] = await tx
-        .select()
-        .from(importBatch)
-        .where(eq(importBatch.id, row.import_batch_id))
-        .limit(1);
+      // DROP
+      if (body.action === "drop") {
+        if (row.status !== "pending") {
+          throw new Error("Import row is not pending");
+        }
 
-      if (!batch) {
-        throw new Error("Import batch not found");
+        const [updatedRow] = await tx
+          .update(importRow)
+          .set({
+            status: "dropped",
+            updated_at: new Date(),
+          })
+          .where(eq(importRow.id, row.id))
+          .returning();
+
+        return updatedRow;
       }
 
-      const [profile] = await tx
-        .select()
-        .from(importProfile)
-        .where(eq(importProfile.id, batch.import_profile_id))
-        .limit(1);
+      // UNDO
+      if (body.action === "undo") {
+        if (row.status === "merged") {
+          if (!row.transaction_id) {
+            throw new Error("Merged row has no transaction");
+          }
 
-      if (!importProfile) {
-        throw new Error("Import profile not found");
+          const transactionId = row.transaction_id;
+
+          // Remove the FK reference first
+          await tx
+            .update(importRow)
+            .set({
+              transaction_id: null,
+              status: "pending",
+              updated_at: new Date(),
+            })
+            .where(eq(importRow.id, row.id));
+
+          // Now delete the transaction created by the merge
+          await tx
+            .delete(transaction)
+            .where(eq(transaction.id, transactionId));
+        }
+
+        const [updatedRow] = await tx
+          .update(importRow)
+          .set({
+            status: "pending",
+            transaction_id: null,
+            updated_at: new Date(),
+          })
+          .where(eq(importRow.id, row.id))
+          .returning();
+
+        return updatedRow;
       }
 
-      const [newTransaction] = await tx
-        .insert(transaction)
-        .values({
-          profile_id: body.profile_id,
-          tag_id: row.tag_id,
-          project_id: row.project_id,
-          category_id: row.category_id,
-          currency_id: profile.currency_id,
-          amount: row.amount!,
-          description: row.description,
-        })
-        .returning();
-
-      await tx
-        .update(importRow)
-        .set({
-          transaction_id: newTransaction.id,
-          status: "merged",
-          updated_at: new Date(),
-        })
-        .where(eq(importRow.id, row.id));
-
-      return newTransaction;
+      throw new Error("Invalid action");
     });
 
     return Response.json(
       { data: result },
-      { status: 201 },
+      { status: 200 },
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -330,7 +394,7 @@ Deno.serve(async (req) => {
       {
         error: error instanceof Error
           ? error.message
-          : "Failed to merge import row",
+          : "Failed to process import row",
       },
       { status: 500 },
     );
