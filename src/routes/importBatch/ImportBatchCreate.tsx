@@ -1,11 +1,12 @@
-import { required } from "ra-core";
-import type { ImportBatch, ImportProfile } from "#/db/schema";
+import { CreateBase, required } from "ra-core";
+import { Spinner } from "#/components/admin/spinner";
 import { useImportProfiles } from "#/hooks/use-import-profiles";
 import { importProfileOptionText } from "#/lib/form/importProfileOptionText";
+import { createImportBatch } from "#/lib/importer/createImportBatch";
 import { parseImportRow } from "#/lib/importer/parseImportRow";
 import { readSpreadsheet } from "#/lib/importer/readSpreadsheet";
 import {
-	Create,
+	CreateView,
 	FileField,
 	FileInput,
 	ReferenceInput,
@@ -14,63 +15,68 @@ import {
 	TextInput,
 } from "@/components/admin";
 
-// TODO:
-// create a edge func on supabase
-// there should not be a regular create for this obj
 export function ImportBatchCreate() {
-	const { data: profileList } = useImportProfiles();
+	const { data: profileList, isPending, isSuccess } = useImportProfiles();
+
+	if (isPending || !isSuccess || !profileList || !profileList.length) {
+		return <Spinner />;
+	}
 
 	return (
-		<Create
-			transform={async (data) => {
-				const file = data.file?.rawFile;
+		<CreateBase>
+			<CreateView title="Create Import Batch">
+				<SimpleForm
+					onSubmit={async (data: any) => {
+						try {
+							const file = data.file?.rawFile;
 
-				if (!file) {
-					// TODO
-					return data;
-				}
+							if (!file) {
+								throw new Error("Please select a file.");
+							}
 
-				const profile: ImportProfile | undefined = profileList?.find(
-					(e) => e.id === Number(data.import_profile_id),
-				);
+							const profile = profileList.find(
+								(profile) => profile.id === Number(data.import_profile_id),
+							);
 
-				if (!profile) {
-					// TODO
-					return data;
-				}
+							if (!profile) {
+								throw new Error("Import profile not found.");
+							}
 
-				const rows = await readSpreadsheet(file);
-				const parsed = parseImportRow(rows, profile);
+							const rows = await readSpreadsheet(file);
+							const parsed = parseImportRow(rows, profile);
 
-				console.log("parsed", parsed);
-
-				return {
-					...data,
-					file: undefined,
-				};
-			}}
-		>
-			<SimpleForm>
-				<TextInput source="batch_name" />
-
-				<ReferenceInput source="import_profile_id" reference="import_profile">
-					<SelectInput
-						optionText={importProfileOptionText}
-						validate={required()}
-					/>
-				</ReferenceInput>
-
-				<FileInput
-					validate={required()}
-					source="file"
-					accept={{
-						"text/csv": [".csv"],
-						"text/xls": [".xls"],
+							await createImportBatch({
+								batch_name: data.batch_name,
+								import_profile_id: Number(data.import_profile_id),
+								rows: parsed,
+							});
+						} catch (error) {
+							console.error("Failed to create import batch:", error);
+							throw error;
+						}
 					}}
 				>
-					<FileField source="src" title="title" />
-				</FileInput>
-			</SimpleForm>
-		</Create>
+					<TextInput source="batch_name" />
+
+					<ReferenceInput source="import_profile_id" reference="import_profile">
+						<SelectInput
+							optionText={importProfileOptionText}
+							validate={required()}
+						/>
+					</ReferenceInput>
+
+					<FileInput
+						validate={required()}
+						source="file"
+						accept={{
+							"text/csv": [".csv"],
+							"text/xls": [".xls"],
+						}}
+					>
+						<FileField source="src" title="title" />
+					</FileInput>
+				</SimpleForm>
+			</CreateView>
+		</CreateBase>
 	);
 }

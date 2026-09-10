@@ -222,7 +222,9 @@ export const importRow = pgTable("import_row", {
 
 	tag_id: integer("tag_id").references(() => transactionTag.id),
 
-	category_id: integer("category_id").references(() => transactionCategory.id),
+	category_id: integer("category_id").references(() =>
+		transactionCategory.id
+	),
 
 	project_id: integer("project_id").references(() => transactionProject.id),
 
@@ -246,6 +248,8 @@ export const importRow = pgTable("import_row", {
 // ============================================================================
 //	Types
 // ============================================================================
+
+export type ImportRowData = Omit<ImportRowInsert, "import_batch_id">;
 
 export type ImportBatchStatusEnum =
 	(typeof importBatchStatusEnum.enumValues)[number];

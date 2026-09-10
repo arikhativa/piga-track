@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "db:create-user": "tsx scripts/create-local-user.ts",
-    "db:start": "supabase start --exclude realtime,storage-api,imgproxy,mailpit,edge-runtime,logflare,vector,supavisor",
+    "db:start": "supabase start --exclude realtime,storage-api,imgproxy,mailpit,logflare,vector,supavisor",
     "db:stop": "supabase stop",
     "db:drop": "drizzle-kit drop",
     "db:empty-mig": "drizzle-kit generate --custom",

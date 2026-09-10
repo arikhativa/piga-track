@@ -1,6 +1,5 @@
-import type { ImportProfile, ImportRowInsert } from "#/db/schema";
-
-type ImportRowData = Omit<ImportRowInsert, "import_batch_id">;
+import type { ImportProfile, ImportRowData } from "#/db/schema";
+import { toDateStringFromDMY } from "#/lib/format/toDateStringFromDMY";
 
 function columnToIndex(column: string): number {
 	let index = 0;
@@ -33,7 +32,8 @@ export function parseImportRow(
 	const startIndex = Math.max((profile.start_row ?? 1) - 1, 0);
 
 	return table.slice(startIndex).map((row, index) => {
-		const date = getValue(row, profile.date_column);
+		const baseDate = getValue(row, profile.date_column);
+		const date = toDateStringFromDMY(baseDate || "");
 		const positive = getValue(row, profile.positive_amount_column);
 		const negative = getValue(row, profile.negative_amount_column);
 
