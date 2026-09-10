@@ -210,7 +210,9 @@ export const importRow = pgTable("import_row", {
 
 	import_batch_id: integer("import_batch_id")
 		.notNull()
-		.references(() => importBatch.id),
+		.references(() => importBatch.id, {
+			onDelete: "cascade",
+		}),
 
 	row_number: integer("row_number").notNull(),
 
