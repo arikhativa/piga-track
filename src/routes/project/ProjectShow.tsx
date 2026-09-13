@@ -11,7 +11,7 @@ export function ProjectShow() {
 				<ReferenceManyField
 					reference="transaction"
 					target="project_id"
-					sort={{ field: "created_at", order: "DESC" }}
+					sort={{ field: "transaction_at", order: "DESC" }}
 				>
 					<TransactionDataTable
 						disableSortCreatedAt

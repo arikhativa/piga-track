@@ -2,7 +2,7 @@ import { useInput } from "ra-core";
 import { Button } from "@/components/ui/button";
 
 export function ResetDateTimeButton() {
-	const { field } = useInput({ source: "created_at" });
+	const { field } = useInput({ source: "transaction_at" });
 
 	return (
 		<Button

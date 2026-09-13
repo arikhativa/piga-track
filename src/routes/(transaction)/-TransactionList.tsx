@@ -32,7 +32,7 @@ export const TransactionList = () => {
 		<List
 			exporter={transactionExporter}
 			filters={transactionFilters}
-			sort={{ field: "created_at", order: "DESC" }}
+			sort={{ field: "transaction_at", order: "DESC" }}
 		>
 			<TransactionDataTable />
 		</List>

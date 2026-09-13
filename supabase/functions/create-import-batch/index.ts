@@ -2,8 +2,8 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { z } from "zod";
-
-import { importBatch, importRow } from "../../../src/db/schema.ts";
+import { and, eq, sql } from "drizzle-orm";
+import { importBatch, importRow, transaction } from "../../../src/db/schema.ts";
 
 const importRowSchema = z.object({
   row_number: z.number().int().positive(),
@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const connectionString = Deno.env.get("DATABASE_URL")!;
+    const connectionString = Deno.env.get("SUPABASE_DB_URL")!;
 
     const client = postgres(connectionString, { prepare: false });
     const db = drizzle({ client });
@@ -63,17 +63,33 @@ Deno.serve(async (req) => {
         })
         .returning();
 
-      const rows = body.rows.length
-        ? await tx
-          .insert(importRow)
-          .values(
-            body.rows.map((row) => ({
-              ...row,
-              import_batch_id: batch.id,
-            })),
+      const rows = [];
+
+      for (const row of body.rows) {
+        const [duplicate] = await tx
+          .select({ id: transaction.id })
+          .from(transaction)
+          .where(
+            and(
+              sql`${transaction.transaction_at}::date = ${row.date}`,
+              eq(transaction.amount, row.amount!),
+            ),
           )
-          .returning()
-        : [];
+          .limit(1);
+
+        console.log("duplicate", duplicate);
+
+        const [insertedRow] = await tx
+          .insert(importRow)
+          .values({
+            ...row,
+            import_batch_id: batch.id,
+            duplicate_transaction_id: duplicate?.id ?? null,
+          })
+          .returning();
+
+        rows.push(insertedRow);
+      }
 
       return { batch, rows };
     });

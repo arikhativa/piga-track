@@ -83,7 +83,7 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 				<div className="col-span-2 flex items-end gap-4">
 					<DateTimeInput
 						className="flex-1"
-						source="created_at"
+						source="transaction_at"
 						defaultValue={new Date().toISOString()}
 						validate={required()}
 					/>

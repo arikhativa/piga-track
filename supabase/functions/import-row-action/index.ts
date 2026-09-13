@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const connectionString = Deno.env.get("DATABASE_URL")!;
+    const connectionString = Deno.env.get("SUPABASE_DB_URL")!;
 
     const client = postgres(connectionString, {
       prepare: false,
@@ -95,6 +95,7 @@ Deno.serve(async (req) => {
           .values({
             profile_id: body.profile_id,
             tag_id: row.tag_id,
+            transaction_at: new Date(`${row.date}T00:00:00.000Z`),
             project_id: row.project_id,
             category_id: row.category_id,
             currency_id: profile.currency_id,

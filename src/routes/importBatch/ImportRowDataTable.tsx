@@ -61,7 +61,14 @@ export const ImportRowDataTable = () => {
 
 			<DataTable.Col
 				source="status"
-				render={(record) => {
+				render={(record: ImportRow) => {
+					if (record.duplicate_transaction_id) {
+						return (
+							<Badge
+								variant={"destructive"}
+							>{`Duplicates transaction ${record.duplicate_transaction_id}`}</Badge>
+						);
+					}
 					return (
 						<Badge variant={getRowStateVariant(record.status)}>
 							{capitalize(record.status)}
@@ -75,6 +82,9 @@ export const ImportRowDataTable = () => {
 				headerClassName="flex items-center justify-center"
 				cellClassName={"flex items-center justify-center py-2 gap-4"}
 				render={(record: ImportRow) => {
+					if (record.duplicate_transaction_id) {
+						return;
+					}
 					if (record.status === "pending") {
 						return (
 							<>

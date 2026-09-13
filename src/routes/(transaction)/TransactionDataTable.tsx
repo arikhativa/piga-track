@@ -65,7 +65,7 @@ export const TransactionDataTable = ({
 						<AmountInNis
 							amount={record.amount}
 							isoCode={currency.iso_code}
-							date={toDateString(record.created_at)}
+							date={toDateString(record.transaction_at)}
 						/>
 					);
 				}}
@@ -109,9 +109,9 @@ export const TransactionDataTable = ({
 
 			<DataTable.Col
 				disableSort={disableSortCreatedAt}
-				source="created_at"
+				source="transaction_at"
 				render={(record) => (
-					<div>{`${toSmallDate(record.created_at)} - ${toTime(record.created_at)}`}</div>
+					<div>{`${toSmallDate(record.transaction_at)} - ${toTime(record.transaction_at)}`}</div>
 				)}
 			/>
 

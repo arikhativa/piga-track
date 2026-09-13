@@ -23,7 +23,7 @@ export function Dashboard() {
 		const months = new Map<string, number>();
 
 		for (const transaction of data) {
-			const date = new Date(transaction.created_at);
+			const date = new Date(transaction.transaction_at);
 
 			const month = date.toLocaleString("en-US", {
 				month: "long",

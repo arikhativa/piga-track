@@ -6,7 +6,8 @@ import { getExchangeRates } from "#/lib/exchange-rate";
 import { toDateString } from "#/lib/format/toDateString";
 
 export const useProjectCosts = (record?: TransactionProject) => {
-	const { data: currencies, isPending: currenciesPending } = useCurrencyList();
+	const { data: currencies, isPending: currenciesPending } =
+		useCurrencyList();
 
 	const {
 		data: transactions,
@@ -22,7 +23,7 @@ export const useProjectCosts = (record?: TransactionProject) => {
 			}
 
 			const dates = transactions.map((transaction) =>
-				toDateString(transaction.created_at),
+				toDateString(transaction.transaction_at)
 			);
 
 			const fromDate = dates.reduce((a, b) => (a < b ? a : b));
@@ -53,7 +54,7 @@ export const useProjectCosts = (record?: TransactionProject) => {
 					return sum;
 				}
 
-				const date = toDateString(transaction.created_at);
+				const date = toDateString(transaction.transaction_at);
 				const rate = rateMap.get(`${currency.iso_code}:${date}`);
 
 				if (rate === undefined) {
@@ -65,8 +66,7 @@ export const useProjectCosts = (record?: TransactionProject) => {
 
 			return Math.abs(sum);
 		},
-		enabled:
-			Boolean(record?.id) &&
+		enabled: Boolean(record?.id) &&
 			!currenciesPending &&
 			!transactionsPending &&
 			!transactionsError,

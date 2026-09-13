@@ -130,6 +130,10 @@ export const transaction = pgTable("transaction", {
 
 	description: text("description"),
 
+	transaction_at: timestamp("transaction_at", {
+		withTimezone: true,
+	}).notNull(),
+
 	created_at: timestamp("created_at", { withTimezone: true })
 		.defaultNow()
 		.notNull(),

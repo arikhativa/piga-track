@@ -40,7 +40,7 @@ export const transactionExporter = async (
 
 	// Get the date range of the transactions
 	const dates = transactions.map((transaction) =>
-		toDateString(transaction.created_at),
+		toDateString(transaction.transaction_at)
 	);
 
 	const fromDate = dates.reduce((a, b) => (a < b ? a : b));
@@ -57,7 +57,7 @@ export const transactionExporter = async (
 
 	const transactionsForExport = transactions.map((transaction) => {
 		const currency = currencies[transaction.currency_id];
-		const date = toDateString(transaction.created_at);
+		const date = toDateString(transaction.transaction_at);
 
 		let amountInNis: number | "" = "";
 
@@ -82,9 +82,11 @@ export const transactionExporter = async (
 			category: transaction.category_id
 				? categoryOptionText(categories[transaction.category_id])
 				: "",
-			tag: transaction.tag_id ? tagOptionText(tags[transaction.tag_id]) : "",
+			tag: transaction.tag_id
+				? tagOptionText(tags[transaction.tag_id])
+				: "",
 			description: transaction.description ?? "",
-			created_at: transaction.created_at,
+			transaction_at: transaction.transaction_at,
 		};
 	});
 
@@ -100,7 +102,7 @@ export const transactionExporter = async (
 				"category",
 				"tag",
 				"description",
-				"created_at",
+				"transaction_at",
 			],
 		},
 		(err, csv) => {
