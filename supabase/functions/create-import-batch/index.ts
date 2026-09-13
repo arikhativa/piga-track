@@ -21,7 +21,31 @@ const createImportBatchSchema = z.object({
   rows: z.array(importRowSchema),
 });
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+function jsonResponse(
+  body: unknown,
+  status = 200,
+): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return jsonResponse("ok");
+  }
+
   try {
     const connectionString = Deno.env.get("DATABASE_URL")!;
 
@@ -54,23 +78,27 @@ Deno.serve(async (req) => {
       return { batch, rows };
     });
 
-    return Response.json(result, { status: 201 });
+    return jsonResponse(result, 201);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return Response.json(
+      return jsonResponse(
         {
           error: "Invalid request",
           issues: error.issues,
         },
-        { status: 400 },
+        400,
       );
     }
 
     console.error(error);
 
-    return Response.json(
-      { error: "Failed to create import batch" },
-      { status: 500 },
+    return jsonResponse(
+      {
+        error: error instanceof Error
+          ? error.message
+          : "Failed to create import batch",
+      },
+      500,
     );
   }
 });

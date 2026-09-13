@@ -17,7 +17,31 @@ const schema = z.object({
   action: z.enum(["merge", "drop", "undo"]),
 });
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+function jsonResponse(
+  body: unknown,
+  status = 200,
+): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return jsonResponse("ok");
+  }
+
   try {
     const connectionString = Deno.env.get("DATABASE_URL")!;
 
@@ -150,30 +174,30 @@ Deno.serve(async (req) => {
       throw new Error("Invalid action");
     });
 
-    return Response.json(
+    return jsonResponse(
       { data: result },
-      { status: 200 },
+      200,
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return Response.json(
+      return jsonResponse(
         {
           error: "Invalid request",
           issues: error.issues,
         },
-        { status: 400 },
+        400,
       );
     }
 
     console.error(error);
 
-    return Response.json(
+    return jsonResponse(
       {
         error: error instanceof Error
           ? error.message
           : "Failed to process import row",
       },
-      { status: 500 },
+      500,
     );
   }
 });
