@@ -23,6 +23,7 @@ export function ImportBatchCreate() {
 
 	return (
 		<Create
+			redirect="show"
 			transform={async (data) => {
 				const file = data.file?.rawFile;
 
@@ -62,8 +63,8 @@ export function ImportBatchCreate() {
 					validate={required()}
 					source="file"
 					accept={{
-						"text/csv": [".csv"],
 						"text/xls": [".xls"],
+						"text/xlsx": [".xlsx"],
 					}}
 				>
 					<FileField source="src" title="title" />

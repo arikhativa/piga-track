@@ -16,7 +16,6 @@ if (error) {
 	process.exit(1);
 }
 
-
 const user = data.user;
 
 const { error: profileError } = await supabase.from("profile").insert({

@@ -9,8 +9,8 @@ const importRowSchema = z.object({
   row_number: z.number().int().positive(),
   date: z.string().nullable(),
   amount: z.string().nullable(),
-  tag_value: z.string().nullable(),
-  description: z.string().nullable(),
+  tag_value: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
   category_id: z.number().int().nullable().optional(),
   project_id: z.number().int().nullable().optional(),
 });

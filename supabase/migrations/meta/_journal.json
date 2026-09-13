@@ -204,6 +204,13 @@
       "when": 1789041269427,
       "tag": "0028_condemned_thunderbolt_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1789291455760,
+      "tag": "0029_gray_ogun",
+      "breakpoints": true
     }
   ]
 }

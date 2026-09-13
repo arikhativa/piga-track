@@ -7,9 +7,10 @@ export function ImportBatchShow() {
 		<Show title={<ImportBatchTitle />}>
 			<article className="space-y-4">
 				<ReferenceManyField
-					sort={{ field: "row_number", order: "DESC" }}
+					sort={{ field: "row_number", order: "ASC" }}
 					reference="import_row"
 					target="import_batch_id"
+					perPage={1000}
 				>
 					<ImportRowDataTable />
 				</ReferenceManyField>

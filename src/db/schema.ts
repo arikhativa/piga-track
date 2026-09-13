@@ -1,5 +1,6 @@
 import type { InferSelectModel } from "drizzle-orm";
 import {
+	boolean,
 	date,
 	integer,
 	numeric,
@@ -157,12 +158,18 @@ export const importProfile = pgTable("import_profile", {
 	date_column: text("date_column"),
 
 	positive_amount_column: text("positive_amount_column"),
-
 	negative_amount_column: text("negative_amount_column"),
+
+	// this is basically asking "is a positive num"
+	// true === -
+	// false === +
+	positive_amount_sign: boolean("positive_amount_sign").default(true),
+	negative_amount_sign: boolean("negative_amount_sign").default(true),
 
 	tag_column: text("tag_column"),
 
-	description_column: text("description_column"),
+	description_column_list: text("description_column_list")
+		.array(),
 
 	created_at: timestamp("created_at", { withTimezone: true })
 		.defaultNow()

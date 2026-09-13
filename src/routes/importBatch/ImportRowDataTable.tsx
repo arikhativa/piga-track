@@ -12,6 +12,7 @@ import { DataTable, DateField, NumberField } from "@/components/admin";
 
 export const ImportRowDataTable = () => {
 	const { isSuccess, data: userProfile } = useProfile();
+
 	const navigate = useNavigate();
 	const refresh = useRefresh();
 
@@ -29,6 +30,10 @@ export const ImportRowDataTable = () => {
 				return false;
 			}}
 		>
+			<DataTable.Col label={"Row number"}>
+				<NumberField source="row_number"></NumberField>
+			</DataTable.Col>
+
 			<DataTable.Col
 				label="Type"
 				render={(record) => (
@@ -47,10 +52,6 @@ export const ImportRowDataTable = () => {
 					return <>{Math.abs(record.amount)}</>;
 				}}
 			/>
-
-			<DataTable.Col label={"Row number"}>
-				<NumberField source="row_number"></NumberField>
-			</DataTable.Col>
 
 			<DataTable.Col source="description" />
 
