@@ -1,6 +1,6 @@
 import { capitalize } from "lodash";
 import { Minus, Plus, RotateCcw } from "lucide-react";
-import { useNavigate, useRefresh } from "ra-core";
+import { useDataProvider, useNavigate, useRefresh } from "ra-core";
 import { Spinner } from "#/components/admin/spinner";
 import { Badge } from "#/components/ui/badge";
 import { Button } from "#/components/ui/button";
@@ -12,6 +12,7 @@ import { DataTable, DateField, NumberField } from "@/components/admin";
 
 export const ImportRowDataTable = () => {
 	const { isSuccess, data: userProfile } = useProfile();
+	const dataProvider = useDataProvider();
 
 	const navigate = useNavigate();
 	const refresh = useRefresh();
@@ -21,7 +22,14 @@ export const ImportRowDataTable = () => {
 	return (
 		<DataTable<ImportRow>
 			rowClassName={(row) => {
-				if (row.status !== "merged") return "cursor-default";
+				let ret = "";
+				if (row.status !== "merged") {
+					ret += " cursor-default";
+				}
+				if (row.status === "dropped") {
+					ret += " text-muted-foreground/30";
+				}
+				return ret;
 			}}
 			rowClick={(_id, _resource, record) => {
 				if (record.status === "merged") {
@@ -109,10 +117,12 @@ export const ImportRowDataTable = () => {
 									size="icon"
 									variant="destructive"
 									onClick={async () => {
-										await importRowAction({
-											profile_id: userProfile.id,
-											import_row_id: Number(record.id),
-											action: "drop",
+										await dataProvider.update("import_row", {
+											id: record.id,
+											data: {
+												status: "dropped",
+											},
+											previousData: record,
 										});
 
 										refresh();
@@ -128,14 +138,24 @@ export const ImportRowDataTable = () => {
 						return (
 							<Button
 								size="icon"
+								className={"text-foreground"}
 								variant="outline"
 								onClick={async () => {
-									await importRowAction({
-										profile_id: userProfile.id,
-										import_row_id: Number(record.id),
-										action: "undo",
-									});
-
+									if (record.status === "dropped") {
+										await dataProvider.update("import_row", {
+											id: record.id,
+											data: {
+												status: "pending",
+											},
+											previousData: record,
+										});
+									} else {
+										await importRowAction({
+											profile_id: userProfile.id,
+											import_row_id: Number(record.id),
+											action: "undo",
+										});
+									}
 									refresh();
 								}}
 							>
