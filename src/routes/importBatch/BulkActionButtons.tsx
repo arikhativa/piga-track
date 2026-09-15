@@ -4,6 +4,11 @@ import { Button } from "#/components/ui/button";
 import type { Profile } from "#/db/schema";
 import { importRowAction } from "#/lib/importer/importRowAction";
 
+// TODO
+// we need to disable the merge and the undo btns when the selected items are mixed statuses
+// we need to show the bulk status on this page and allow changing it (after a big bulck merge we should updated the status to done)
+// add the bulk action for category and content
+// maybe also currency?
 export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 	const { selectedIds } = useListContext();
 	const notify = useNotify();
