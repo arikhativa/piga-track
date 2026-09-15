@@ -1,0 +1,3 @@
+ALTER TABLE "import_profile" ADD COLUMN "transaction_type_id" integer DEFAULT 1 NOT NULL;--> statement-breakpoint
+ALTER TABLE "import_profile" ADD CONSTRAINT "import_profile_transaction_type_id_transaction_type_id_fk" FOREIGN KEY ("transaction_type_id") REFERENCES "public"."transaction_type"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "import_profile" DROP COLUMN "tag_column";

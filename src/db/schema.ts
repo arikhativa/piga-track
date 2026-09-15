@@ -170,7 +170,10 @@ export const importProfile = pgTable("import_profile", {
 	positive_amount_sign: boolean("positive_amount_sign").default(true),
 	negative_amount_sign: boolean("negative_amount_sign").default(true),
 
-	tag_column: text("tag_column"),
+	transaction_type_id: integer("transaction_type_id")
+		.default(CASH_ID)
+		.notNull()
+		.references(() => transactionType.id),
 
 	description_column_list: text("description_column_list")
 		.array(),

@@ -30,6 +30,10 @@ export function ImportProfileForm() {
 				/>
 			</ReferenceInput>
 
+			<ReferenceInput source="transaction_type_id" reference="transaction_type">
+				<SelectInput validate={required()} />
+			</ReferenceInput>
+
 			<NumberInput source="start_row" />
 
 			<TextInput source="date_column" />

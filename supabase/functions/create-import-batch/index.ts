@@ -77,8 +77,6 @@ Deno.serve(async (req) => {
           )
           .limit(1);
 
-        console.log("duplicate", duplicate);
-
         const [insertedRow] = await tx
           .insert(importRow)
           .values({

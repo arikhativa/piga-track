@@ -218,6 +218,13 @@
       "when": 1789300708367,
       "tag": "0030_mushy_vivisector",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1789478999590,
+      "tag": "0031_breezy_nomad",
+      "breakpoints": true
     }
   ]
 }

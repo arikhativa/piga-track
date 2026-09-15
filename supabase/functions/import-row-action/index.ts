@@ -99,6 +99,7 @@ Deno.serve(async (req) => {
             project_id: row.project_id,
             category_id: row.category_id,
             currency_id: profile.currency_id,
+            transaction_type_id: profile.transaction_type_id,
             amount: row.amount!,
             description: row.description,
           })
