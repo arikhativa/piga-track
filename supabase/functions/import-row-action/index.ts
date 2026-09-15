@@ -2,8 +2,9 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 
+import { jsonResponse } from "../../helper.ts";
 import {
   importBatch,
   importProfile,
@@ -12,30 +13,10 @@ import {
 } from "../../../src/db/schema.ts";
 
 const schema = z.object({
-  import_row_id: z.number().int().positive(),
+  import_row_ids: z.array(z.number().int().positive()).min(1),
   profile_id: z.uuid(),
-  action: z.enum(["merge", "drop", "undo"]),
+  action: z.enum(["merge", "undo"]),
 });
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-function jsonResponse(
-  body: unknown,
-  status = 200,
-): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      ...corsHeaders,
-      "Content-Type": "application/json",
-    },
-  });
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -50,30 +31,64 @@ Deno.serve(async (req) => {
     });
 
     const db = drizzle({ client });
-
     const body = schema.parse(await req.json());
 
     const result = await db.transaction(async (tx) => {
-      const [row] = await tx
+      // --------------------------------------------------
+      // Fetch all import rows in ONE query
+      // --------------------------------------------------
+
+      const rows = await tx
         .select()
         .from(importRow)
-        .where(eq(importRow.id, body.import_row_id))
-        .limit(1);
+        .where(inArray(importRow.id, body.import_row_ids));
 
-      if (!row) {
-        throw new Error("Import row not found");
+      if (rows.length !== body.import_row_ids.length) {
+        throw new Error("One or more import rows were not found");
       }
 
+      // All rows must belong to the same batch
+      const batchId = rows[0].import_batch_id;
+
+      if (rows.some((row) => row.import_batch_id !== batchId)) {
+        throw new Error(
+          "All import rows must belong to the same batch",
+        );
+      }
+
+      // --------------------------------------------------
       // MERGE
+      // --------------------------------------------------
+
       if (body.action === "merge") {
-        if (row.status !== "pending") {
-          throw new Error("Import row is not pending");
+        for (const row of rows) {
+          if (row.status !== "pending") {
+            throw new Error(
+              `Import row ${row.id} is not pending`,
+            );
+          }
+
+          if (!row.date) {
+            throw new Error(
+              `Import row ${row.id} has no date`,
+            );
+          }
+
+          if (!row.amount) {
+            throw new Error(
+              `Import row ${row.id} has no amount`,
+            );
+          }
         }
+
+        // --------------------------------------------------
+        // Fetch batch + profile
+        // --------------------------------------------------
 
         const [batch] = await tx
           .select()
           .from(importBatch)
-          .where(eq(importBatch.id, row.import_batch_id))
+          .where(eq(importBatch.id, batchId))
           .limit(1);
 
         if (!batch) {
@@ -90,96 +105,99 @@ Deno.serve(async (req) => {
           throw new Error("Import profile not found");
         }
 
-        const [newTransaction] = await tx
+        // --------------------------------------------------
+        // Build transactions
+        // --------------------------------------------------
+
+        const transactionValues = rows.map((row) => ({
+          profile_id: body.profile_id,
+          tag_id: row.tag_id,
+          transaction_at: new Date(
+            `${row.date}T00:00:00.000Z`,
+          ),
+          project_id: row.project_id,
+          category_id: row.category_id,
+          currency_id: profile.currency_id,
+          transaction_type_id: profile.transaction_type_id,
+          amount: row.amount!,
+          description: row.description,
+        }));
+
+        // --------------------------------------------------
+        // ONE bulk transaction insert
+        // --------------------------------------------------
+
+        const newTransactions = await tx
           .insert(transaction)
-          .values({
-            profile_id: body.profile_id,
-            tag_id: row.tag_id,
-            transaction_at: new Date(`${row.date}T00:00:00.000Z`),
-            project_id: row.project_id,
-            category_id: row.category_id,
-            currency_id: profile.currency_id,
-            transaction_type_id: profile.transaction_type_id,
-            amount: row.amount!,
-            description: row.description,
-          })
-          .returning();
+          .values(transactionValues)
+          .returning({
+            id: transaction.id,
+          });
+
+        // --------------------------------------------------
+        // ONE bulk import-row update
+        // --------------------------------------------------
+
+        const transactionCase = sql.join(
+          rows.map(
+            (row, index) =>
+              sql`WHEN ${importRow.id} = ${row.id} THEN ${
+                newTransactions[index].id
+              }`,
+          ),
+          sql` `,
+        );
 
         await tx
           .update(importRow)
           .set({
-            transaction_id: newTransaction.id,
+            transaction_id: sql`CASE ${transactionCase} ELSE NULL END::integer`,
             status: "merged",
-            updated_at: new Date(),
           })
-          .where(eq(importRow.id, row.id));
+          .where(inArray(importRow.id, body.import_row_ids));
 
-        return newTransaction;
+        return {
+          action: "merge",
+          rows: newTransactions,
+        };
       }
 
-      // DROP
-      if (body.action === "drop") {
-        if (row.status !== "pending") {
-          throw new Error("Import row is not pending");
-        }
-
-        const [updatedRow] = await tx
-          .update(importRow)
-          .set({
-            status: "dropped",
-            updated_at: new Date(),
-          })
-          .where(eq(importRow.id, row.id))
-          .returning();
-
-        return updatedRow;
-      }
-
+      // --------------------------------------------------
       // UNDO
-      if (body.action === "undo") {
-        if (row.status === "merged") {
-          if (!row.transaction_id) {
-            throw new Error("Merged row has no transaction");
-          }
+      // --------------------------------------------------
 
-          const transactionId = row.transaction_id;
+      const transactionIds = rows
+        .filter(
+          (row) =>
+            row.status === "merged" &&
+            row.transaction_id !== null,
+        )
+        .map((row) => row.transaction_id!);
 
-          // Remove the FK reference first
-          await tx
-            .update(importRow)
-            .set({
-              transaction_id: null,
-              status: "pending",
-              updated_at: new Date(),
-            })
-            .where(eq(importRow.id, row.id));
+      // Clear FK references first
+      await tx
+        .update(importRow)
+        .set({
+          status: "pending",
+          transaction_id: null,
+          updated_at: new Date(),
+        })
+        .where(inArray(importRow.id, body.import_row_ids));
 
-          // Now delete the transaction created by the merge
-          await tx
-            .delete(transaction)
-            .where(eq(transaction.id, transactionId));
-        }
-
-        const [updatedRow] = await tx
-          .update(importRow)
-          .set({
-            status: "pending",
-            transaction_id: null,
-            updated_at: new Date(),
-          })
-          .where(eq(importRow.id, row.id))
-          .returning();
-
-        return updatedRow;
+      // Delete all transactions in ONE query
+      if (transactionIds.length > 0) {
+        await tx
+          .delete(transaction)
+          .where(inArray(transaction.id, transactionIds));
       }
 
-      throw new Error("Invalid action");
+      return {
+        action: "undo",
+        rows: body.import_row_ids,
+      };
     });
 
-    return jsonResponse(
-      { data: result },
-      200,
-    );
+    return jsonResponse({ data: result }, 200);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return jsonResponse(
@@ -197,7 +215,7 @@ Deno.serve(async (req) => {
       {
         error: error instanceof Error
           ? error.message
-          : "Failed to process import row",
+          : "Failed to process import rows",
       },
       500,
     );

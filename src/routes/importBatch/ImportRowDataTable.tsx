@@ -8,6 +8,7 @@ import type { ImportRow } from "#/db/schema";
 import { useProfile } from "#/hooks/use-profile";
 import { importRowAction } from "#/lib/importer/importRowAction";
 import { getRowStateVariant } from "#/lib/variant/getRowStateVariant";
+import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
 import { DataTable, DateField, NumberField } from "@/components/admin";
 
 export const ImportRowDataTable = () => {
@@ -21,6 +22,7 @@ export const ImportRowDataTable = () => {
 
 	return (
 		<DataTable<ImportRow>
+			bulkActionButtons={<BulkActionButtons profileId={userProfile.id} />}
 			rowClassName={(row) => {
 				let ret = "";
 				if (row.status !== "merged") {
@@ -102,7 +104,7 @@ export const ImportRowDataTable = () => {
 									onClick={async () => {
 										await importRowAction({
 											profile_id: userProfile.id,
-											import_row_id: Number(record.id),
+											import_row_ids: [Number(record.id)],
 											action: "merge",
 										});
 
@@ -152,7 +154,7 @@ export const ImportRowDataTable = () => {
 									} else {
 										await importRowAction({
 											profile_id: userProfile.id,
-											import_row_id: Number(record.id),
+											import_row_ids: [Number(record.id)],
 											action: "undo",
 										});
 									}

@@ -1,10 +1,10 @@
 import type { ImportRow, Profile } from "#/db/schema";
 import { supabaseClient } from "#/lib/supabaseClient";
 
-type ImportRowAction = "merge" | "drop" | "undo";
+type ImportRowAction = "merge" | "undo";
 
 interface ImportRowActionParams {
-    import_row_id: ImportRow["id"];
+    import_row_ids: ImportRow["id"][];
     profile_id: Profile["id"];
     action: ImportRowAction;
 }
