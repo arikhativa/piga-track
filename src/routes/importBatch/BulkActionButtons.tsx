@@ -9,14 +9,32 @@ import { importRowAction } from "#/lib/importer/importRowAction";
 // we need to show the bulk status on this page and allow changing it (after a big bulck merge we should updated the status to done)
 // add the bulk action for category and content
 // maybe also currency?
+// change the color of the toast and also add a loader to the buttons
+
 export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
-	const { selectedIds } = useListContext();
 	const notify = useNotify();
 	const refresh = useRefresh();
+	const { selectedIds, data } = useListContext();
+
+	const selectedIdSet = new Set(selectedIds.map(Number));
+
+	const selectedRows = Object.values(data ?? {}).filter((row) =>
+		selectedIdSet.has(Number(row.id)),
+	);
+
+	const rowsMatchSelection = selectedRows.length === selectedIds.length;
+
+	const statuses = rowsMatchSelection
+		? selectedRows.map((row) => row.status)
+		: [];
+
+	const sameStatus =
+		rowsMatchSelection && statuses.length > 0 && new Set(statuses).size === 1;
+
+	const canMerge = sameStatus && statuses[0] === "pending";
+	const canUndo = sameStatus && statuses[0] === "merged";
 
 	const handleMerge = async () => {
-		if (!selectedIds.length) return;
-
 		try {
 			await importRowAction({
 				import_row_ids: selectedIds as number[],
@@ -37,8 +55,6 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 	};
 
 	const handleUndo = async () => {
-		if (!selectedIds.length) return;
-
 		try {
 			await importRowAction({
 				import_row_ids: selectedIds as number[],
@@ -65,7 +81,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 			<Button
 				type="button"
 				variant="default"
-				disabled={!selectedIds.length}
+				disabled={!canMerge}
 				onClick={handleMerge}
 			>
 				Merge
@@ -74,7 +90,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 			<Button
 				type="button"
 				variant="outline"
-				disabled={!selectedIds.length}
+				disabled={!canUndo}
 				onClick={handleUndo}
 			>
 				Undo
