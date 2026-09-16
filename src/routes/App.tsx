@@ -36,7 +36,7 @@ import { Home } from "#/routes/home/Home";
 import { ImportBatchCreate } from "#/routes/importBatch/ImportBatchCreate";
 import { ImportBatchEdit } from "#/routes/importBatch/ImportBatchEdit";
 import { ImportBatchList } from "#/routes/importBatch/ImportBatchList";
-import { ImportBatchShow } from "#/routes/importBatch/ImportBatchShow";
+import { ImportBatchShow } from "#/routes/importBatch/show/ImportBatchShow";
 import { ImportProfileCreate } from "#/routes/importProfile/ImportProfileCreate";
 import { ImportProfileEdit } from "#/routes/importProfile/ImportProfileEdit";
 import { ImportProfileList } from "#/routes/importProfile/ImportProfileList";

@@ -1,11 +1,12 @@
+import { Loader2 } from "lucide-react";
 import { useListContext, useNotify, useRefresh } from "ra-core";
+import { useState } from "react";
 import { SelectAllButton } from "#/components/admin";
 import { Button } from "#/components/ui/button";
 import type { Profile } from "#/db/schema";
 import { importRowAction } from "#/lib/importer/importRowAction";
 
 // TODO
-// we need to disable the merge and the undo btns when the selected items are mixed statuses
 // we need to show the bulk status on this page and allow changing it (after a big bulck merge we should updated the status to done)
 // add the bulk action for category and content
 // maybe also currency?
@@ -15,6 +16,8 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 	const notify = useNotify();
 	const refresh = useRefresh();
 	const { selectedIds, data } = useListContext();
+	const [isSubmittingUndo, setIsSubmittingUndo] = useState(false);
+	const [isSubmittingMerge, setIsSubmittingMerge] = useState(false);
 
 	const selectedIdSet = new Set(selectedIds.map(Number));
 
@@ -36,6 +39,8 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 
 	const handleMerge = async () => {
 		try {
+			setIsSubmittingMerge(true);
+
 			await importRowAction({
 				import_row_ids: selectedIds as number[],
 				profile_id: profileId,
@@ -52,10 +57,12 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 				type: "error",
 			});
 		}
+		setIsSubmittingMerge(false);
 	};
 
 	const handleUndo = async () => {
 		try {
+			setIsSubmittingUndo(true);
 			await importRowAction({
 				import_row_ids: selectedIds as number[],
 				profile_id: profileId,
@@ -72,6 +79,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 				type: "error",
 			});
 		}
+		setIsSubmittingUndo(false);
 	};
 
 	return (
@@ -81,18 +89,24 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 			<Button
 				type="button"
 				variant="default"
-				disabled={!canMerge}
+				disabled={isSubmittingMerge || !canMerge}
 				onClick={handleMerge}
 			>
+				{isSubmittingMerge ? (
+					<Loader2 className="me-2 h-4 w-4 animate-spin" />
+				) : null}
 				Merge
 			</Button>
 
 			<Button
 				type="button"
 				variant="outline"
-				disabled={!canUndo}
+				disabled={isSubmittingUndo || !canUndo}
 				onClick={handleUndo}
 			>
+				{isSubmittingUndo ? (
+					<Loader2 className="me-2 h-4 w-4 animate-spin" />
+				) : null}
 				Undo
 			</Button>
 		</>

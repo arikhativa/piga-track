@@ -8,5 +8,5 @@ export const ImportBatchTitle = () => {
 	if (!record) {
 		return <Spinner />;
 	}
-	return <span>{record.batch_name}</span>;
+	return record.batch_name;
 };
