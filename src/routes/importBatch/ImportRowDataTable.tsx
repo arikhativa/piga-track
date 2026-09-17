@@ -2,6 +2,7 @@ import { capitalize } from "lodash";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { useDataProvider, useNavigate, useRefresh } from "ra-core";
 import { Spinner } from "#/components/admin/spinner";
+import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
 import { Badge } from "#/components/ui/badge";
 import { Button } from "#/components/ui/button";
 import type { ImportRow } from "#/db/schema";
@@ -44,17 +45,7 @@ export const ImportRowDataTable = () => {
 				<NumberField source="row_number"></NumberField>
 			</DataTable.Col>
 
-			<DataTable.Col
-				label="Type"
-				render={(record) => (
-					<Badge
-						className="aspect-square rounded-full"
-						variant={record.amount < 0 ? "spent" : "received"}
-					>
-						{record.amount < 0 ? "-" : "+"}
-					</Badge>
-				)}
-			/>
+			<DataTableSignCol />
 
 			<DataTable.Col
 				source="amount"

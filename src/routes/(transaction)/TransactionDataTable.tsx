@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
 import { Badge } from "#/components/ui/badge";
 import type { Transaction } from "#/db/schema";
 import { useCurrencyList } from "#/hooks/use-currency-list";
@@ -22,17 +23,7 @@ export const TransactionDataTable = ({
 	const { data } = useCurrencyList();
 	return (
 		<DataTable<Transaction> bulkActionButtons={bulkActionButtons}>
-			<DataTable.Col
-				label="Type"
-				render={(record) => (
-					<Badge
-						className="aspect-square rounded-full"
-						variant={record.amount < 0 ? "spent" : "received"}
-					>
-						{record.amount < 0 ? "-" : "+"}
-					</Badge>
-				)}
-			/>
+			<DataTableSignCol />
 
 			<DataTable.Col
 				source="amount"
