@@ -1,7 +1,7 @@
 import { Label } from "#/components/ui/label";
 import { ImportBatchTitle } from "#/routes/importBatch/ImportBatchTitle";
 import { ImportRowDataTable } from "#/routes/importBatch/ImportRowDataTable";
-import { BatchStatusSelect } from "#/routes/importBatch/show/BatchStatusSelect";
+import { BatchStatusInput } from "#/routes/importBatch/show/BatchStatusInput";
 import { MergeProgressBar } from "#/routes/importBatch/show/MergeProgressBar";
 import { ReferenceManyField, Show } from "@/components/admin";
 
@@ -15,7 +15,7 @@ export function ImportBatchShow() {
 						<MergeProgressBar />
 					</div>
 					<div className="flex-1 flex items-center justify-end">
-						<BatchStatusSelect />
+						<BatchStatusInput />
 					</div>
 				</div>
 				<ReferenceManyField
