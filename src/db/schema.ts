@@ -1,4 +1,4 @@
-import type { InferSelectModel } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import {
 	boolean,
 	date,
@@ -17,10 +17,10 @@ export const NIS_ID = 7 as const; // NOTE: this is nis - it will be in DB cus th
 const CASH_ID = 1 as const; // NOTE: this is cash - there is a custom mig for this
 const MARKET_ID = 1 as const; // NOTE: defend here supabase/migrations/0013_init_category.sql
 
-const AMOUNT = numeric("amount", {
+const AMOUNT_PRECISION = {
 	precision: 12,
 	scale: 2,
-});
+};
 
 export const profile = pgTable("profile", {
 	id: uuid("id").primaryKey(),
@@ -126,7 +126,8 @@ export const transaction = pgTable("transaction", {
 		.default(CASH_ID)
 		.references(() => transactionType.id),
 
-	amount: AMOUNT.notNull(),
+	amount: numeric("amount", AMOUNT_PRECISION).notNull(),
+	amount_nis: numeric("amount_nis", AMOUNT_PRECISION),
 
 	description: text("description"),
 
@@ -232,7 +233,7 @@ export const importRow = pgTable("import_row", {
 
 	date: date("date"),
 
-	amount: AMOUNT,
+	amount: numeric("amount", AMOUNT_PRECISION).notNull(),
 
 	description: text("description"),
 
@@ -284,3 +285,4 @@ export type TransactionType = InferSelectModel<typeof transactionType>;
 export type Profile = InferSelectModel<typeof profile>;
 export type Currency = InferSelectModel<typeof currency>;
 export type Transaction = InferSelectModel<typeof transaction>;
+export type TransactionInsert = InferInsertModel<typeof transaction>;

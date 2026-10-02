@@ -225,6 +225,13 @@
       "when": 1789478999590,
       "tag": "0031_breezy_nomad",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1790940646719,
+      "tag": "0032_thin_korg",
+      "breakpoints": true
     }
   ]
 }

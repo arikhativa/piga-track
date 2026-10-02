@@ -1,25 +1,15 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useCurrencyList } from "#/hooks/use-currency-list";
+import { transactionTransform } from "#/lib/transaction/transactionTransform";
 import { TransactionForm } from "#/routes/(transaction)/-TransactionForm";
 import { Edit } from "@/components/admin";
 
 export function TransactionEdit() {
 	const [type, setType] = useState<"spent" | "received">("spent");
-	// const navigate = useNavigate();
-
-	// const onSuccess = () => navigate(-1);
+	const { data: currencyList } = useCurrencyList();
 
 	return (
-		<Edit
-			redirect={false}
-			transform={(data) => ({
-				...data,
-				amount:
-					type === "received"
-						? Math.abs(Number(data.amount))
-						: -Math.abs(Number(data.amount)),
-			})}
-		>
+		<Edit redirect={false} transform={transactionTransform(type, currencyList)}>
 			<TransactionForm type={type} setType={setType} />
 		</Edit>
 	);

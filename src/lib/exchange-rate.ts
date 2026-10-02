@@ -1,9 +1,11 @@
+import { BASE_CURRENCY } from "#/lib/constant";
 import { supabaseClient } from "#/lib/supabaseClient";
 
 type ExchangeRateProviderResponse = {
 	rate: number;
 };
 
+// TODO maybe some of these can be local and not exported
 export const callExchangeRateProvider = async (
 	isoCode: string,
 	date: string,
@@ -76,4 +78,33 @@ export const insertExchangeRate = async (
 	}
 
 	return data;
+};
+
+export const resolveAmountNis = async ({
+	amount,
+	isoCode,
+	date,
+}: {
+	amount: number;
+	isoCode: string;
+	date: Date;
+}): Promise<number | null> => {
+	if (isoCode === BASE_CURRENCY) {
+		return amount;
+	}
+
+	const dateString = date.toISOString().slice(0, 10);
+
+	let rate = await getExchangeRate(isoCode, dateString);
+
+	if (rate === null) {
+		try {
+			rate = await callExchangeRateProvider(isoCode, dateString);
+			await insertExchangeRate(isoCode, dateString, rate);
+		} catch {
+			return null;
+		}
+	}
+
+	return Math.abs(amount) * rate;
 };

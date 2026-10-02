@@ -1,0 +1,1 @@
+ALTER TABLE "transaction" ADD COLUMN "amount_nis" numeric(12, 2);

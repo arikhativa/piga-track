@@ -1,11 +1,9 @@
 import type { ReactNode } from "react";
 import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
-import { Badge } from "#/components/ui/badge";
 import type { Transaction } from "#/db/schema";
 import { useCurrencyList } from "#/hooks/use-currency-list";
-import { toDateString } from "#/lib/format/toDateString";
+import { NIS } from "#/lib/constant";
 import { toSmallDate, toTime } from "#/lib/format/toSmallDate";
-import { AmountInNis } from "#/routes/(transaction)/AmountInNis";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, ReferenceField } from "@/components/admin";
 
@@ -41,7 +39,23 @@ export const TransactionDataTable = ({
 			/>
 
 			<DataTable.Col
-				source="amount"
+				source="amount_nis"
+				render={(record: Transaction) => {
+					if (record.amount_nis) {
+						return (
+							<>
+								{Math.abs(Number(record.amount_nis))} {NIS}
+							</>
+						);
+					} else {
+						return "--";
+					}
+				}}
+			/>
+
+			{/* TODO remove unnececary logic rate to AmountInNis */}
+			{/* <DataTable.Col
+				source="amount_nis"
 				label="NIS"
 				render={(record: Transaction) => {
 					const currency = data?.find(
@@ -60,7 +74,7 @@ export const TransactionDataTable = ({
 						/>
 					);
 				}}
-			/>
+			/> */}
 
 			{colToHide?.includes("tag") ? null : (
 				<DataTable.Col label="Content">
