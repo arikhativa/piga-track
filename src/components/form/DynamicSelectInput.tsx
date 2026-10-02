@@ -1,11 +1,5 @@
 import type { ChoicesProps, InputProps } from "ra-core";
-import {
-	FieldTitle,
-	useChoices,
-	useChoicesContext,
-	useCreate,
-	useInput,
-} from "ra-core";
+import { FieldTitle, useChoicesContext, useCreate, useInput } from "ra-core";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
 import { FormError, FormField, FormLabel } from "@/components/admin/form";
 import { InputHelperText } from "@/components/admin/input-helper-text";
@@ -32,10 +26,6 @@ export function DynamicSelectInput({
 		resource,
 		label,
 		helperText,
-	});
-
-	const { getChoiceText } = useChoices({
-		optionText,
 	});
 
 	const [create] = useCreate();

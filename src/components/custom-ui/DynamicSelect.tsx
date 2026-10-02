@@ -1,6 +1,6 @@
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,8 @@ type DynamicSelectProps = {
 	className?: string;
 };
 
+const HISTORY_KEY = "__dynamicSelectDialog";
+
 export function DynamicSelect({
 	choices,
 	className,
@@ -39,6 +41,12 @@ export function DynamicSelect({
 }: DynamicSelectProps) {
 	const [open, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
+
+	/**
+	 * Tracks whether we currently have a history entry belonging
+	 * to this dialog.
+	 */
+	const hasHistoryEntry = useRef(false);
 
 	const getChoiceText = (choice: any) =>
 		typeof optionText === "function" ? optionText(choice) : choice[optionText];
@@ -62,21 +70,93 @@ export function DynamicSelect({
 			String(getChoiceText(choice)).toLowerCase() === search.toLowerCase(),
 	);
 
+	/**
+	 * Browser/mobile back button handling.
+	 *
+	 * When the dialog is open, the current history entry is:
+	 *
+	 *   /current-page
+	 *   /current-page  <-- temporary dialog entry
+	 *
+	 * Pressing Back removes the temporary entry instead of
+	 * navigating away from the page.
+	 */
+	useEffect(() => {
+		const handlePopState = () => {
+			if (!hasHistoryEntry.current) return;
+
+			hasHistoryEntry.current = false;
+			setOpen(false);
+			setSearch("");
+		};
+
+		window.addEventListener("popstate", handlePopState);
+
+		return () => {
+			window.removeEventListener("popstate", handlePopState);
+		};
+	}, []);
+
+	/**
+	 * Opens the dialog and adds a temporary history entry.
+	 */
+	const openDialog = () => {
+		if (disabled || isPending || open) return;
+
+		window.history.pushState(
+			{
+				...window.history.state,
+				[HISTORY_KEY]: true,
+			},
+			"",
+			window.location.href,
+		);
+
+		hasHistoryEntry.current = true;
+		setOpen(true);
+	};
+
+	/**
+	 * Closes the dialog.
+	 *
+	 * If we're closing normally (X button, Escape, selection, etc.),
+	 * remove the temporary history entry as well.
+	 *
+	 * If the user already pressed Back, the popstate handler has
+	 * already removed it, so we don't call history.back() again.
+	 */
+	const closeDialog = () => {
+		setOpen(false);
+		setSearch("");
+
+		if (hasHistoryEntry.current) {
+			hasHistoryEntry.current = false;
+			window.history.back();
+		}
+	};
+
+	const handleOpenChange = (nextOpen: boolean) => {
+		if (nextOpen) {
+			openDialog();
+		} else {
+			closeDialog();
+		}
+	};
+
 	const handleSelect = (choice: any) => {
 		onChange(getChoiceValue(choice));
-		setSearch("");
-		setOpen(false);
+		closeDialog();
 	};
 
 	const handleCreate = async () => {
 		const newValue = search.trim();
+
 		if (!newValue || !onCreate) return;
 
 		const id = await onCreate(newValue);
 
 		onChange(id);
-		setSearch("");
-		setOpen(false);
+		closeDialog();
 	};
 
 	return (
@@ -86,7 +166,7 @@ export function DynamicSelect({
 				variant="ghost"
 				role="combobox"
 				aria-expanded={open}
-				onClick={() => setOpen(true)}
+				onClick={openDialog}
 				className={cn(
 					"h-9 w-full min-w-0 justify-between",
 					"rounded-md border border-input bg-transparent",
@@ -108,7 +188,7 @@ export function DynamicSelect({
 
 			<CommandDialog
 				open={open}
-				onOpenChange={setOpen}
+				onOpenChange={handleOpenChange}
 				className="top-4 translate-y-0 sm:top-[50%] sm:translate-y-[-50%]"
 			>
 				<Command shouldFilter={false}>
@@ -140,6 +220,7 @@ export function DynamicSelect({
 												selected ? "opacity-100" : "opacity-0",
 											)}
 										/>
+
 										{getChoiceText(choice)}
 									</CommandItem>
 								);

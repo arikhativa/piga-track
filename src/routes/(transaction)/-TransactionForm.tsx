@@ -9,7 +9,6 @@ import { ResetDateTimeButton } from "#/components/form/ResetDateTimeButton";
 import { Separator } from "#/components/ui/separator";
 import { useProfile } from "#/hooks/use-profile";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
-import { projectOptionText } from "#/lib/form/projectOptionText";
 import {
 	DateTimeInput,
 	NumberInput,
@@ -59,12 +58,13 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 				</ReferenceInput>
 
 				<ReferenceInput source="project_id" reference="transaction_project">
-					<SelectInput
-						defaultValue={profile?.default_project_id ?? undefined}
-						optionText={projectOptionText}
+					<DynamicSelectInput
+						defaultValue={profile?.default_project_id}
 						label="Project"
+						optionText="value"
 					/>
 				</ReferenceInput>
+
 				<ReferenceInput source="profile_id" reference="profile">
 					<SelectInput
 						label="Owner"
