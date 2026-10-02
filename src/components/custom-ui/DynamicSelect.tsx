@@ -23,10 +23,12 @@ type DynamicSelectProps = {
 	isPending?: boolean;
 	onCreate?: (value: string) => Promise<string | number>;
 	disabled?: boolean;
+	className?: string;
 };
 
 export function DynamicSelect({
 	choices,
+	className,
 	value,
 	onChange,
 	optionText = "name",
@@ -78,7 +80,7 @@ export function DynamicSelect({
 	};
 
 	return (
-		<>
+		<div className={className}>
 			<Button
 				type="button"
 				variant="ghost"
@@ -153,6 +155,6 @@ export function DynamicSelect({
 					</CommandList>
 				</Command>
 			</CommandDialog>
-		</>
+		</div>
 	);
 }

@@ -1,15 +1,7 @@
-import type { ImportRow, Profile } from "#/db/schema";
 import { supabaseClient } from "#/lib/supabaseClient";
+import type { ImportRowActionInput } from "../../../supabase/functions/import-row-action/schema";
 
-type ImportRowAction = "merge" | "undo";
-
-interface ImportRowActionParams {
-    import_row_ids: ImportRow["id"][];
-    profile_id: Profile["id"];
-    action: ImportRowAction;
-}
-
-export async function importRowAction(input: ImportRowActionParams) {
+export async function importRowAction(input: ImportRowActionInput) {
     const { data, error } = await supabaseClient.functions.invoke(
         "import-row-action",
         {

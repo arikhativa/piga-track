@@ -1,23 +1,32 @@
 import { Loader2 } from "lucide-react";
-import { useListContext, useNotify, useRefresh } from "ra-core";
+import { useGetList, useListContext, useNotify, useRefresh } from "ra-core";
 import { useState } from "react";
 import { SelectAllButton } from "#/components/admin";
+import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
 import { Button } from "#/components/ui/button";
-import type { Profile } from "#/db/schema";
+import type { Profile, TransactionCategory } from "#/db/schema";
 import { importRowAction } from "#/lib/importer/importRowAction";
-
-// TODO
-// we need to show the bulk status on this page and allow changing it (after a big bulck merge we should updated the status to done)
-// add the bulk action for category and content
-// maybe also currency?
-// change the color of the toast and also add a loader to the buttons
 
 export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 	const notify = useNotify();
 	const refresh = useRefresh();
 	const { selectedIds, data } = useListContext();
+
 	const [isSubmittingUndo, setIsSubmittingUndo] = useState(false);
 	const [isSubmittingMerge, setIsSubmittingMerge] = useState(false);
+	const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
+
+	const { data: categories = [], isPending: isCategoriesPending } =
+		useGetList<TransactionCategory>("transaction_category", {
+			pagination: {
+				page: 1,
+				perPage: 1000,
+			},
+			sort: {
+				field: "value",
+				order: "ASC",
+			},
+		});
 
 	const selectedIdSet = new Set(selectedIds.map(Number));
 
@@ -35,7 +44,37 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 		rowsMatchSelection && statuses.length > 0 && new Set(statuses).size === 1;
 
 	const canMerge = sameStatus && statuses[0] === "pending";
-	const canUndo = sameStatus && statuses[0] === "merged";
+	const canUndo =
+		sameStatus && (statuses[0] === "merged" || statuses[0] === "dropped");
+
+	const canSetCategory = canMerge;
+
+	const handleCategoryChange = async (value: string | number) => {
+		if (!value || !canSetCategory) return;
+
+		try {
+			setIsSubmittingCategory(true);
+
+			await importRowAction({
+				import_row_ids: selectedIds as number[],
+				profile_id: profileId,
+				action: "set_category",
+				value: Number(value),
+			});
+
+			notify(`${selectedIds.length} rows updated`, {
+				type: "success",
+			});
+
+			refresh();
+		} catch {
+			notify("Failed to update category", {
+				type: "error",
+			});
+		} finally {
+			setIsSubmittingCategory(false);
+		}
+	};
 
 	const handleMerge = async () => {
 		try {
@@ -56,13 +95,15 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 			notify("Failed to merge rows", {
 				type: "error",
 			});
+		} finally {
+			setIsSubmittingMerge(false);
 		}
-		setIsSubmittingMerge(false);
 	};
 
 	const handleUndo = async () => {
 		try {
 			setIsSubmittingUndo(true);
+
 			await importRowAction({
 				import_row_ids: selectedIds as number[],
 				profile_id: profileId,
@@ -78,13 +119,23 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 			notify("Failed to undo rows", {
 				type: "error",
 			});
+		} finally {
+			setIsSubmittingUndo(false);
 		}
-		setIsSubmittingUndo(false);
 	};
 
 	return (
 		<>
 			<SelectAllButton />
+
+			<DynamicSelect
+				disabled={!canSetCategory || isSubmittingCategory}
+				choices={categories}
+				optionText="value"
+				emptyText="Category"
+				isPending={isCategoriesPending || isSubmittingCategory}
+				onChange={handleCategoryChange}
+			/>
 
 			<Button
 				type="button"
