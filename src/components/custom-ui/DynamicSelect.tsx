@@ -1,17 +1,7 @@
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
-import type { ChoicesProps, InputProps } from "ra-core";
-import {
-	FieldTitle,
-	useChoices,
-	useChoicesContext,
-	useCreate,
-	useInput,
-} from "ra-core";
 import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-import { FormError, FormField, FormLabel } from "@/components/admin/form";
-import { InputHelperText } from "@/components/admin/input-helper-text";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -24,55 +14,46 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
-// TODO: do not show "add" when there are ops to select from
-// TODO: hijeck the back button so it only closes the dialog
-
-type DynamicSelectProps = ChoicesProps &
-	Partial<InputProps> & {
-		label?: string;
-		optionText?: string | ((record: any) => ReactNode);
-		emptyText?: string;
-	};
+type DynamicSelectProps = {
+	choices: any[];
+	value?: string | number | null;
+	onChange: (value: string | number) => void;
+	optionText?: string | ((record: any) => ReactNode);
+	emptyText?: string;
+	isPending?: boolean;
+	onCreate?: (value: string) => Promise<string | number>;
+	disabled?: boolean;
+};
 
 export function DynamicSelect({
+	choices,
+	value,
+	onChange,
 	optionText = "name",
 	emptyText = "Select...",
-	label,
-	helperText,
-	...props
+	isPending = false,
+	onCreate,
+	disabled = false,
 }: DynamicSelectProps) {
-	const { allChoices = [], isPending, source, resource } = useChoicesContext();
-
-	const { id, field, isRequired } = useInput({
-		...props,
-		source,
-		resource,
-		label,
-		helperText,
-	});
-
 	const [open, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
 
-	const { getChoiceText, getChoiceValue } = useChoices({
-		optionText,
-	});
+	const getChoiceText = (choice: any) =>
+		typeof optionText === "function" ? optionText(choice) : choice[optionText];
 
-	const [create] = useCreate();
+	const getChoiceValue = (choice: any) => choice.id;
 
-	const selectedChoice = allChoices.find(
-		(choice) => String(getChoiceValue(choice)) === String(field.value),
+	const selectedChoice = choices.find(
+		(choice) => String(getChoiceValue(choice)) === String(value),
 	);
 
-	const filteredChoices = useMemo(() => {
-		if (!search) return allChoices;
-
-		return allChoices.filter((choice) =>
-			String(getChoiceText(choice))
-				.toLowerCase()
-				.includes(search.toLowerCase()),
-		);
-	}, [allChoices, getChoiceText, search]);
+	const filteredChoices = search
+		? choices.filter((choice) =>
+				String(getChoiceText(choice))
+					.toLowerCase()
+					.includes(search.toLowerCase()),
+			)
+		: choices;
 
 	const hasExactMatch = filteredChoices.some(
 		(choice) =>
@@ -80,46 +61,24 @@ export function DynamicSelect({
 	);
 
 	const handleSelect = (choice: any) => {
-		field.onChange(getChoiceValue(choice));
+		onChange(getChoiceValue(choice));
 		setSearch("");
 		setOpen(false);
 	};
 
 	const handleCreate = async () => {
-		const value = search.trim();
-		if (!value) return;
+		const newValue = search.trim();
+		if (!newValue || !onCreate) return;
 
-		const record = await create(
-			resource,
-			{
-				data: {
-					value,
-				},
-			},
-			{
-				returnPromise: true,
-			},
-		);
+		const id = await onCreate(newValue);
 
-		field.onChange(record.id);
-
+		onChange(id);
 		setSearch("");
 		setOpen(false);
 	};
 
 	return (
-		<FormField id={id} name={field.name} className="w-full min-w-20">
-			{label !== "" && (
-				<FormLabel>
-					<FieldTitle
-						label={label}
-						source={source}
-						resource={resource}
-						isRequired={isRequired}
-					/>
-				</FormLabel>
-			)}
-
+		<>
 			<Button
 				type="button"
 				variant="ghost"
@@ -136,7 +95,7 @@ export function DynamicSelect({
 					"focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
 					"disabled:cursor-not-allowed disabled:opacity-50",
 				)}
-				disabled={field.disabled || isPending}
+				disabled={disabled || isPending}
 			>
 				<span className={cn(!selectedChoice && "text-muted-foreground")}>
 					{selectedChoice ? getChoiceText(selectedChoice) : emptyText}
@@ -159,18 +118,18 @@ export function DynamicSelect({
 
 					<CommandList>
 						{filteredChoices.length === 0 && !search && (
-							<CommandEmpty>No tags found.</CommandEmpty>
+							<CommandEmpty>No options found.</CommandEmpty>
 						)}
 
 						<CommandGroup>
 							{filteredChoices.map((choice) => {
-								const value = getChoiceValue(choice);
-								const selected = String(value) === String(field.value);
+								const choiceValue = getChoiceValue(choice);
+								const selected = String(choiceValue) === String(value);
 
 								return (
 									<CommandItem
-										key={value}
-										value={String(value)}
+										key={choiceValue}
+										value={String(choiceValue)}
 										onSelect={() => handleSelect(choice)}
 									>
 										<Check
@@ -184,7 +143,7 @@ export function DynamicSelect({
 								);
 							})}
 
-							{search.trim() && !hasExactMatch && (
+							{search.trim() && !hasExactMatch && onCreate && (
 								<CommandItem onSelect={handleCreate}>
 									<Plus className="mr-2 size-4" />
 									Create "{search}"
@@ -194,9 +153,6 @@ export function DynamicSelect({
 					</CommandList>
 				</Command>
 			</CommandDialog>
-
-			<InputHelperText helperText={helperText} />
-			<FormError />
-		</FormField>
+		</>
 	);
 }

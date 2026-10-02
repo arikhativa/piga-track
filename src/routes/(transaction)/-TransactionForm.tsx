@@ -4,7 +4,7 @@ import {
 	SpentReceivedTabs,
 	type SpentReceivedTabsProps,
 } from "#/components/custom-ui/SpentReceivedTabs";
-import { DynamicSelect } from "#/components/form/DynamicSelect";
+import { DynamicSelectInput } from "#/components/form/DynamicSelectInput";
 import { ResetDateTimeButton } from "#/components/form/ResetDateTimeButton";
 import { Separator } from "#/components/ui/separator";
 import { useProfile } from "#/hooks/use-profile";
@@ -47,11 +47,11 @@ export function TransactionForm({ type, setType }: SpentReceivedTabsProps) {
 
 			<div className="grid grid-cols-2 gap-4">
 				<ReferenceInput source="tag_id" reference="transaction_tag">
-					<DynamicSelect label="Content" optionText="value" />
+					<DynamicSelectInput label="Content" optionText="value" />
 				</ReferenceInput>
 
 				<ReferenceInput source="category_id" reference="transaction_category">
-					<DynamicSelect
+					<DynamicSelectInput
 						defaultValue={profile?.default_category_id}
 						label="Category"
 						optionText="value"

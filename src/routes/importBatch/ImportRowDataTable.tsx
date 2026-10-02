@@ -10,6 +10,7 @@ import { useProfile } from "#/hooks/use-profile";
 import { importRowAction } from "#/lib/importer/importRowAction";
 import { getRowStateVariant } from "#/lib/variant/getRowStateVariant";
 import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
+import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { DataTable, DateField, NumberField } from "@/components/admin";
 
 export const ImportRowDataTable = () => {
@@ -41,8 +42,12 @@ export const ImportRowDataTable = () => {
 				return false;
 			}}
 		>
-			<DataTable.Col label={"Row number"}>
-				<NumberField source="row_number"></NumberField>
+			<DataTable.Col label={"Row"}>
+				<NumberField className="w-fit" source="row_number"></NumberField>
+			</DataTable.Col>
+
+			<DataTable.Col label="Date">
+				<DateField source="date" />
 			</DataTable.Col>
 
 			<DataTableSignCol />
@@ -56,9 +61,12 @@ export const ImportRowDataTable = () => {
 
 			<DataTable.Col source="description" />
 
-			<DataTable.Col>
-				<DateField source="date" />
-			</DataTable.Col>
+			<DataTable.Col
+				label="Category"
+				render={(record: ImportRow) => {
+					return <ImportRowCategory record={record} />;
+				}}
+			></DataTable.Col>
 
 			<DataTable.Col
 				source="status"
