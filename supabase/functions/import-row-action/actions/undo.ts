@@ -3,6 +3,7 @@ import { inArray } from "drizzle-orm";
 import { importRow, transaction } from "../../../../src/db/schema.ts";
 import type { ImportRow } from "../../../../src/db/schema.ts";
 import type { ImportRowAction } from "../types.ts";
+import { updateBatchStatus } from "../lib/update-batch-status.ts";
 
 function validateUndoable(rows: ImportRow[]) {
   for (const row of rows) {
@@ -36,6 +37,10 @@ export const undo: ImportRowAction = async ({ db, rows }) => {
       .delete(transaction)
       .where(inArray(transaction.id, transactionIds));
   }
+
+  const batchId = rows[0].import_batch_id;
+
+  await updateBatchStatus(db, batchId);
 
   return {
     action: "undo",

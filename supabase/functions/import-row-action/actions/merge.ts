@@ -8,6 +8,7 @@ import {
 } from "../../../../src/db/schema.ts";
 import { validatePending } from "../lib/validate-import-rows.ts";
 import type { ImportRowAction } from "../types.ts";
+import { updateBatchStatus } from "../lib/update-batch-status.ts";
 
 export const merge: ImportRowAction = async ({
   db,
@@ -83,6 +84,8 @@ export const merge: ImportRowAction = async ({
       updated_at: new Date(),
     })
     .where(inArray(importRow.id, rows.map((row) => row.id)));
+
+  await updateBatchStatus(db, batchId);
 
   return {
     action: "merge",
