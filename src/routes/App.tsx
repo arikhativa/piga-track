@@ -81,6 +81,14 @@ export function App() {
 					icon={HandCoins}
 				/>
 				<Resource
+					name="transaction_category"
+					options={{ label: "Categories", table: true }}
+					list={CategoryList}
+					edit={CategoryEdit}
+					create={CategoryCreate}
+					icon={Bookmark}
+				/>
+				<Resource
 					name="transaction_project"
 					options={{ label: "Projects", table: true }}
 					list={ProjectList}
@@ -88,14 +96,6 @@ export function App() {
 					show={ProjectShow}
 					create={ProjectCreate}
 					icon={ChartGantt}
-				/>
-				<Resource
-					name="transaction_category"
-					options={{ label: "Categories", table: true }}
-					list={CategoryList}
-					edit={CategoryEdit}
-					create={CategoryCreate}
-					icon={Bookmark}
 				/>
 
 				{/* Import */}
