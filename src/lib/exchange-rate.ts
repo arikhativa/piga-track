@@ -1,3 +1,4 @@
+import type { QueryClient } from "@tanstack/react-query";
 import { BASE_CURRENCY } from "#/lib/constant";
 import { supabaseClient } from "#/lib/supabaseClient";
 
@@ -5,7 +6,6 @@ type ExchangeRateProviderResponse = {
 	rate: number;
 };
 
-// TODO maybe some of these can be local and not exported
 export const callExchangeRateProvider = async (
 	isoCode: string,
 	date: string,
@@ -23,7 +23,7 @@ export const callExchangeRateProvider = async (
 	return data.rate;
 };
 
-export const getExchangeRate = async (isoCode: string, date: string) => {
+export const getExchangeRateFromDB = async (isoCode: string, date: string) => {
 	const { data, error } = await supabaseClient
 		.from("exchange_rate")
 		.select("rate")
@@ -36,21 +36,6 @@ export const getExchangeRate = async (isoCode: string, date: string) => {
 	}
 
 	return data?.rate ?? null;
-};
-
-export const getExchangeRates = async (fromDate: string, toDate: string) => {
-	const { data, error } = await supabaseClient
-		.from("exchange_rate")
-		.select("*")
-		.gte("date", fromDate)
-		.lte("date", toDate)
-		.order("date", { ascending: true });
-
-	if (error) {
-		throw error;
-	}
-
-	return data;
 };
 
 export const insertExchangeRate = async (
@@ -80,31 +65,61 @@ export const insertExchangeRate = async (
 	return data;
 };
 
-export const resolveAmountNis = async ({
+export const resolveAmountNis = ({
 	amount,
 	isoCode,
-	date,
+	rate,
 }: {
 	amount: number;
 	isoCode: string;
-	date: Date;
-}): Promise<number | null> => {
+	rate: number | null;
+}): number | null => {
 	if (isoCode === BASE_CURRENCY) {
 		return amount;
 	}
 
-	const dateString = date.toISOString().slice(0, 10);
-
-	let rate = await getExchangeRate(isoCode, dateString);
-
 	if (rate === null) {
-		try {
-			rate = await callExchangeRateProvider(isoCode, dateString);
-			await insertExchangeRate(isoCode, dateString, rate);
-		} catch {
-			return null;
-		}
+		return null;
 	}
 
 	return Math.abs(amount) * rate;
 };
+
+export async function getExchangeRate(
+	{ queryClient, isoCode, dateString }: {
+		queryClient: QueryClient;
+		isoCode: string;
+		dateString: string;
+	},
+): Promise<number | null> {
+	return queryClient.query({
+		queryKey: ["exchange-rate", isoCode, dateString],
+		queryFn: async (): Promise<number | null> => {
+			const existing = await getExchangeRateFromDB(
+				isoCode,
+				dateString,
+			);
+
+			if (existing !== null) {
+				return existing;
+			}
+
+			try {
+				const newRate = await callExchangeRateProvider(
+					isoCode,
+					dateString,
+				);
+
+				await insertExchangeRate(
+					isoCode,
+					dateString,
+					newRate,
+				);
+
+				return newRate;
+			} catch {
+				return null;
+			}
+		},
+	});
+}

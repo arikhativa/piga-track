@@ -1,5 +1,6 @@
+import type { QueryClient } from "@tanstack/react-query";
 import type { Currency, TransactionInsert } from "#/db/schema";
-import { resolveAmountNis } from "#/lib/exchange-rate";
+import { getExchangeRate, resolveAmountNis } from "#/lib/exchange-rate";
 
 type TransactionFormData =
     & Omit<
@@ -15,6 +16,7 @@ type TransactionFormData =
 export const transactionTransform = (
     type: "spent" | "received",
     currencyList: Currency[] | undefined,
+    queryClient: QueryClient,
 ) => {
     return async (data: TransactionFormData) => {
         const amount = type === "received"
@@ -30,11 +32,22 @@ export const transactionTransform = (
         let amountNis: number | null = null;
 
         if (isoCode) {
-            amountNis = await resolveAmountNis({
-                amount,
+            const date = new Date(data.transaction_at);
+            const dateString = date.toISOString().slice(0, 10);
+
+            const rate = await getExchangeRate({
                 isoCode,
-                date: new Date(data.transaction_at),
+                dateString,
+                queryClient,
             });
+
+            if (rate) {
+                amountNis = resolveAmountNis({
+                    amount,
+                    isoCode,
+                    rate,
+                });
+            }
         }
 
         return {

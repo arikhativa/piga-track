@@ -8,12 +8,10 @@ import type {
 	TransactionProject,
 	TransactionTag,
 } from "#/db/schema";
-import { getExchangeRates } from "#/lib/exchange-rate";
 import { categoryOptionText } from "#/lib/form/categoryOptionText";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
 import { tagOptionText } from "#/lib/form/tagOptionText";
-import { toDateString } from "#/lib/format/toDateString";
 
 export const transactionExporter = async (
 	transactions: Transaction[],
@@ -38,43 +36,13 @@ export const transactionExporter = async (
 		),
 	]);
 
-	// Get the date range of the transactions
-	const dates = transactions.map((transaction) =>
-		toDateString(transaction.transaction_at)
-	);
-
-	const fromDate = dates.reduce((a, b) => (a < b ? a : b));
-	const toDate = dates.reduce((a, b) => (a > b ? a : b));
-
-	const exchangeRates = await getExchangeRates(fromDate, toDate);
-
-	const rateMap = new Map(
-		exchangeRates.map((rate) => [
-			`${rate.iso_code}:${rate.date}`,
-			Number(rate.rate),
-		]),
-	);
-
 	const transactionsForExport = transactions.map((transaction) => {
 		const currency = currencies[transaction.currency_id];
-		const date = toDateString(transaction.transaction_at);
-
-		let amountInNis: number | "" = "";
-
-		if (currency?.iso_code === "ILS") {
-			amountInNis = Number(transaction.amount);
-		} else if (currency?.iso_code) {
-			const rate = rateMap.get(`${currency.iso_code}:${date}`);
-
-			if (rate !== undefined) {
-				amountInNis = Number(transaction.amount) * rate;
-			}
-		}
 
 		return {
 			id: transaction.id,
 			amount: transaction.amount,
-			amount_in_nis: amountInNis === "" ? "" : amountInNis.toFixed(2),
+			amount_nis: transaction.amount_nis,
 			currency: currency ? currencyOptionText(currency) : "",
 			project: transaction.project_id
 				? projectOptionText(projects[transaction.project_id])
@@ -96,7 +64,7 @@ export const transactionExporter = async (
 			headers: [
 				"id",
 				"amount",
-				"amount_in_nis",
+				"amount_nis",
 				"currency",
 				"project",
 				"category",

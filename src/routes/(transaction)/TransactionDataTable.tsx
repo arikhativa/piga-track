@@ -53,29 +53,6 @@ export const TransactionDataTable = ({
 				}}
 			/>
 
-			{/* TODO remove unnececary logic rate to AmountInNis */}
-			{/* <DataTable.Col
-				source="amount_nis"
-				label="NIS"
-				render={(record: Transaction) => {
-					const currency = data?.find(
-						(currency) => currency.id === record.currency_id,
-					);
-
-					if (!currency?.iso_code) {
-						return "...";
-					}
-
-					return (
-						<AmountInNis
-							amount={record.amount}
-							isoCode={currency.iso_code}
-							date={toDateString(record.transaction_at)}
-						/>
-					);
-				}}
-			/> */}
-
 			{colToHide?.includes("tag") ? null : (
 				<DataTable.Col label="Content">
 					<ReferenceField
