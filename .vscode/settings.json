@@ -42,7 +42,8 @@
 		"jsonexport",
 		"Pigafetta",
 		"postgrest",
-		"raphiniert"
+		"raphiniert",
+		"Undoable"
 	],
 	"deno.enablePaths": ["supabase/functions"],
 	"deno.lint": true,
