@@ -11,6 +11,7 @@ import { importRowAction } from "#/lib/importer/importRowAction";
 import { getRowStateVariant } from "#/lib/variant/getRowStateVariant";
 import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
 import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
+import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { DataTable, DateField, NumberField } from "@/components/admin";
 
 export const ImportRowDataTable = () => {
@@ -65,6 +66,13 @@ export const ImportRowDataTable = () => {
 				label="Category"
 				render={(record: ImportRow) => {
 					return <ImportRowCategory record={record} />;
+				}}
+			></DataTable.Col>
+
+			<DataTable.Col
+				label="Project"
+				render={(record: ImportRow) => {
+					return <ImportRowProject record={record} />;
 				}}
 			></DataTable.Col>
 

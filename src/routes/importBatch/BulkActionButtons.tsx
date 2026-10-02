@@ -4,7 +4,11 @@ import { useState } from "react";
 import { SelectAllButton } from "#/components/admin";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
 import { Button } from "#/components/ui/button";
-import type { Profile, TransactionCategory } from "#/db/schema";
+import type {
+	Profile,
+	TransactionCategory,
+	TransactionProject,
+} from "#/db/schema";
 import { importRowAction } from "#/lib/importer/importRowAction";
 
 export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
@@ -15,9 +19,22 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 	const [isSubmittingUndo, setIsSubmittingUndo] = useState(false);
 	const [isSubmittingMerge, setIsSubmittingMerge] = useState(false);
 	const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
+	const [isSubmittingProject, setIsSubmittingProject] = useState(false);
 
 	const { data: categories = [], isPending: isCategoriesPending } =
 		useGetList<TransactionCategory>("transaction_category", {
+			pagination: {
+				page: 1,
+				perPage: 1000,
+			},
+			sort: {
+				field: "value",
+				order: "ASC",
+			},
+		});
+
+	const { data: projects = [], isPending: isProjectsPending } =
+		useGetList<TransactionProject>("transaction_project", {
 			pagination: {
 				page: 1,
 				perPage: 1000,
@@ -48,6 +65,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 		sameStatus && (statuses[0] === "merged" || statuses[0] === "dropped");
 
 	const canSetCategory = canMerge;
+	const canSetProject = canMerge;
 
 	const handleCategoryChange = async (value: string | number) => {
 		if (!value || !canSetCategory) return;
@@ -73,6 +91,33 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 			});
 		} finally {
 			setIsSubmittingCategory(false);
+		}
+	};
+
+	const handleProjectChange = async (value: string | number) => {
+		if (!value || !canSetProject) return;
+
+		try {
+			setIsSubmittingProject(true);
+
+			await importRowAction({
+				import_row_ids: selectedIds as number[],
+				profile_id: profileId,
+				action: "set_project",
+				value: Number(value),
+			});
+
+			notify(`${selectedIds.length} rows updated`, {
+				type: "success",
+			});
+
+			refresh();
+		} catch {
+			notify("Failed to update project", {
+				type: "error",
+			});
+		} finally {
+			setIsSubmittingProject(false);
 		}
 	};
 
@@ -135,6 +180,15 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 				emptyText="Category"
 				isPending={isCategoriesPending || isSubmittingCategory}
 				onChange={handleCategoryChange}
+			/>
+
+			<DynamicSelect
+				disabled={!canSetProject || isSubmittingProject}
+				choices={projects}
+				optionText="value"
+				emptyText="Project"
+				isPending={isProjectsPending || isSubmittingProject}
+				onChange={handleProjectChange}
 			/>
 
 			<Button
