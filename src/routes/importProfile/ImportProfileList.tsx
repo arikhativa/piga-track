@@ -1,4 +1,4 @@
-import type { Currency } from "#/db/schema";
+import type { Currency, ImportProfile } from "#/db/schema";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
 import { DataTable, List, ReferenceField } from "@/components/admin";
 
@@ -16,9 +16,9 @@ export const ImportProfileList = () => (
 				></ReferenceField>
 			</DataTable.Col>
 			<DataTable.Col
-				source="transaction_at"
-				render={(record) =>
-					new Date(record.transaction_at).toLocaleDateString("he-IL")
+				source="created_at"
+				render={(record: ImportProfile) =>
+					new Date(record.created_at).toLocaleDateString("he-IL")
 				}
 			/>
 		</DataTable>
