@@ -307,8 +307,11 @@ export function DataTableColumn<
 >(props: DataTableColumnProps<RecordType>) {
 	const renderContext = useDataTableRenderContext();
 	switch (renderContext) {
-		case "columnsSelector":
-			return <ColumnsSelectorItem<RecordType> {...props} />;
+		case "columnsSelector": {
+			const { cellClassName: _, ...columnsSelectorProps } = props;
+
+			return <ColumnsSelectorItem<RecordType> {...columnsSelectorProps} />;
+		}
 		case "header":
 			return <DataTableHeadCell {...props} />;
 		case "data":
@@ -432,6 +435,7 @@ function DataTableCell<
 		source,
 		className,
 		cellClassName,
+		onCellClick,
 		conditionalClassName,
 	} = props;
 
@@ -446,14 +450,26 @@ function DataTableCell<
 		);
 	}
 
+	const resolvedCellClassName =
+		typeof cellClassName === "function"
+			? record
+				? cellClassName(record)
+				: undefined
+			: cellClassName;
+
 	return (
 		<TableCell
 			className={cn(
 				"py-1",
 				className,
-				cellClassName,
+				resolvedCellClassName,
 				record && conditionalClassName?.(record),
 			)}
+			onClick={() => {
+				if (record && onCellClick) {
+					onCellClick(record);
+				}
+			}}
 		>
 			{children ??
 				(render
@@ -469,7 +485,7 @@ export interface DataTableColumnProps<
 	RecordType extends RaRecord<Identifier> = RaRecord<Identifier>,
 > {
 	className?: string;
-	cellClassName?: string;
+	cellClassName?: string | ((record: RecordType) => string);
 	headerClassName?: string;
 	conditionalClassName?: (record: RecordType) => string | false | undefined;
 	children?: ReactNode;
@@ -479,6 +495,7 @@ export interface DataTableColumnProps<
 	label?: React.ReactNode;
 	disableSort?: boolean;
 	sortByOrder?: SortPayload["order"];
+	onCellClick?: (record: RecordType) => void;
 }
 
 export function DataTableNumberColumn<

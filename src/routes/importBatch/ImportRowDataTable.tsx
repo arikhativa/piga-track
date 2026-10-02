@@ -1,6 +1,7 @@
 import { capitalize } from "lodash";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { useDataProvider, useNavigate, useRefresh } from "ra-core";
+import { useCallback } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
 import { Badge } from "#/components/ui/badge";
@@ -21,46 +22,68 @@ export const ImportRowDataTable = () => {
 	const navigate = useNavigate();
 	const refresh = useRefresh();
 
+	const navToRealTrans = useCallback(
+		(record: ImportRow) => {
+			if (record.status === "merged") {
+				navigate(`/transaction/${record.transaction_id}`);
+			}
+		},
+		[navigate],
+	);
+
+	const navCellClass = (record: ImportRow) => {
+		return record.status === "merged" ? "cursor-pointer" : "cursor-default";
+	};
+
 	if (!isSuccess) return <Spinner />;
 
 	return (
 		<DataTable<ImportRow>
 			bulkActionButtons={<BulkActionButtons profileId={userProfile.id} />}
 			rowClassName={(row) => {
-				let ret = "";
-				if (row.status !== "merged") {
-					ret += " cursor-default";
-				}
+				let ret = "cursor-default";
+
 				if (row.status === "dropped") {
 					ret += " text-muted-foreground/30";
 				}
 				return ret;
 			}}
-			rowClick={(_id, _resource, record) => {
-				if (record.status === "merged") {
-					navigate(`/transaction/${record.transaction_id}`);
-				}
-				return false;
-			}}
 		>
-			<DataTable.Col label={"Row"}>
+			<DataTable.Col
+				label={"Row"}
+				cellClassName={navCellClass}
+				onCellClick={navToRealTrans}
+			>
 				<NumberField className="w-fit" source="row_number"></NumberField>
 			</DataTable.Col>
 
-			<DataTable.Col label="Date">
+			<DataTable.Col
+				cellClassName={navCellClass}
+				onCellClick={navToRealTrans}
+				label="Date"
+			>
 				<DateField source="date" />
 			</DataTable.Col>
 
-			<DataTableSignCol />
+			<DataTableSignCol
+				cellClassName={navCellClass}
+				onCellClick={navToRealTrans}
+			/>
 
 			<DataTable.Col
+				cellClassName={navCellClass}
+				onCellClick={navToRealTrans}
 				source="amount"
 				render={(record) => {
-					return <>{Math.abs(record.amount)}</>;
+					return <>{Math.abs(Number(record.amount))}</>;
 				}}
 			/>
 
-			<DataTable.Col source="description" />
+			<DataTable.Col
+				cellClassName={navCellClass}
+				onCellClick={navToRealTrans}
+				source="description"
+			/>
 
 			<DataTable.Col
 				label="Category"
