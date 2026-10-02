@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SelectAllButton } from "#/components/admin";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
 import { Button } from "#/components/ui/button";
+import { Separator } from "#/components/ui/separator";
 import type {
 	Profile,
 	TransactionCategory,
@@ -170,50 +171,74 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 	};
 
 	return (
-		<>
+		<div className="flex gap-4">
 			<SelectAllButton />
 
-			<DynamicSelect
-				disabled={!canSetCategory || isSubmittingCategory}
-				choices={categories}
-				optionText="value"
-				emptyText="Category"
-				isPending={isCategoriesPending || isSubmittingCategory}
-				onChange={handleCategoryChange}
-			/>
+			{(canSetCategory || canSetProject) && (
+				<>
+					<Separator orientation="vertical" />
 
-			<DynamicSelect
-				disabled={!canSetProject || isSubmittingProject}
-				choices={projects}
-				optionText="value"
-				emptyText="Project"
-				isPending={isProjectsPending || isSubmittingProject}
-				onChange={handleProjectChange}
-			/>
+					<div className="flex gap-2">
+						{canSetCategory && (
+							<DynamicSelect
+								disabled={isSubmittingCategory}
+								choices={categories}
+								optionText="value"
+								emptyText="Category"
+								isPending={isCategoriesPending || isSubmittingCategory}
+								onChange={handleCategoryChange}
+							/>
+						)}
 
-			<Button
-				type="button"
-				variant="default"
-				disabled={isSubmittingMerge || !canMerge}
-				onClick={handleMerge}
-			>
-				{isSubmittingMerge ? (
-					<Loader2 className="me-2 h-4 w-4 animate-spin" />
-				) : null}
-				Merge
-			</Button>
+						{canSetProject && (
+							<DynamicSelect
+								disabled={isSubmittingProject}
+								choices={projects}
+								optionText="value"
+								emptyText="Project"
+								isPending={isProjectsPending || isSubmittingProject}
+								onChange={handleProjectChange}
+							/>
+						)}
+					</div>
+				</>
+			)}
 
-			<Button
-				type="button"
-				variant="outline"
-				disabled={isSubmittingUndo || !canUndo}
-				onClick={handleUndo}
-			>
-				{isSubmittingUndo ? (
-					<Loader2 className="me-2 h-4 w-4 animate-spin" />
-				) : null}
-				Undo
-			</Button>
-		</>
+			{(canMerge || canUndo) && (
+				<>
+					<Separator orientation="vertical" />
+
+					<div className="flex gap-2">
+						{canMerge && (
+							<Button
+								type="button"
+								variant="default"
+								disabled={isSubmittingMerge}
+								onClick={handleMerge}
+							>
+								{isSubmittingMerge ? (
+									<Loader2 className="me-2 h-4 w-4 animate-spin" />
+								) : null}
+								Merge
+							</Button>
+						)}
+
+						{canUndo && (
+							<Button
+								type="button"
+								variant="outline"
+								disabled={isSubmittingUndo}
+								onClick={handleUndo}
+							>
+								{isSubmittingUndo ? (
+									<Loader2 className="me-2 h-4 w-4 animate-spin" />
+								) : null}
+								Undo
+							</Button>
+						)}
+					</div>
+				</>
+			)}
+		</div>
 	);
 }
