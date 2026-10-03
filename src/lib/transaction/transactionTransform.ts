@@ -14,9 +14,15 @@ type TransactionFormData =
     };
 
 export const transactionTransform = (
-    type: "spent" | "received",
-    currencyList: Currency[] | undefined,
-    queryClient: QueryClient,
+    {
+        type,
+        currencyList,
+        queryClient,
+    }: {
+        type: "spent" | "received";
+        currencyList: Currency[] | undefined;
+        queryClient: QueryClient;
+    },
 ) => {
     return async (data: TransactionFormData) => {
         const amount = type === "received"
