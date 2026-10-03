@@ -1,4 +1,4 @@
-import { TransactionTagForm } from "#/routes/(transactionTag)/-TransactionTagForm";
+import { TransactionTagForm } from "#/routes/transactionTag/TransactionTagForm";
 import { Create } from "@/components/admin";
 
 export function TransactionTagCreate() {

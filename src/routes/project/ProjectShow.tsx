@@ -1,6 +1,6 @@
-import { TransactionDataTable } from "#/routes/(transaction)/TransactionDataTable";
 import { ProjectStates } from "#/routes/project/ProjectStates";
 import { ProjectTitle } from "#/routes/project/ProjectTitle";
+import { TransactionDataTable } from "#/routes/transaction/TransactionDataTable";
 import { ReferenceManyField, Show } from "@/components/admin";
 
 export function ProjectShow() {

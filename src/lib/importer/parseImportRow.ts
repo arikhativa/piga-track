@@ -152,7 +152,6 @@ function isEmptyRow(
 		profile.date_column,
 		profile.positive_amount_column,
 		profile.negative_amount_column,
-		profile.tag_column,
 		...drizzleTextArray(profile.description_column_list),
 	].filter((column): column is string => Boolean(column));
 
@@ -187,7 +186,7 @@ export function parseImportRow(
 		rows.push({
 			row_number: index + 1,
 			date,
-			amount: getAmount(row, profile),
+			amount: getAmount(row, profile) || "",
 			description: getDescription(
 				row,
 				drizzleTextArray(profile.description_column_list),

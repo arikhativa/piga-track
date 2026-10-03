@@ -2,7 +2,7 @@ import { transactionExporter } from "#/lib/exporter/transactionExporter";
 import { categoryOptionText } from "#/lib/form/categoryOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
 import { tagOptionText } from "#/lib/form/tagOptionText";
-import { TransactionDataTable } from "#/routes/(transaction)/TransactionDataTable";
+import { TransactionDataTable } from "#/routes/transaction/TransactionDataTable";
 import { List, ReferenceInput, SelectInput } from "@/components/admin";
 
 const transactionFilters = [

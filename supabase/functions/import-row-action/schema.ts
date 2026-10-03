@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// TODO i need to rethink this tpye api share with supabse funcs
 export const importRowActionSchema = z.object({
   import_row_ids: z.array(z.number().int().positive()).min(1),
 

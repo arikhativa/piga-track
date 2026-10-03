@@ -16,12 +16,12 @@ import { supabaseAuthProvider } from "#/lib/authProvider";
 import { supabaseDataProvider } from "#/lib/dataProvider";
 import { getIdentity } from "#/lib/getIdentity";
 import { supabaseClient } from "#/lib/supabaseClient";
-import { TransactionCreate } from "#/routes/(transaction)/-TransactionCreate";
-import { TransactionEdit } from "#/routes/(transaction)/-TransactionEdit";
-import { TransactionList } from "#/routes/(transaction)/-TransactionList";
-import { TransactionTagCreate } from "#/routes/(transactionTag)/-TransactionTagCreate";
-import { TransactionTagEdit } from "#/routes/(transactionTag)/-TransactionTagEdit";
-import { TransactionTagList } from "#/routes/(transactionTag)/-TransactionTagList";
+import { TransactionTagCreate } from "#/routes/transactionTag/TransactionTagCreate";
+import { TransactionTagEdit } from "#/routes/transactionTag/TransactionTagEdit";
+import { TransactionTagList } from "#/routes/transactionTag/TransactionTagList";
+import { TransactionCreate } from "#/routes/transaction/TransactionCreate";
+import { TransactionEdit } from "#/routes/transaction/TransactionEdit";
+import { TransactionList } from "#/routes/transaction/TransactionList";
 
 import "../styles.css";
 import { CategoryCreate } from "#/routes/category/CategoryCreate";

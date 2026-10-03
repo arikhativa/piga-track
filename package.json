@@ -23,6 +23,7 @@
     "preview": "vite preview",
     "format": "biome format",
     "lint": "biome lint",
+    "check:ts": "tsc --noEmit -p tsconfig.json",
     "check": "biome check"
   },
   "dependencies": {
