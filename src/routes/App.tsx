@@ -1,3 +1,4 @@
+import { NuqsAdapter } from 'nuqs/adapters/react'
 import {
 	Bookmark,
 	ChartGantt,
@@ -62,6 +63,7 @@ const authProvider = supabaseAuthProvider(supabaseClient, { getIdentity });
 
 export function App() {
 	return (
+		  <NuqsAdapter>
 		<TooltipProvider>
 			<Admin authProvider={authProvider} dataProvider={dataProvider}>
 				<CustomRoutes>
@@ -144,5 +146,6 @@ export function App() {
 				/>
 			</Admin>
 		</TooltipProvider>
+		</NuqsAdapter>
 	);
 }
