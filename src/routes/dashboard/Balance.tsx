@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
 import { Spinner } from "#/components/ui/spinner";
-import { useDashboardBalance } from "#/hooks/use-dashboard-balance";
+import { useDashboardData } from "#/hooks/use-dashboard-data";
 import type { DateRange } from "#/hooks/use-dashboard-date-range";
 import { formatNIS } from "#/lib/format/formatNIS";
 
@@ -22,7 +22,7 @@ function BalanceCard({ title, amount }: { title: string; amount?: string }) {
 }
 
 export function Balance({ dateRange }: { dateRange: DateRange }) {
-	const { data, isLoading } = useDashboardBalance(dateRange);
+	const { data, isLoading } = useDashboardData(dateRange);
 
 	const { balance = 0, expenses = 0, income = 0 } = data ?? {};
 

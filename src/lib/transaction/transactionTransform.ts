@@ -35,9 +35,6 @@ export const transactionTransform = (
             (currency) => currency.id === currencyId,
         )?.iso_code;
 
-        console.log("currencyId", currencyId);
-        console.log("isoCode", isoCode);
-
         let amountNis: number | null = null;
 
         if (isoCode) {

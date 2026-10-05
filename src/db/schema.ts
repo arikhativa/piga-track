@@ -249,10 +249,14 @@ export const importRow = pgTable("import_row", {
 
 	status: importRowStatusEnum("status").notNull().default("pending"),
 
-	transaction_id: integer("transaction_id").references(() => transaction.id),
-
 	duplicate_transaction_id: integer("duplicate_transaction_id").references(
 		() => transaction.id,
+		{ onDelete: "set null" },
+	),
+
+	transaction_id: integer("transaction_id").references(
+		() => transaction.id,
+		{ onDelete: "set null" },
 	),
 
 	created_at: timestamp("created_at", { withTimezone: true })

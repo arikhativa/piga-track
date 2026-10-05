@@ -239,6 +239,13 @@
       "when": 1791191589053,
       "tag": "0033_old_colleen_wing",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1791205567807,
+      "tag": "0034_parched_sabra",
+      "breakpoints": true
     }
   ]
 }
