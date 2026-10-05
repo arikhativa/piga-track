@@ -1,14 +1,12 @@
 import { cn } from "cn";
-import { House, LayoutDashboard, List, Plus, Settings } from "lucide-react";
+import { LayoutDashboard, List, Plus, Settings } from "lucide-react";
 import {
 	LinkBase,
 	useCanAccess,
 	useCreatePath,
 	useGetResourceLabel,
-	useHasDashboard,
 	useMatch,
 	useResourceDefinitions,
-	useTranslate,
 } from "ra-core";
 import { createElement } from "react";
 import PixelIcon from "#/components/icon/lord pigafetta";
@@ -32,8 +30,13 @@ import { Skeleton } from "@/components/ui/skeleton";
  * different sections of the application.
  */
 export function AppSidebar() {
-	const hasDashboard = useHasDashboard();
+	// const hasDashboard = useHasDashboard();
 	const resources = useResourceDefinitions();
+
+	const newTranMatch = useMatch({
+		path: "/",
+		end: true,
+	});
 
 	const dashboardMatch = useMatch({
 		path: "/dashboard",
@@ -112,7 +115,7 @@ export function AppSidebar() {
 									render={
 										<LinkBase to="/transaction/create" onClick={handleClick} />
 									}
-									isActive={!!dashboardMatch}
+									isActive={!!newTranMatch}
 								>
 									<Plus />
 									<span>New Transaction</span>
@@ -131,9 +134,6 @@ export function AppSidebar() {
 							</SidebarMenuItem>
 							{/* ----------------------------------------------------------------------------------------- */}
 
-							{hasDashboard ? (
-								<DashboardMenuItem onClick={handleClick} />
-							) : null}
 							{mainPages.map((name) => (
 								<ResourceMenuItem
 									key={name}
@@ -152,10 +152,6 @@ export function AppSidebar() {
 
 						<SidebarGroupContent>
 							<SidebarMenu>
-								{hasDashboard ? (
-									<DashboardMenuItem onClick={handleClick} />
-								) : null}
-
 								{tablePages.map((name) => (
 									<ResourceMenuItem
 										key={name}
@@ -205,11 +201,6 @@ export function AppSidebar() {
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 								{/* ----------------------------------------------------------------------------------------- */}
-
-								{hasDashboard ? (
-									<DashboardMenuItem onClick={handleClick} />
-								) : null}
-
 								{utilsPages.map((name) => (
 									<ResourceMenuItem
 										key={name}
@@ -228,30 +219,30 @@ export function AppSidebar() {
 	);
 }
 
-export const DashboardMenuItem = ({ onClick }: { onClick?: () => void }) => {
-	const translate = useTranslate();
+// export const DashboardMenuItem = ({ onClick }: { onClick?: () => void }) => {
+// 	const translate = useTranslate();
 
-	const label = translate("ra.page.dashboard", {
-		_: "Dashboard",
-	});
+// 	const label = translate("ra.page.dashboard", {
+// 		_: "Dashboard",
+// 	});
 
-	const match = useMatch({
-		path: "/",
-		end: true,
-	});
+// 	const match = useMatch({
+// 		path: "/",
+// 		end: true,
+// 	});
 
-	return (
-		<SidebarMenuItem>
-			<SidebarMenuButton
-				render={<LinkBase to="/" onClick={onClick} />}
-				isActive={!!match}
-			>
-				<House />
-				{label}
-			</SidebarMenuButton>
-		</SidebarMenuItem>
-	);
-};
+// 	return (
+// 		<SidebarMenuItem>
+// 			<SidebarMenuButton
+// 				render={<LinkBase to="/" onClick={onClick} />}
+// 				isActive={!!match}
+// 			>
+// 				<House />
+// 				{label}
+// 			</SidebarMenuButton>
+// 		</SidebarMenuItem>
+// 	);
+// };
 
 export const ResourceMenuItem = ({
 	name,
