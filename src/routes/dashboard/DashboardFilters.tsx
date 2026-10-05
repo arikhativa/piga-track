@@ -32,7 +32,7 @@ const getMonthRange = (year: number, month: number) => ({
 const getPresets = (): Preset[] => {
 	const now = new Date();
 
-	return Array.from({ length: 7 }, (_, index) => {
+	return Array.from({ length: 6 }, (_, index) => {
 		const monthOffset = index - 6;
 
 		const date = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
@@ -41,9 +41,9 @@ const getPresets = (): Preset[] => {
 
 		return {
 			value: `${date.getFullYear()}-${date.getMonth() + 1}`,
-			label: date.toLocaleDateString("he-IL", {
+			label: date.toLocaleDateString("en-GB", {
 				month: "long",
-				year: "2-digit",
+				year: "numeric",
 			}),
 			from: range.from,
 			to: range.to,

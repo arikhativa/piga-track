@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { jsonResponse } from "../../helper.ts";
 import { and, eq, gte, lt, sql } from "drizzle-orm";
-import { dashboardRequestSchema } from "./schema.ts";
+import { dashboardRequestSchema, DashboardResponse } from "./schema.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -132,13 +132,15 @@ Deno.serve(async (req) => {
       }
     }
 
-    return jsonResponse({
+    const ret: DashboardResponse = {
       balance: income - expenses,
       income,
       expenses,
       incomeCategories,
       expenseCategories,
-    });
+    };
+
+    return jsonResponse(ret);
   } catch (error) {
     console.error(error);
 

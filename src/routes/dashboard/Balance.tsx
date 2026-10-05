@@ -14,7 +14,7 @@ function BalanceCard({ title, amount }: { title: string; amount?: string }) {
 				{amount === undefined ? (
 					<Spinner />
 				) : (
-					<p className="text-2xl font-semibold">{amount}</p>
+					<p className="text-end text-2xl font-semibold">{amount}</p>
 				)}
 			</CardContent>
 		</Card>
