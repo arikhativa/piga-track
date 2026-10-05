@@ -1,5 +1,5 @@
 import { and, eq, gte, lt, sql } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 import { transaction, transactionCategory } from "../../../src/db/schema.ts";
@@ -163,12 +163,15 @@ Deno.serve(async (req) => {
       }
     }
 
+    const monthly = await getMonthly(db);
+
     const response: DashboardResponse = {
       balance: income + expenses,
       income,
       expenses,
       incomeCategories,
       expenseCategories,
+      monthly,
     };
 
     return jsonResponse(response);
@@ -185,3 +188,137 @@ Deno.serve(async (req) => {
     await client?.end();
   }
 });
+
+async function getMonthly(
+  db: PostgresJsDatabase<Record<string, never>> & {
+    // deno-lint-ignore ban-types
+    $client: postgres.Sql<{}>;
+  },
+) {
+  const monthlyRows = await db
+    .select({
+      month: sql<string>`
+				to_char(
+					date_trunc(
+						'month',
+						${transaction.transaction_at} - interval '8 days'
+					),
+					'YYYY-MM'
+				)
+			`,
+
+      categoryId: transactionCategory.id,
+      isIncome: transactionCategory.is_income,
+      isExpense: transactionCategory.is_expense,
+
+      total: sql<string>`
+				coalesce(sum(${transaction.amount_nis}), 0)
+			`,
+
+      positive: sql<string>`
+				coalesce(
+					sum(
+						case
+							when ${transaction.amount_nis} > 0
+							then ${transaction.amount_nis}
+							else 0
+						end
+					),
+					0
+				)
+			`,
+
+      negative: sql<string>`
+				coalesce(
+					sum(
+						case
+							when ${transaction.amount_nis} < 0
+							then ${transaction.amount_nis}
+							else 0
+						end
+					),
+					0
+				)
+			`,
+    })
+    .from(transaction)
+    .innerJoin(
+      transactionCategory,
+      eq(transaction.category_id, transactionCategory.id),
+    )
+    .where(
+      and(
+        gte(
+          transaction.transaction_at,
+          new Date(
+            new Date().getFullYear(),
+            new Date().getMonth() - 6,
+            9,
+          ),
+        ),
+        lt(transaction.transaction_at, new Date()),
+      ),
+    )
+    .groupBy(
+      sql`
+				date_trunc(
+					'month',
+					${transaction.transaction_at} - interval '8 days'
+				)
+			`,
+      transactionCategory.id,
+      transactionCategory.is_income,
+      transactionCategory.is_expense,
+    )
+    .orderBy(
+      sql`
+				date_trunc(
+					'month',
+					${transaction.transaction_at} - interval '8 days'
+				)
+			`,
+    );
+
+  const monthly = new Map<
+    string,
+    { income: number; expenses: number }
+  >();
+
+  for (const row of monthlyRows) {
+    const current = monthly.get(row.month) ?? {
+      income: 0,
+      expenses: 0,
+    };
+
+    const total = Number(row.total);
+    const positive = Number(row.positive);
+    const negative = Number(row.negative);
+
+    // Both income + expense:
+    // split positive and negative.
+    if (row.isIncome && row.isExpense) {
+      current.income += positive;
+      current.expenses += negative;
+    }
+
+    // Income only:
+    // use the signed total.
+    if (row.isIncome && !row.isExpense) {
+      current.income += total;
+    }
+
+    // Expense only:
+    // use the signed total.
+    if (row.isExpense && !row.isIncome) {
+      current.expenses += total;
+    }
+
+    monthly.set(row.month, current);
+  }
+
+  return [...monthly.entries()].map(([month, values]) => ({
+    month,
+    income: values.income,
+    expenses: values.expenses,
+  }));
+}

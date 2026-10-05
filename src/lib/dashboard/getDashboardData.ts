@@ -21,6 +21,11 @@ type DashboardResponse = {
         category: string;
         amount: number;
     }[];
+    monthly: {
+        month: string;
+        income: number;
+        expenses: number;
+    }[];
 };
 
 export async function getDashboardData(

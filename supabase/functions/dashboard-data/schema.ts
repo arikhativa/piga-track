@@ -5,7 +5,7 @@ export const dashboardRequestSchema = z.object({
   to: z.iso.datetime(),
 });
 
-const dashboardResponseSchema = z.object({
+export const dashboardResponseSchema = z.object({
   balance: z.number(),
   income: z.number(),
   expenses: z.number(),
@@ -23,6 +23,14 @@ const dashboardResponseSchema = z.object({
       categoryId: z.number(),
       category: z.string(),
       amount: z.number(),
+    }),
+  ),
+
+  monthly: z.array(
+    z.object({
+      month: z.string(),
+      income: z.number(),
+      expenses: z.number(),
     }),
   ),
 });

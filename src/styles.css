@@ -65,6 +65,9 @@ body {
   --color-expense: var(--color-pink-300);
   --color-income: var(--color-green-300);
   --color-balance: var(--color-blue-300);
+
+  --color-income-chart: var(--color-green-300);
+	--color-expense-chart: var(--color-pink-300);
 }
 
 :root {
