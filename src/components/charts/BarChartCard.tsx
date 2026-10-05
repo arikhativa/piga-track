@@ -39,7 +39,7 @@ interface BarChartCard {
 	desc?: string;
 	data: ChartData[];
 }
-
+// TODO maybe delete
 export function BarChartCard({ title, desc, data }: BarChartCard) {
 	return (
 		<Card>

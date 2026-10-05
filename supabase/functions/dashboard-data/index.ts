@@ -1,9 +1,10 @@
-import { transaction, transactionCategory } from "../../../src/db/schema.ts";
+import { and, eq, gte, lt, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+
+import { transaction, transactionCategory } from "../../../src/db/schema.ts";
 import { jsonResponse } from "../../helper.ts";
-import { and, eq, gte, lt, sql } from "drizzle-orm";
-import { dashboardRequestSchema, DashboardResponse } from "./schema.ts";
+import { dashboardRequestSchema, type DashboardResponse } from "./schema.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -37,23 +38,22 @@ Deno.serve(async (req) => {
       );
     }
 
-    const body = result.data;
-
-    const from = new Date(body.from);
-    const to = new Date(body.to);
-
-    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) {
-      throw new Error("Invalid date range");
-    }
+    const { from, to } = result.data;
 
     const rows = await db
       .select({
         categoryId: transactionCategory.id,
         category: transactionCategory.value,
-        is_income: transactionCategory.is_income,
-        is_expense: transactionCategory.is_expense,
+        isIncome: transactionCategory.is_income,
+        isExpense: transactionCategory.is_expense,
 
-        income: sql<string>`
+        // Used for income-only / expense-only categories.
+        total: sql<string>`
+					coalesce(sum(${transaction.amount_nis}), 0)
+				`,
+
+        // Used for categories that are both.
+        positive: sql<string>`
 					coalesce(
 						sum(
 							case
@@ -66,12 +66,12 @@ Deno.serve(async (req) => {
 					)
 				`,
 
-        expenses: sql<string>`
+        negative: sql<string>`
 					coalesce(
 						sum(
 							case
 								when ${transaction.amount_nis} < 0
-								then abs(${transaction.amount_nis})
+								then ${transaction.amount_nis}
 								else 0
 							end
 						),
@@ -86,8 +86,8 @@ Deno.serve(async (req) => {
       )
       .where(
         and(
-          gte(transaction.transaction_at, from),
-          lt(transaction.transaction_at, to),
+          gte(transaction.transaction_at, new Date(from)),
+          lt(transaction.transaction_at, new Date(to)),
         ),
       )
       .groupBy(
@@ -100,47 +100,78 @@ Deno.serve(async (req) => {
     let income = 0;
     let expenses = 0;
 
-    const incomeCategories = [];
-    const expenseCategories = [];
+    const incomeCategories: DashboardResponse["incomeCategories"] = [];
+    const expenseCategories: DashboardResponse["expenseCategories"] = [];
 
     for (const row of rows) {
-      const rowIncome = Number(row.income);
-      const rowExpenses = Number(row.expenses);
+      const total = Number(row.total);
+      const positive = Number(row.positive);
+      const negative = Number(row.negative);
 
-      if (row.is_income) {
-        income += rowIncome;
+      // Both income + expense:
+      // split positive and negative transactions.
+      if (row.isIncome && row.isExpense) {
+        if (positive !== 0) {
+          income += positive;
 
-        if (rowIncome !== 0) {
           incomeCategories.push({
             categoryId: row.categoryId,
             category: row.category,
-            amount: rowIncome,
+            amount: positive,
+          });
+        }
+
+        if (negative !== 0) {
+          expenses += negative;
+
+          expenseCategories.push({
+            categoryId: row.categoryId,
+            category: row.category,
+            amount: negative,
+          });
+        }
+
+        continue;
+      }
+
+      // Income only:
+      // sum all transactions.
+      if (row.isIncome) {
+        income += total;
+
+        if (total !== 0) {
+          incomeCategories.push({
+            categoryId: row.categoryId,
+            category: row.category,
+            amount: total,
           });
         }
       }
 
-      if (row.is_expense) {
-        expenses += rowExpenses;
+      // Expense only:
+      // sum all transactions.
+      if (row.isExpense) {
+        expenses += total;
 
-        if (rowExpenses !== 0) {
+        if (total !== 0) {
           expenseCategories.push({
             categoryId: row.categoryId,
             category: row.category,
-            amount: rowExpenses,
+            amount: total,
           });
         }
       }
     }
 
-    const ret: DashboardResponse = {
-      balance: income - expenses,
+    const response: DashboardResponse = {
+      balance: income + expenses,
       income,
       expenses,
       incomeCategories,
       expenseCategories,
     };
 
-    return jsonResponse(ret);
+    return jsonResponse(response);
   } catch (error) {
     console.error(error);
 
