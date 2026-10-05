@@ -1,4 +1,6 @@
-import type { PropsWithChildren } from "react";
+import { cn } from "cn";
+import { Minus, Plus } from "lucide-react";
+import type { ReactNode } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
 import { Item, ItemContent, ItemTitle } from "#/components/ui/item";
 import { Spinner } from "#/components/ui/spinner";
@@ -19,12 +21,15 @@ function CategoryItem({ title, amount }: { title: string; amount: number }) {
 
 function BalanceCard({
 	title,
+	className,
 	children,
-}: { title: string } & PropsWithChildren) {
+	icon,
+}: { title: string; icon?: ReactNode } & React.ComponentProps<"div">) {
 	return (
-		<Card className="">
-			<CardHeader>
+		<Card className={className}>
+			<CardHeader className="flex justify-between">
 				<CardTitle>{title}</CardTitle>
+				{icon}
 			</CardHeader>
 			<CardContent>{children}</CardContent>
 		</Card>
@@ -48,9 +53,21 @@ export function BalanceByCategory({ dateRange }: { dateRange: DateRange }) {
 
 	return (
 		<div className="grid gap-4 md:grid-cols-2">
-			<BalanceCard title="Expenses">{expenseList}</BalanceCard>
+			<BalanceCard
+				icon={<Minus className=" bg-pink-200 p-1 text-pink-600 rounded-full" />}
+				title="Expenses"
+			>
+				{expenseList}
+			</BalanceCard>
 
-			<BalanceCard title="Income">{incomeList}</BalanceCard>
+			<BalanceCard
+				icon={
+					<Plus className=" bg-green-200 p-1 text-green-600 rounded-full" />
+				}
+				title="Income"
+			>
+				{incomeList}
+			</BalanceCard>
 		</div>
 	);
 }

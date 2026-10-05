@@ -39,18 +39,18 @@ export function Balance({ dateRange }: { dateRange: DateRange }) {
 	return (
 		<div className="flex gap-4 items-center ">
 			<BalanceCard
-				className="border-pink-300"
+				className="border-expense"
 				title={"Expenses"}
 				amount={isLoading ? undefined : formatNIS(expenses)}
 			/>
 			<BalanceCard
-				className="border-green-300"
+				className="border-income"
 				title={"Income"}
 				amount={isLoading ? undefined : formatNIS(income)}
 			/>
 			<Separator orientation="vertical" />
 			<BalanceCard
-				className="border-blue-300"
+				className="border-balance"
 				title={"Balance"}
 				amount={isLoading ? undefined : formatNIS(balance)}
 			/>
