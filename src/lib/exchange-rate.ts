@@ -201,6 +201,9 @@ export async function getExchangeRate(
 	return queryClient.query({
 		queryKey: ["exchange-rate", isoCode, dateString],
 		queryFn: async (): Promise<number | null> => {
+			if (isoCode === BASE_CURRENCY) {
+				return 1;
+			}
 			const existing = await getExchangeRateFromDB(
 				isoCode,
 				dateString,

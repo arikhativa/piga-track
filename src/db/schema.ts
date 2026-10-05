@@ -65,6 +65,8 @@ export const transactionProject = pgTable("transaction_project", {
 export const transactionCategory = pgTable("transaction_category", {
 	id: serial("id").primaryKey(),
 	value: text("value").notNull(),
+	is_income: boolean("is_income").default(false).notNull(),
+	is_expense: boolean("is_expense").default(true).notNull(),
 });
 
 export const currency = pgTable("currency", {

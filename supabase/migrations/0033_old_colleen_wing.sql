@@ -1,0 +1,2 @@
+ALTER TABLE "transaction_category" ADD COLUMN "is_income" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+ALTER TABLE "transaction_category" ADD COLUMN "is_expense" boolean DEFAULT true NOT NULL;
