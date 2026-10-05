@@ -2,6 +2,7 @@ import { Separator } from "#/components/ui/separator";
 import { useDashboardDateRange } from "#/hooks/use-dashboard-date-range";
 import { Balance } from "#/routes/dashboard/Balance";
 import { BalanceByCategory } from "#/routes/dashboard/BalanceByCategory";
+import { BarChartFilter } from "#/routes/dashboard/BarChartFilter";
 import { BarChartSection } from "#/routes/dashboard/BarChartSection";
 import { DashboardFilters } from "#/routes/dashboard/DashboardFilters";
 
@@ -9,7 +10,7 @@ export function Dashboard() {
 	const [dateRange, setDateRange] = useDashboardDateRange();
 
 	return (
-		<article className="pt-10 flex flex-col gap-4">
+		<article className="pt-10 pb-6 flex flex-col gap-4">
 			<DashboardFilters value={dateRange} onChange={setDateRange} />
 			<Separator />
 			<Balance dateRange={dateRange} />
@@ -17,6 +18,8 @@ export function Dashboard() {
 			<BalanceByCategory dateRange={dateRange} />
 			<Separator />
 			<BarChartSection dateRange={dateRange} />
+			<Separator />
+			<BarChartFilter dateRange={dateRange} />
 		</article>
 	);
 }

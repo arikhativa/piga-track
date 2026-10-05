@@ -24,7 +24,7 @@ function BalanceCard({
 				{amount === undefined ? (
 					<Spinner />
 				) : (
-					<p className="text-end text-2xl font-semibold">{amount}</p>
+					<p className="text-end md:text-2xl text-xl font-semibold">{amount}</p>
 				)}
 			</CardContent>
 		</Card>
