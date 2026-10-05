@@ -8,7 +8,7 @@ import { formatNIS } from "#/lib/format/formatNIS";
 
 function CategoryItem({ title, amount }: { title: string; amount: number }) {
 	return (
-		<Item className="bg-background">
+		<Item className="bg-background border-2 border-border">
 			<ItemContent className="flex  flex-row justify-between">
 				<ItemTitle>{title}</ItemTitle>
 				<p>{formatNIS(amount)}</p>
@@ -48,9 +48,9 @@ export function BalanceByCategory({ dateRange }: { dateRange: DateRange }) {
 
 	return (
 		<div className="grid gap-4 md:grid-cols-2">
-			<BalanceCard title="Income">{incomeList}</BalanceCard>
-
 			<BalanceCard title="Expenses">{expenseList}</BalanceCard>
+
+			<BalanceCard title="Income">{incomeList}</BalanceCard>
 		</div>
 	);
 }
