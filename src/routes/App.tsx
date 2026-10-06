@@ -1,4 +1,3 @@
-import { NuqsAdapter } from 'nuqs/adapters/react'
 import {
 	Bookmark,
 	ChartGantt,
@@ -9,6 +8,7 @@ import {
 	PiggyBank,
 	Tags,
 } from "lucide-react";
+import { NuqsAdapter } from "nuqs/adapters/react";
 import { CustomRoutes, Resource } from "ra-core";
 import { Route } from "react-router-dom";
 import { Admin } from "#/components/admin";
@@ -17,12 +17,12 @@ import { supabaseAuthProvider } from "#/lib/authProvider";
 import { supabaseDataProvider } from "#/lib/dataProvider";
 import { getIdentity } from "#/lib/getIdentity";
 import { supabaseClient } from "#/lib/supabaseClient";
-import { TransactionTagCreate } from "#/routes/transactionTag/TransactionTagCreate";
-import { TransactionTagEdit } from "#/routes/transactionTag/TransactionTagEdit";
-import { TransactionTagList } from "#/routes/transactionTag/TransactionTagList";
 import { TransactionCreate } from "#/routes/transaction/TransactionCreate";
 import { TransactionEdit } from "#/routes/transaction/TransactionEdit";
 import { TransactionList } from "#/routes/transaction/TransactionList";
+import { TransactionTagCreate } from "#/routes/transactionTag/TransactionTagCreate";
+import { TransactionTagEdit } from "#/routes/transactionTag/TransactionTagEdit";
+import { TransactionTagList } from "#/routes/transactionTag/TransactionTagList";
 
 import "../styles.css";
 import { CategoryCreate } from "#/routes/category/CategoryCreate";
@@ -63,89 +63,89 @@ const authProvider = supabaseAuthProvider(supabaseClient, { getIdentity });
 
 export function App() {
 	return (
-		  <NuqsAdapter>
-		<TooltipProvider>
-			<Admin authProvider={authProvider} dataProvider={dataProvider}>
-				<CustomRoutes>
-					<Route path="/" element={<Home />} />
-					<Route path="/profile" element={<ProfileBaseEdit />} />
-					<Route path="/defaults" element={<DefaultsBaseEdit />} />
-					<Route path="/dashboard" element={<Dashboard />} />
-				</CustomRoutes>
+		<NuqsAdapter>
+			<TooltipProvider>
+				<Admin authProvider={authProvider} dataProvider={dataProvider}>
+					<CustomRoutes>
+						<Route path="/" element={<Home />} />
+						<Route path="/profile" element={<ProfileBaseEdit />} />
+						<Route path="/defaults" element={<DefaultsBaseEdit />} />
+						<Route path="/dashboard" element={<Dashboard />} />
+					</CustomRoutes>
 
-				{/* Tables */}
-				<Resource
-					name="transaction"
-					list={TransactionList}
-					edit={TransactionEdit}
-					create={TransactionCreate}
-					options={{ table: true }}
-					icon={HandCoins}
-				/>
-				<Resource
-					name="transaction_category"
-					options={{ label: "Categories", table: true }}
-					list={CategoryList}
-					edit={CategoryEdit}
-					create={CategoryCreate}
-					icon={Bookmark}
-				/>
-				<Resource
-					name="transaction_project"
-					options={{ label: "Projects", table: true }}
-					list={ProjectList}
-					edit={ProjectEdit}
-					show={ProjectShow}
-					create={ProjectCreate}
-					icon={ChartGantt}
-				/>
+					{/* Tables */}
+					<Resource
+						name="transaction"
+						list={TransactionList}
+						edit={TransactionEdit}
+						create={TransactionCreate}
+						options={{ table: true }}
+						icon={HandCoins}
+					/>
+					<Resource
+						name="transaction_category"
+						options={{ label: "Categories", table: true }}
+						list={CategoryList}
+						edit={CategoryEdit}
+						create={CategoryCreate}
+						icon={Bookmark}
+					/>
+					<Resource
+						name="transaction_project"
+						options={{ label: "Projects", table: true }}
+						list={ProjectList}
+						edit={ProjectEdit}
+						show={ProjectShow}
+						create={ProjectCreate}
+						icon={ChartGantt}
+					/>
 
-				{/* Import */}
-				<Resource
-					name="import_batch"
-					options={{ importCSV: true, label: "Batch" }}
-					create={ImportBatchCreate}
-					list={ImportBatchList}
-					edit={ImportBatchEdit}
-					show={ImportBatchShow}
-					icon={Import}
-				/>
-				<Resource
-					name="import_profile"
-					options={{ importCSV: true, label: "Import Profile" }}
-					list={ImportProfileList}
-					edit={ImportProfileEdit}
-					create={ImportProfileCreate}
-					icon={FileSliders}
-				/>
+					{/* Import */}
+					<Resource
+						name="import_batch"
+						options={{ importCSV: true, label: "Batch" }}
+						create={ImportBatchCreate}
+						list={ImportBatchList}
+						edit={ImportBatchEdit}
+						show={ImportBatchShow}
+						icon={Import}
+					/>
+					<Resource
+						name="import_profile"
+						options={{ importCSV: true, label: "Import Profile" }}
+						list={ImportProfileList}
+						edit={ImportProfileEdit}
+						create={ImportProfileCreate}
+						icon={FileSliders}
+					/>
 
-				{/* Utils */}
-				<Resource
-					name="transaction_tag"
-					options={{ label: "Tags", util: true }}
-					list={TransactionTagList}
-					edit={TransactionTagEdit}
-					create={TransactionTagCreate}
-					icon={Tags}
-				/>
-				<Resource
-					name="currency"
-					options={{ util: true }}
-					list={CurrencyList}
-					edit={CurrencyEdit}
-					create={CurrencyCreate}
-					icon={Coins}
-				/>
-				<Resource
-					name="transaction_type"
-					options={{ label: "Money pots", util: true }}
-					list={PotList}
-					edit={PotEdit}
-					create={PotCreate}
-					icon={PiggyBank}
-				/>
-			</Admin>
-		</TooltipProvider>
+					{/* Utils */}
+					<Resource
+						name="transaction_tag"
+						options={{ label: "Tags", util: true }}
+						list={TransactionTagList}
+						edit={TransactionTagEdit}
+						create={TransactionTagCreate}
+						icon={Tags}
+					/>
+					<Resource
+						name="currency"
+						options={{ util: true }}
+						list={CurrencyList}
+						edit={CurrencyEdit}
+						create={CurrencyCreate}
+						icon={Coins}
+					/>
+					<Resource
+						name="transaction_type"
+						options={{ label: "Money pots", util: true }}
+						list={PotList}
+						edit={PotEdit}
+						create={PotCreate}
+						icon={PiggyBank}
+					/>
+				</Admin>
+			</TooltipProvider>
 		</NuqsAdapter>
 	);
 }

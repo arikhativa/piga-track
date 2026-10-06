@@ -9,6 +9,7 @@ import {
 	useResourceDefinitions,
 } from "ra-core";
 import { createElement } from "react";
+import { DevBadge } from "#/components/DevBadge";
 import PixelIcon from "#/components/icon/lord pigafetta";
 import {
 	Sidebar,
@@ -81,6 +82,7 @@ export function AppSidebar() {
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
+						<DevBadge />
 						<SidebarMenuButton
 							render={<LinkBase to="/" />}
 							className={cn(
