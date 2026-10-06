@@ -188,7 +188,7 @@ export const resolveAmountNis = ({
 		return null;
 	}
 
-	return Math.abs(amount) * rate;
+	return amount * rate;
 };
 
 export async function getExchangeRate(

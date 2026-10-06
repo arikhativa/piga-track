@@ -1,8 +1,8 @@
-import { and, gte, inArray, lt, sql } from "drizzle-orm";
+import { and, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import { transaction } from "../../../src/db/schema.ts";
+import { transaction, transactionCategory } from "../../../src/db/schema.ts";
 
 import { jsonResponse } from "../../helper.ts";
 import {
@@ -18,7 +18,6 @@ Deno.serve(async (req) => {
   let client;
 
   try {
-    // TODO: the db logic should be in a helper
     const connectionString = Deno.env.get("SUPABASE_DB_URL");
 
     if (!connectionString) {
@@ -82,45 +81,121 @@ Deno.serve(async (req) => {
       );
     }
 
-    const bucketExpression = bucket === "billing_month"
+    const bucketExpression = bucket === "calendar_month"
       ? sql`
-					date_trunc(
-						'month',
-						${transaction.transaction_at} - interval '8 days'
-					)
-				`
-      : bucket === "calendar_month"
-      ? sql`
-						date_trunc(
-							'month',
-							${transaction.transaction_at}
-						)
-					`
+				date_trunc(
+					'month',
+					${transaction.transaction_at}
+				)
+			`
       : sql`null`;
 
     const rows = await db
       .select({
         bucket: bucketExpression,
-        amount: sql<string>`
+
+        isIncome: transactionCategory.is_income,
+        isExpense: transactionCategory.is_expense,
+
+        total: sql<string>`
 					coalesce(
 						sum(${transaction.amount_nis}),
 						0
 					)
 				`,
+
+        income: sql<string>`
+					coalesce(
+						sum(
+							case
+								when ${transaction.amount_nis} > 0
+								then ${transaction.amount_nis}
+								else 0
+							end
+						),
+						0
+					)
+				`,
+
+        expense: sql<string>`
+					coalesce(
+						sum(
+							case
+								when ${transaction.amount_nis} < 0
+								then ${transaction.amount_nis}
+								else 0
+							end
+						),
+						0
+					)
+				`,
       })
       .from(transaction)
+      .innerJoin(
+        transactionCategory,
+        eq(
+          transaction.category_id,
+          transactionCategory.id,
+        ),
+      )
       .where(and(...conditions))
-      .groupBy(bucketExpression)
+      .groupBy(
+        bucketExpression,
+        transactionCategory.is_income,
+        transactionCategory.is_expense,
+      )
       .orderBy(bucketExpression);
 
-    const buckets = rows.map((row) => ({
-      bucket: row.bucket === null
+    const buckets = rows.flatMap((row) => {
+      const bucketName = row.bucket === null
         ? "total"
         : row.bucket instanceof Date
         ? row.bucket.toISOString().slice(0, 7)
-        : String(row.bucket),
-      amount: Number(row.amount),
-    }));
+        : String(row.bucket);
+
+      const total = Number(row.total);
+      const income = Number(row.income);
+      const expense = Number(row.expense);
+
+      // Category can represent both income and expense.
+      if (row.isIncome && row.isExpense) {
+        const result = [];
+
+        if (income !== 0) {
+          result.push({
+            bucket: bucketName,
+            amount: income,
+            type: "income" as const,
+          });
+        }
+
+        if (expense !== 0) {
+          result.push({
+            bucket: bucketName,
+            amount: expense,
+            type: "expense" as const,
+          });
+        }
+
+        return result;
+      }
+
+      // Income-only category.
+      if (row.isIncome) {
+        return [{
+          bucket: bucketName,
+          amount: total,
+          type: "income" as const,
+        }];
+      }
+
+      // Expense-only category.
+      return [{
+        bucket: bucketName,
+        amount: total,
+        type: "expense" as const,
+      }];
+    });
 
     const response: TransactionDataResponse = {
       total: buckets.reduce(

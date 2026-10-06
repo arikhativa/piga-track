@@ -8,7 +8,6 @@ export const transactionDataRequestSchema = z.object({
 
   bucket: z.enum([
     "none",
-    "billing_month",
     "calendar_month",
   ]),
 
@@ -21,11 +20,18 @@ export type TransactionDataRequest = z.infer<
   typeof transactionDataRequestSchema
 >;
 
-export type TransactionDataResponse = {
-  total: number;
+export const transactionDataResponseSchema = z.object({
+  total: z.number(),
 
-  buckets: {
-    bucket: string;
-    amount: number;
-  }[];
-};
+  buckets: z.array(
+    z.object({
+      bucket: z.string(),
+      amount: z.number(),
+      type: z.enum(["income", "expense"]),
+    }),
+  ),
+});
+
+export type TransactionDataResponse = z.infer<
+  typeof transactionDataResponseSchema
+>;

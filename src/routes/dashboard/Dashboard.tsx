@@ -5,6 +5,7 @@ import { BalanceByCategory } from "#/routes/dashboard/BalanceByCategory";
 import { BarChartFilter } from "#/routes/dashboard/BarChartFilter";
 import { BarChartSection } from "#/routes/dashboard/BarChartSection";
 import { DashboardFilters } from "#/routes/dashboard/DashboardFilters";
+import { DashboardSection } from "#/routes/dashboard/DashboardSection";
 
 export function Dashboard() {
 	const [dateRange, setDateRange] = useDashboardDateRange();
@@ -19,7 +20,9 @@ export function Dashboard() {
 			<Separator />
 			<BarChartSection dateRange={dateRange} />
 			<Separator />
-			<BarChartFilter dateRange={dateRange} />
+			<DashboardSection title="Compare by category">
+				<BarChartFilter dateRange={dateRange} />
+			</DashboardSection>
 		</article>
 	);
 }

@@ -1,12 +1,12 @@
 import { supabaseClient } from "#/lib/supabaseClient";
 
 // NOTE - this is based on the edge func schema
-type TransactionDataRequest = {
+export type TransactionDataRequest = {
     dateRange: {
         from: string;
         to: string;
     };
-    bucket: "none" | "billing_month" | "calendar_month";
+    bucket: "none" | "calendar_month";
     category_list: number[];
     tag_list: number[];
     project_list: number[];
@@ -18,6 +18,7 @@ type TransactionDataResponse = {
     buckets: {
         bucket: string;
         amount: number;
+        type: "income" | "expense";
     }[];
 };
 

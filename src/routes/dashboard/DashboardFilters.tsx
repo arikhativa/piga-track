@@ -25,14 +25,14 @@ type Preset = {
 };
 
 const getMonthRange = (year: number, month: number) => ({
-	from: new Date(year, month - 1, 9, 0, 0, 0, 0),
-	to: new Date(year, month, 8, 23, 59, 59, 999),
+	from: new Date(year, month - 1, 1, 0, 0, 0, 0),
+	to: new Date(year, month, 0, 23, 59, 59, 999),
 });
 
 const getPresets = (): Preset[] => {
 	const now = new Date();
 
-	return Array.from({ length: 6 }, (_, index) => {
+	return Array.from({ length: 7 }, (_, index) => {
 		const monthOffset = index - 6;
 
 		const date = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
@@ -92,7 +92,7 @@ export function DashboardFilters({ value, onChange }: DashboardFiltersProps) {
 				value={selectedPreset?.value ?? ""}
 				onValueChange={handlePresetChange}
 			>
-				<SelectTrigger className="w-[180px]">
+				<SelectTrigger className="">
 					<SelectValue placeholder="Select month">
 						{selectedPreset?.label}
 					</SelectValue>
