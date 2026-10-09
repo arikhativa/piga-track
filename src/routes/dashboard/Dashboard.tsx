@@ -21,7 +21,10 @@ export function Dashboard() {
 			<BarChartSection dateRange={dateRange} />
 			<Separator />
 			<DashboardSection title="Compare by category">
-				<BarChartFilter dateRange={dateRange} />
+				<BarChartFilter filterType="category" dateRange={dateRange} />
+			</DashboardSection>
+			<DashboardSection title="Compare by content">
+				<BarChartFilter filterType="tag" dateRange={dateRange} />
 			</DashboardSection>
 		</article>
 	);

@@ -3,24 +3,36 @@ import { useMemo, useState } from "react";
 import { BarChartMultiple } from "#/components/charts/BarChartMultiple";
 import { BarChartSingle } from "#/components/charts/BarChartSingle";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
-import type { TransactionCategory } from "#/db/schema";
+import type { TransactionCategory, TransactionTag } from "#/db/schema";
 import type { DateRange } from "#/hooks/use-dashboard-date-range";
 import { useTransactionData } from "#/hooks/use-transaction-data";
 
-export function BarChartFilter({ dateRange }: { dateRange: DateRange }) {
-	const [categoryId, setCategoryId] = useState<number | undefined>();
+type FilterType = "category" | "tag";
+
+type BarChartFilterProps = {
+	dateRange: DateRange;
+	filterType: FilterType;
+};
+
+export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
+	const [selectedId, setSelectedId] = useState<number | undefined>();
+
+	const isCategory = filterType === "category";
 
 	const { data: categories = [], isPending: isCategoriesPending } =
 		useGetList<TransactionCategory>("transaction_category", {
-			pagination: {
-				page: 1,
-				perPage: 1000,
-			},
-			sort: {
-				field: "value",
-				order: "ASC",
-			},
+			pagination: { page: 1, perPage: 1000 },
+			sort: { field: "value", order: "ASC" },
 		});
+
+	const { data: tags = [], isPending: isTagsPending } =
+		useGetList<TransactionTag>("transaction_tag", {
+			pagination: { page: 1, perPage: 1000 },
+			sort: { field: "value", order: "ASC" },
+		});
+
+	const choices = isCategory ? categories : tags;
+	const isChoicesPending = isCategory ? isCategoriesPending : isTagsPending;
 
 	const transactionDateRange = useMemo(
 		() => ({
@@ -37,8 +49,9 @@ export function BarChartFilter({ dateRange }: { dateRange: DateRange }) {
 	const { data } = useTransactionData({
 		dateRange: transactionDateRange,
 		bucket: "calendar_month",
-		category_list: categoryId ? [categoryId] : [],
-		enabled: !!categoryId,
+		category_list: isCategory && selectedId ? [selectedId] : [],
+		tag_list: !isCategory && selectedId ? [selectedId] : [],
+		enabled: selectedId !== undefined,
 	});
 
 	const buckets = data?.buckets ?? [];
@@ -55,14 +68,7 @@ export function BarChartFilter({ dateRange }: { dateRange: DateRange }) {
 
 	const multipleData = Object.values(
 		buckets.reduce<
-			Record<
-				string,
-				{
-					month: string;
-					income: number;
-					expenses: number;
-				}
-			>
+			Record<string, { month: string; income: number; expenses: number }>
 		>((result, bucket) => {
 			const current = result[bucket.bucket] ?? {
 				month: bucket.bucket,
@@ -71,30 +77,29 @@ export function BarChartFilter({ dateRange }: { dateRange: DateRange }) {
 			};
 
 			if (bucket.type === "income") {
-				current.income = Math.abs(bucket.amount);
+				current.income += Math.abs(bucket.amount);
 			}
 
 			if (bucket.type === "expense") {
-				current.expenses = Math.abs(bucket.amount);
+				current.expenses += Math.abs(bucket.amount);
 			}
 
 			result[bucket.bucket] = current;
-
 			return result;
 		}, {}),
 	);
 
 	return (
-		<div className="space-y-4">
+		<>
 			<DynamicSelect
 				className="max-w-lg"
-				choices={categories}
+				choices={choices}
 				optionText="value"
-				value={categoryId}
-				emptyText="Category"
-				isPending={isCategoriesPending}
+				value={selectedId}
+				emptyText={isCategory ? "Category" : "Tag"}
+				isPending={isChoicesPending}
 				onChange={(value) => {
-					setCategoryId(value ? Number(value) : undefined);
+					setSelectedId(value ? Number(value) : undefined);
 				}}
 			/>
 
@@ -103,6 +108,6 @@ export function BarChartFilter({ dateRange }: { dateRange: DateRange }) {
 			) : (
 				<BarChartSingle data={singleData} title="" />
 			)}
-		</div>
+		</>
 	);
 }

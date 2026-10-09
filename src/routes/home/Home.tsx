@@ -32,7 +32,7 @@ export function Home() {
 			</div>
 
 			<div className="flex justify-center items-center">
-				<Button render={<Link to="/transaction/create" />}>
+				<Button nativeButton={false} render={<Link to="/transaction/create" />}>
 					<Plus />
 					<span>New Transaction</span>
 				</Button>

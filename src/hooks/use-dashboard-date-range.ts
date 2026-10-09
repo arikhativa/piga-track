@@ -17,10 +17,10 @@ const toDate = (value: string, endOfDay = false) => {
         year,
         month - 1,
         day,
-        endOfDay ? 23 : 0,
-        endOfDay ? 59 : 0,
-        endOfDay ? 59 : 0,
-        endOfDay ? 999 : 0,
+        0,
+        0,
+        endOfDay ? 0 : 0,
+        endOfDay ? 0 : 0,
     );
 };
 
@@ -41,16 +41,8 @@ export function useDashboardDateRange(): [
     const now = new Date();
 
     const defaultRange: DateRange = {
-        from: new Date(now.getFullYear(), now.getMonth() - 1, 9),
-        to: new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            8,
-            23,
-            59,
-            59,
-            999,
-        ),
+        from: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+        to: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999),
     };
 
     const dateRange: DateRange = {
