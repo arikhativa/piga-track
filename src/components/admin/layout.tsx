@@ -1,9 +1,13 @@
+import { ArrowLeft } from "lucide-react";
 import type { CoreLayoutProps } from "ra-core";
 import type { ErrorInfo } from "react";
 import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { Button } from "#/components/ui/button";
+import { useGoBack } from "#/hooks/use-go-back";
+import { useIsMobile } from "#/hooks/use-mobile";
 import { AppSidebar } from "@/components/admin/app-sidebar";
-import { Error } from "@/components/admin/error";
+import { Error as AdminError } from "@/components/admin/error";
 import { Loading } from "@/components/admin/loading";
 import { LocalesMenuButton } from "@/components/admin/locales-menu-button";
 import { Notification } from "@/components/admin/notification";
@@ -26,6 +30,11 @@ export const Layout = (props: CoreLayoutProps) => {
 	const handleError = (_: unknown, info: ErrorInfo) => {
 		setErrorInfo(info);
 	};
+
+	const isMobile = useIsMobile();
+
+	const { goBack, isFirstPage } = useGoBack();
+
 	return (
 		<SidebarProvider>
 			<AppSidebar />
@@ -41,7 +50,19 @@ export const Layout = (props: CoreLayoutProps) => {
 				)}
 			>
 				<header className="flex h-16 md:h-12 shrink-0 items-center gap-2 px-4">
-					<SidebarTrigger className="scale-125 sm:scale-100" />
+					{isMobile ? (
+						<SidebarTrigger className="scale-125 sm:scale-100" />
+					) : (
+						<Button
+							disabled={isFirstPage}
+							variant="ghost"
+							size="icon-sm"
+							onClick={goBack}
+						>
+							<ArrowLeft className="rtl:rotate-180" />
+							<span className="sr-only">Go Back</span>
+						</Button>
+					)}
 					<div className="flex-1 flex items-center" id="breadcrumb" />
 					<LocalesMenuButton />
 					<ThemeModeToggle />
@@ -51,7 +72,7 @@ export const Layout = (props: CoreLayoutProps) => {
 				<ErrorBoundary
 					onError={handleError}
 					fallbackRender={({ error, resetErrorBoundary }) => (
-						<Error
+						<AdminError
 							error={error}
 							errorInfo={errorInfo}
 							resetErrorBoundary={resetErrorBoundary}

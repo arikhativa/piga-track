@@ -13,7 +13,8 @@ import { getRowStateVariant } from "#/lib/variant/getRowStateVariant";
 import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
 import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
-import { DataTable, DateField, NumberField } from "@/components/admin";
+import { ImportRowTag } from "#/routes/importBatch/ImportRowTag";
+import { DataTable, DateField } from "@/components/admin";
 
 export const ImportRowDataTable = () => {
 	const { isSuccess, data: userProfile } = useProfile();
@@ -49,22 +50,6 @@ export const ImportRowDataTable = () => {
 				return ret;
 			}}
 		>
-			<DataTable.Col
-				label={"Row"}
-				cellClassName={navCellClass}
-				onCellClick={navToRealTrans}
-			>
-				<NumberField className="w-fit" source="row_number"></NumberField>
-			</DataTable.Col>
-
-			<DataTable.Col
-				cellClassName={navCellClass}
-				onCellClick={navToRealTrans}
-				label="Date"
-			>
-				<DateField source="date" />
-			</DataTable.Col>
-
 			<DataTableSignCol
 				cellClassName={navCellClass}
 				onCellClick={navToRealTrans}
@@ -82,8 +67,23 @@ export const ImportRowDataTable = () => {
 			<DataTable.Col
 				cellClassName={navCellClass}
 				onCellClick={navToRealTrans}
+				label="Date"
+			>
+				<DateField source="date" />
+			</DataTable.Col>
+
+			<DataTable.Col
+				cellClassName={navCellClass}
+				onCellClick={navToRealTrans}
 				source="description"
 			/>
+
+			<DataTable.Col
+				label="Content"
+				render={(record: ImportRow) => {
+					return <ImportRowTag record={record} />;
+				}}
+			></DataTable.Col>
 
 			<DataTable.Col
 				label="Category"

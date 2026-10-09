@@ -4,6 +4,7 @@ import {
   importBatch,
   importProfile,
   importRow,
+  NIS_ID,
   transaction,
 } from "../../../../src/db/schema.ts";
 import { validatePending } from "../lib/validate-import-rows.ts";
@@ -57,7 +58,8 @@ export const merge: ImportRowAction = async ({
     category_id: row.category_id,
     currency_id: profile.currency_id,
     transaction_type_id: profile.transaction_type_id,
-    amount: row.amount!,
+    amount: row.amount,
+    amount_nis: profile.currency_id === NIS_ID ? row.amount : null,
     description: row.description,
   }));
 

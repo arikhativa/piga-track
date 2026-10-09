@@ -8,7 +8,7 @@ import { importBatch, importRow, transaction } from "../../../src/db/schema.ts";
 const importRowSchema = z.object({
   row_number: z.number().int().positive(),
   date: z.string().nullable(),
-  amount: z.string().nullable(),
+  amount: z.string(),
   tag_value: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   category_id: z.number().int().nullable().optional(),
@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
           .where(
             and(
               sql`${transaction.transaction_at}::date = ${row.date}`,
-              eq(transaction.amount, row.amount!),
+              eq(transaction.amount, row.amount),
             ),
           )
           .limit(1);
