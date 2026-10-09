@@ -33,12 +33,16 @@ Deno.serve(async (req) => {
     const body = importRowActionSchema.parse(await req.json());
 
     const result = await db.transaction(async (tx) => {
-      const rows = await getImportRows(
-        tx,
-        body.import_row_ids,
-      );
+      let rows;
 
-      validateSameBatch(rows);
+      if (body.import_row_ids.length) {
+        rows = await getImportRows(
+          tx,
+          body.import_row_ids,
+        );
+
+        validateSameBatch(rows);
+      }
 
       const action = actions[body.action];
 
@@ -50,8 +54,8 @@ Deno.serve(async (req) => {
 
       return action({
         db: tx,
-        rows,
-        profileId: body.profile_id,
+        rows: rows || [],
+        profileId: body.profileId,
         value: body.value,
       });
     });

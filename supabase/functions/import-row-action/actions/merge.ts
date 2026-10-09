@@ -16,6 +16,8 @@ export const merge: ImportRowAction = async ({
   rows,
   profileId,
 }) => {
+  console.log("in merge");
+
   validatePending(rows);
 
   for (const row of rows) {

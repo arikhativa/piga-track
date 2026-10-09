@@ -1,6 +1,7 @@
 import type { ImportRowAction } from "../types.ts";
 
 import { merge } from "./merge.ts";
+import { mergeAllPending } from "./mergeAllPending.ts";
 import { setCategory } from "./set-category.ts";
 import { setProject } from "./set-project.ts";
 import { setStatus } from "./set-status.ts";
@@ -9,6 +10,7 @@ import { undo } from "./undo.ts";
 
 export const actions: Record<string, ImportRowAction> = {
   merge,
+  mergeAllPending,
   undo,
   set_category: setCategory,
   set_project: setProject,

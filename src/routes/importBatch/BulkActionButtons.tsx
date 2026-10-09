@@ -76,7 +76,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 
 			await importRowAction({
 				import_row_ids: selectedIds as number[],
-				profile_id: profileId,
+				profileId,
 				action: "set_category",
 				value: Number(value),
 			});
@@ -103,7 +103,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 
 			await importRowAction({
 				import_row_ids: selectedIds as number[],
-				profile_id: profileId,
+				profileId,
 				action: "set_project",
 				value: Number(value),
 			});
@@ -128,7 +128,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 
 			await importRowAction({
 				import_row_ids: selectedIds as number[],
-				profile_id: profileId,
+				profileId,
 				action: "merge",
 			});
 
@@ -152,7 +152,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 
 			await importRowAction({
 				import_row_ids: selectedIds as number[],
-				profile_id: profileId,
+				profileId,
 				action: "undo",
 			});
 

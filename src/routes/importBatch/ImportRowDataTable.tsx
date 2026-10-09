@@ -133,7 +133,7 @@ export const ImportRowDataTable = () => {
 									size="icon"
 									onClick={async () => {
 										await importRowAction({
-											profile_id: userProfile.id,
+											profileId: userProfile.id,
 											import_row_ids: [Number(record.id)],
 											action: "merge",
 										});
@@ -183,7 +183,7 @@ export const ImportRowDataTable = () => {
 										});
 									} else {
 										await importRowAction({
-											profile_id: userProfile.id,
+											profileId: userProfile.id,
 											import_row_ids: [Number(record.id)],
 											action: "undo",
 										});

@@ -16,9 +16,8 @@ export function ImportBatchDateRange({ id }: { id: ImportBatch["id"] }) {
 	const maxDate = dates.at(-1);
 	const minDate = dates[0];
 
-	if (!maxDate || !maxDate) {
-		console.error("ImportBatchDateRange: failed to find dates");
-		return "";
+	if (!maxDate) {
+		return toSmallDate(minDate);
 	}
 
 	return `${toSmallDate(minDate)} - ${toSmallDate(maxDate)}`;
