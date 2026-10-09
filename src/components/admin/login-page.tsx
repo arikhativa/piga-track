@@ -83,10 +83,6 @@ export const LoginPage = (props: { redirectTo?: string }) => {
 					<div className="w-full z-20 h-full  flex justify-center items-center">
 						<PixelIcon className="size-60 h-full" />
 					</div>
-					<div className="relative z-20 mt-auto flex justify-center  items-center gap-16">
-						<PiggyBank size={180} />
-						<Coins size={82} />
-					</div>
 				</div>
 				<div className="lg:p-8">
 					<div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">

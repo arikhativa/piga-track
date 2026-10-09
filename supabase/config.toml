@@ -437,7 +437,7 @@ entrypoint = "./functions/import-row-action/index.ts"
 
 [functions.dashboard-data]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 import_map = "./functions/dashboard-data/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -448,7 +448,7 @@ entrypoint = "./functions/dashboard-data/index.ts"
 
 [functions.get-transaction-data]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 import_map = "./functions/get-transaction-data/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
