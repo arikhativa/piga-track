@@ -3,6 +3,7 @@ import { Badge } from "#/components/ui/badge";
 import type { ImportBatch, ImportProfile } from "#/db/schema";
 import { importProfileOptionText } from "#/lib/form/importProfileOptionText";
 import { getBatchStatusVariant } from "#/lib/variant/getBatchStateVariant";
+import { ImportBatchDateRange } from "#/routes/importBatch/list/ImportBatchDateRange";
 import { DataTable, List, ReferenceField } from "@/components/admin";
 
 export const ImportBatchList = () => (
@@ -19,6 +20,13 @@ export const ImportBatchList = () => (
 					}
 				></ReferenceField>
 			</DataTable.Col>
+
+			<DataTable.Col
+				label="Date range"
+				render={(record: ImportBatch) => {
+					return <ImportBatchDateRange id={record.id} />;
+				}}
+			/>
 
 			<DataTable.Col
 				source="status"
