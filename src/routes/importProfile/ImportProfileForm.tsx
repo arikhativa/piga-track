@@ -20,7 +20,7 @@ export function ImportProfileForm() {
 				negative_amount_sign: true,
 			}}
 		>
-			<TextInput source="name" validate={required()} />
+			<TextInput autoFocus source="name" validate={required()} />
 
 			<ReferenceInput source="currency_id" reference="currency">
 				<SelectInput

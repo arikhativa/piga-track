@@ -5,9 +5,9 @@ export const ProjectList = () => (
 		<DataTable>
 			<DataTable.Col label="Name" source="value" />
 			<DataTable.Col
-				source="transaction_at"
+				source="created_at"
 				render={(record) =>
-					new Date(record.transaction_at).toLocaleDateString("he-IL")
+					new Date(record.created_at).toLocaleDateString("he-IL")
 				}
 			/>
 		</DataTable>

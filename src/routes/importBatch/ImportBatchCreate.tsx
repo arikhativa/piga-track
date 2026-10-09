@@ -50,7 +50,7 @@ export function ImportBatchCreate() {
 			}}
 		>
 			<SimpleForm>
-				<TextInput source="batch_name" />
+				<TextInput autoFocus source="batch_name" />
 
 				<ReferenceInput source="import_profile_id" reference="import_profile">
 					<SelectInput
