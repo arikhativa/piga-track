@@ -3,9 +3,20 @@ import { categoryOptionText } from "#/lib/form/categoryOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
 import { tagOptionText } from "#/lib/form/tagOptionText";
 import { TransactionDataTable } from "#/routes/transaction/TransactionDataTable";
-import { List, ReferenceInput, SelectInput } from "@/components/admin";
+import {
+	DateInput,
+	List,
+	ReferenceInput,
+	SelectInput,
+} from "@/components/admin";
 
 const transactionFilters = [
+	<DateInput
+		key="transaction_at@gte"
+		source="transaction_at@gte"
+		label="From"
+	/>,
+	<DateInput key="transaction_at@lte" source="transaction_at@lte" label="To" />,
 	<ReferenceInput
 		key="project"
 		source="project_id"
