@@ -22,12 +22,14 @@ export function Dashboard() {
 			<article className="py-6 flex flex-col gap-4">
 				<DashboardFilters value={dateRange} onChange={setDateRange} />
 				<div className="flex flex-col md:flex-row gap-4 ">
-					<div className="flex flex-col gap-4 md:flex md:flex-col md:gap-8">
+					<div className="flex flex-col gap-4 md:gap-8">
 						<Separator />
 						<Balance dateRange={dateRange} />
 						<Separator />
 						<BarChartSection dateRange={dateRange} />
 					</div>
+					<Separator className="hidden md:block" orientation="vertical" />
+
 					<BalanceByCategory className={"md:w-full"} dateRange={dateRange} />
 				</div>
 

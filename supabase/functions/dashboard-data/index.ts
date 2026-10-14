@@ -166,7 +166,7 @@ Deno.serve(async (req) => {
     const monthly = await getMonthly(db);
 
     const response: DashboardResponse = {
-      balance: income + expenses,
+      balance: income - expenses,
       income,
       expenses,
       incomeCategories,
