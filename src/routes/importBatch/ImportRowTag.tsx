@@ -20,7 +20,7 @@ export function ImportRowTag({ record }: { record: ImportRow }) {
 		},
 	);
 
-	const handleChange = async (value: string | number) => {
+	const handleChange = async (value: string | number | null) => {
 		await dataProvider.update("import_row", {
 			id: record.id,
 			data: {

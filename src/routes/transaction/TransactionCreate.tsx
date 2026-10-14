@@ -24,6 +24,7 @@ const FormToolbar = ({ children }: PropsWithChildren) => (
 	</div>
 );
 
+// TODO allow disable proj
 export function TransactionCreate() {
 	const [createMore, setCreateMore] = useState(false);
 	const [type, setType] = useState<"spent" | "received">("spent");

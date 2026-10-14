@@ -4,12 +4,27 @@ import type { ImportBatch, ImportProfile } from "#/db/schema";
 import { importProfileOptionText } from "#/lib/form/importProfileOptionText";
 import { getBatchStatusVariant } from "#/lib/variant/getBatchStateVariant";
 import { ImportBatchDateRange } from "#/routes/importBatch/list/ImportBatchDateRange";
-import { DataTable, List, ReferenceField } from "@/components/admin";
+import {
+	DataTable,
+	List,
+	ReferenceField,
+	ReferenceInput,
+	SelectInput,
+} from "@/components/admin";
 
 // TODO sort them by create date and allow to sort by date range
-// fitler by profile type
 export const ImportBatchList = () => (
-	<List>
+	<List
+		filters={[
+			<ReferenceInput
+				key="import_profile_id"
+				source="import_profile_id"
+				reference="import_profile"
+			>
+				<SelectInput label="Profile" optionText={importProfileOptionText} />
+			</ReferenceInput>,
+		]}
+	>
 		<DataTable>
 			<DataTable.Col source="batch_name" />
 

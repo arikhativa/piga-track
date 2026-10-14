@@ -13,7 +13,7 @@ type DynamicSelectInputProps = ChoicesProps &
 
 export function DynamicSelectInput({
 	optionText = "name",
-	emptyText = "Select...",
+	emptyText = "",
 	label,
 	helperText,
 	...props

@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 
@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 type DynamicSelectProps = {
 	choices: any[];
 	value?: string | number | null;
-	onChange: (value: string | number) => void;
+	onChange: (value: string | number | null) => void;
 	optionText?: string | ((record: any) => ReactNode);
 	emptyText?: string;
 	isPending?: boolean;
@@ -34,18 +34,13 @@ export function DynamicSelect({
 	value,
 	onChange,
 	optionText = "name",
-	emptyText = "Select...",
+	emptyText = "",
 	isPending = false,
 	onCreate,
 	disabled = false,
 }: DynamicSelectProps) {
 	const [open, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
-
-	/**
-	 * Tracks whether we currently have a history entry belonging
-	 * to this dialog.
-	 */
 	const hasHistoryEntry = useRef(false);
 
 	const getChoiceText = (choice: any) =>
@@ -67,20 +62,10 @@ export function DynamicSelect({
 
 	const hasExactMatch = filteredChoices.some(
 		(choice) =>
-			String(getChoiceText(choice)).toLowerCase() === search.toLowerCase(),
+			String(getChoiceText(choice)).toLowerCase() ===
+			search.trim().toLowerCase(),
 	);
 
-	/**
-	 * Browser/mobile back button handling.
-	 *
-	 * When the dialog is open, the current history entry is:
-	 *
-	 *   /current-page
-	 *   /current-page  <-- temporary dialog entry
-	 *
-	 * Pressing Back removes the temporary entry instead of
-	 * navigating away from the page.
-	 */
 	useEffect(() => {
 		const handlePopState = () => {
 			if (!hasHistoryEntry.current) return;
@@ -97,9 +82,6 @@ export function DynamicSelect({
 		};
 	}, []);
 
-	/**
-	 * Opens the dialog and adds a temporary history entry.
-	 */
 	const openDialog = () => {
 		if (disabled || isPending || open) return;
 
@@ -116,15 +98,6 @@ export function DynamicSelect({
 		setOpen(true);
 	};
 
-	/**
-	 * Closes the dialog.
-	 *
-	 * If we're closing normally (X button, Escape, selection, etc.),
-	 * remove the temporary history entry as well.
-	 *
-	 * If the user already pressed Back, the popstate handler has
-	 * already removed it, so we don't call history.back() again.
-	 */
 	const closeDialog = () => {
 		setOpen(false);
 		setSearch("");
@@ -159,32 +132,51 @@ export function DynamicSelect({
 		closeDialog();
 	};
 
+	const handleClear = () => {
+		if (disabled || isPending) return;
+		onChange(null);
+	};
+
 	return (
-		<div className={className}>
+		<div className={cn("flex w-full min-w-0 items-center gap-4 ", className)}>
 			<Button
 				type="button"
 				variant="ghost"
 				role="combobox"
 				aria-expanded={open}
 				onClick={openDialog}
+				disabled={disabled || isPending}
 				className={cn(
-					"h-9 w-full min-w-0 justify-between",
+					"h-9 min-w-0 flex-1 justify-between dark:bg-input/30 dark:hover:bg-input/50",
 					"rounded-md border border-input bg-transparent",
 					"px-2.5 py-2 text-sm font-normal whitespace-nowrap",
 					"shadow-xs transition-[color,box-shadow]",
-					"outline-none",
-					"hover:bg-input/50",
+					"outline-none hover:bg-input/50",
 					"focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
 					"disabled:cursor-not-allowed disabled:opacity-50",
 				)}
-				disabled={disabled || isPending}
 			>
-				<span className={cn(!selectedChoice && "text-muted-foreground")}>
+				<span
+					className={cn("truncate", !selectedChoice && "text-muted-foreground")}
+				>
 					{selectedChoice ? getChoiceText(selectedChoice) : emptyText}
 				</span>
 
 				<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
 			</Button>
+
+			{selectedChoice && (
+				// biome-ignore lint/a11y/useFocusableInteractive: we want to match the input select css
+				// biome-ignore lint/a11y/useKeyWithClickEvents:  we want to match the input select css
+				// biome-ignore lint/a11y/useSemanticElements:  we want to match the input select css
+				<div
+					role="button"
+					className="p-0 ml-auto pointer-events-auto hover:bg-transparent text-muted-foreground opacity-50 hover:opacity-100"
+					onClick={handleClear}
+				>
+					<X className="h-4 w-4" />
+				</div>
+			)}
 
 			<CommandDialog
 				open={open}
@@ -220,7 +212,6 @@ export function DynamicSelect({
 												selected ? "opacity-100" : "opacity-0",
 											)}
 										/>
-
 										{getChoiceText(choice)}
 									</CommandItem>
 								);
@@ -229,7 +220,7 @@ export function DynamicSelect({
 							{search.trim() && !hasExactMatch && onCreate && (
 								<CommandItem onSelect={handleCreate}>
 									<Plus className="mr-2 size-4" />
-									Create "{search}"
+									Create "{search.trim()}"
 								</CommandItem>
 							)}
 						</CommandGroup>

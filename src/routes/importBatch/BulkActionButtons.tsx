@@ -68,7 +68,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 	const canSetCategory = canMerge;
 	const canSetProject = canMerge;
 
-	const handleCategoryChange = async (value: string | number) => {
+	const handleCategoryChange = async (value: string | number | null) => {
 		if (!value || !canSetCategory) return;
 
 		try {
@@ -95,7 +95,7 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 		}
 	};
 
-	const handleProjectChange = async (value: string | number) => {
+	const handleProjectChange = async (value: string | number | null) => {
 		if (!value || !canSetProject) return;
 
 		try {
