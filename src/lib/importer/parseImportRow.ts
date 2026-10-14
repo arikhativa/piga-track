@@ -12,17 +12,18 @@ function columnToIndex(column: string): number {
 }
 
 function getValue(row: unknown[], column: string | null): string | null {
-	if (!column) {
-		return null;
-	}
+	if (!column) return null;
 
 	const value = row[columnToIndex(column)];
 
-	if (value === null || value === undefined) {
-		return null;
-	}
+	if (value === null || value === undefined) return null;
 
-	return String(value).trim() || null;
+	const cleaned = String(value)
+		.trim()
+		.replace(/,/g, "")
+		.replace(/[^\d.-]/g, "");
+
+	return cleaned && cleaned !== "." && cleaned !== "-" ? cleaned : null;
 }
 
 function getDescription(
@@ -40,14 +41,12 @@ function getDescription(
 	return values.length ? values.join(" | ") : null;
 }
 
-function getAmount(
-	row: unknown[],
-	profile: ImportProfile,
-): string | null {
+function getAmount(row: unknown[], profile: ImportProfile): string | null {
 	const positive = getValue(row, profile.positive_amount_column);
 	const negative = getValue(row, profile.negative_amount_column);
 
-	const sameColumn = profile.positive_amount_column &&
+	const sameColumn =
+		profile.positive_amount_column &&
 		profile.positive_amount_column === profile.negative_amount_column;
 
 	if (sameColumn) {
@@ -116,23 +115,17 @@ export function toDateStringGeneric(value: string): string | null {
 		// YYYY-MM-DD
 		[year, month, day] = parts;
 	} else {
-		// DD/MM/YYYY or DD-MM-YYYY
+		// DD/MM/YY or DD/MM/YYYY
 		[day, month, year] = parts;
+		if (year < 100) year += 2000;
 	}
 
-	if (
-		year < 1000 ||
-		month < 1 ||
-		month > 12 ||
-		day < 1 ||
-		day > 31
-	) {
+	if (month < 1 || month > 12 || day < 1 || day > 31) {
 		return null;
 	}
 
 	const date = new Date(Date.UTC(year, month - 1, day));
 
-	// Reject impossible dates such as 31/02/2026.
 	if (
 		date.getUTCFullYear() !== year ||
 		date.getUTCMonth() !== month - 1 ||
@@ -144,10 +137,7 @@ export function toDateStringGeneric(value: string): string | null {
 	return date.toISOString().slice(0, 10);
 }
 
-function isEmptyRow(
-	row: unknown[],
-	profile: ImportProfile,
-): boolean {
+function isEmptyRow(row: unknown[], profile: ImportProfile): boolean {
 	const columns = [
 		profile.date_column,
 		profile.positive_amount_column,
@@ -158,11 +148,19 @@ function isEmptyRow(
 	return columns.every((column) => {
 		const value = row[columnToIndex(column)];
 
-		return (
-			value === null ||
-			value === undefined ||
-			String(value).trim() === ""
-		);
+		if (value === null || value === undefined || String(value).trim() === "") {
+			return true;
+		}
+
+		if (
+			column === profile.positive_amount_column ||
+			column === profile.negative_amount_column
+		) {
+			const amount = Number(String(value).replace(/[^\d.-]/g, ""));
+			return Number.isFinite(amount) && amount === 0;
+		}
+
+		return false;
 	});
 }
 
