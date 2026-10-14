@@ -24,7 +24,9 @@ function BalanceCard({
 				{amount === undefined ? (
 					<Spinner />
 				) : (
-					<p className="text-end md:text-2xl text-xl font-semibold">{amount}</p>
+					<p className="text-end md:text-2xl text-xl text-nowrap font-semibold">
+						{amount}
+					</p>
 				)}
 			</CardContent>
 		</Card>
@@ -37,7 +39,7 @@ export function Balance({ dateRange }: { dateRange: DateRange }) {
 	const { balance = 0, expenses = 0, income = 0 } = data ?? {};
 
 	return (
-		<div className="flex gap-4 items-center ">
+		<div className="flex gap-4 items-center">
 			<BalanceCard
 				className="border-expense"
 				title={"Expenses"}

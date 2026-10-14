@@ -22,40 +22,56 @@ function CategoryItem({ title, amount }: { title: string; amount: number }) {
 function BalanceCard({
 	title,
 	className,
+	classNameContent,
 	children,
 	icon,
-}: { title: string; icon?: ReactNode } & React.ComponentProps<"div">) {
+}: {
+	title: string;
+	icon?: ReactNode;
+	classNameContent?: string;
+} & React.ComponentProps<"div">) {
 	return (
 		<Card className={className}>
-			<CardHeader className="flex justify-between">
+			<CardHeader className="flex justify-between  ">
 				<CardTitle>{title}</CardTitle>
 				{icon}
 			</CardHeader>
-			<CardContent>{children}</CardContent>
+			<CardContent className={classNameContent}>{children}</CardContent>
 		</Card>
 	);
 }
 
-export function BalanceByCategory({ dateRange }: { dateRange: DateRange }) {
+export function BalanceByCategory({
+	dateRange,
+	className,
+}: {
+	dateRange: DateRange;
+	className?: string;
+}) {
 	const { data, isSuccess } = useDashboardData(dateRange);
 
 	if (!isSuccess) return <Spinner />;
 
 	const { incomeCategories, expenseCategories } = data;
 
-	const incomeList = incomeCategories.map(({ category, amount }) => (
-		<CategoryItem key={category} title={category} amount={amount} />
-	));
+	const incomeList = [...incomeCategories]
+		.sort((a, b) => b.amount - a.amount)
+		.map(({ category, amount }) => (
+			<CategoryItem key={category} title={category} amount={amount} />
+		));
 
-	const expenseList = expenseCategories.map(({ category, amount }) => (
-		<CategoryItem key={category} title={category} amount={amount} />
-	));
+	const expenseList = [...expenseCategories]
+		.sort((a, b) => b.amount - a.amount)
+		.map(({ category, amount }) => (
+			<CategoryItem key={category} title={category} amount={amount} />
+		));
 
 	return (
-		<div className="grid gap-4 md:grid-cols-3">
+		<div className={cn("md:grid gap-4 md:grid-cols-3", className)}>
 			<BalanceCard
-				className="md:col-span-2"
-				icon={<Minus className=" bg-pink-200 p-1 text-pink-600 rounded-full" />}
+				className="md:col-span-2 "
+				classNameContent="md:grid md:grid-cols-2"
+				icon={<Minus className="bg-pink-200 p-1 text-pink-600 rounded-full" />}
 				title="Expenses"
 			>
 				{expenseList}
