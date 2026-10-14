@@ -52,8 +52,9 @@ export function BalanceByCategory({ dateRange }: { dateRange: DateRange }) {
 	));
 
 	return (
-		<div className="grid gap-4 md:grid-cols-2">
+		<div className="grid gap-4 md:grid-cols-3">
 			<BalanceCard
+				className="md:col-span-2"
 				icon={<Minus className=" bg-pink-200 p-1 text-pink-600 rounded-full" />}
 				title="Expenses"
 			>

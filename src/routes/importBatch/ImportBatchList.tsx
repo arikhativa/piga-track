@@ -6,6 +6,8 @@ import { getBatchStatusVariant } from "#/lib/variant/getBatchStateVariant";
 import { ImportBatchDateRange } from "#/routes/importBatch/list/ImportBatchDateRange";
 import { DataTable, List, ReferenceField } from "@/components/admin";
 
+// TODO sort them by create date and allow to sort by date range
+// fitler by profile type
 export const ImportBatchList = () => (
 	<List>
 		<DataTable>

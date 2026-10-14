@@ -26,16 +26,16 @@ export function Dashboard() {
 						<Separator />
 						<Balance dateRange={dateRange} />
 						<Separator />
-						<BalanceByCategory dateRange={dateRange} />
+						<BarChartSection dateRange={dateRange} />
 					</div>
-					<BarChartSection dateRange={dateRange} />
+					<BalanceByCategory dateRange={dateRange} />
 				</div>
 
 				<div className="flex flex-col md:grid grid-cols-2 md:gap-8 ">
-					<DashboardSection title="Compare by category">
+					<DashboardSection title="Category">
 						<BarChartFilter filterType="category" dateRange={dateRange} />
 					</DashboardSection>
-					<DashboardSection title="Compare by content">
+					<DashboardSection title="Content">
 						<BarChartFilter filterType="tag" dateRange={dateRange} />
 					</DashboardSection>
 				</div>
