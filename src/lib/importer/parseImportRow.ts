@@ -12,18 +12,35 @@ function columnToIndex(column: string): number {
 }
 
 function getValue(row: unknown[], column: string | null): string | null {
-	if (!column) return null;
+	if (!column) {
+		return null;
+	}
 
 	const value = row[columnToIndex(column)];
 
-	if (value === null || value === undefined) return null;
+	if (value === null || value === undefined) {
+		return null;
+	}
+
+	return String(value).trim() || null;
+}
+
+function formatAmount(value: string | null): number | null {
+	const number = Number(value);
+	if (Number.isNaN(number)) {
+		return null;
+	}
 
 	const cleaned = String(value)
 		.trim()
 		.replace(/,/g, "")
 		.replace(/[^\d.-]/g, "");
 
-	return cleaned && cleaned !== "." && cleaned !== "-" ? cleaned : null;
+	const ret = Number(cleaned);
+	if (Number.isNaN(ret)) {
+		return null;
+	}
+	return ret;
 }
 
 function getDescription(
@@ -42,8 +59,8 @@ function getDescription(
 }
 
 function getAmount(row: unknown[], profile: ImportProfile): string | null {
-	const positive = getValue(row, profile.positive_amount_column);
-	const negative = getValue(row, profile.negative_amount_column);
+	const positive = formatAmount(getValue(row, profile.positive_amount_column));
+	const negative = formatAmount(getValue(row, profile.negative_amount_column));
 
 	const sameColumn =
 		profile.positive_amount_column &&
@@ -57,10 +74,6 @@ function getAmount(row: unknown[], profile: ImportProfile): string | null {
 		}
 
 		const number = Number(value);
-
-		if (Number.isNaN(number)) {
-			return null;
-		}
 
 		// if the received amount is marked with negative
 		if (profile.positive_amount_sign) {
