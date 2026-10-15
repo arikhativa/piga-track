@@ -17,14 +17,16 @@ function BalanceCard({
 }) {
 	return (
 		<Card className={cn(className, "flex-1 border-2")}>
-			<CardHeader>
-				<CardTitle>{title}</CardTitle>
+			<CardHeader className="px-1 md:px-6">
+				<CardTitle className=" text-center md:text-lg text-md md:text-start">
+					{title}
+				</CardTitle>
 			</CardHeader>
-			<CardContent className="w-full">
+			<CardContent className="w-full px-1  md:px-6">
 				{amount === undefined ? (
 					<Spinner />
 				) : (
-					<p className="text-end md:text-2xl text-xl text-nowrap font-semibold">
+					<p className="text-center md:text-2xl text-nowrap font-semibold">
 						{amount}
 					</p>
 				)}

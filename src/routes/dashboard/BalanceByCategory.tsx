@@ -112,7 +112,9 @@ export function BalanceByCategory({
 		));
 
 	return (
-		<div className={cn("md:grid gap-4 md:grid-cols-3", className)}>
+		<div
+			className={cn("flex flex-col md:grid gap-4 md:grid-cols-3", className)}
+		>
 			<BalanceCard
 				className="md:col-span-2 "
 				classNameContent="md:grid md:grid-cols-2"
