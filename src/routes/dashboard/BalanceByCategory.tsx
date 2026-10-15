@@ -1,6 +1,7 @@
 import { cn } from "cn";
 import { Minus, Plus } from "lucide-react";
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
 import { Item, ItemContent, ItemTitle } from "#/components/ui/item";
 import { Spinner } from "#/components/ui/spinner";
@@ -8,17 +9,49 @@ import { useDashboardData } from "#/hooks/use-dashboard-data";
 import type { DateRange } from "#/hooks/use-dashboard-date-range";
 import { formatNIS } from "#/lib/format/formatNIS";
 
-function CategoryItem({ title, amount }: { title: string; amount: number }) {
+function CategoryItem({
+	title,
+	amount,
+	categoryId,
+	dateRange,
+}: {
+	title: string;
+	amount: number;
+	categoryId: number;
+	dateRange: DateRange;
+}) {
+	const filter = {
+		"transaction_at@gte": dateRange.from,
+		"transaction_at@lte": dateRange.to,
+		category_id: String(categoryId),
+	};
+
+	const displayedFilters = {
+		"transaction_at@gte": true,
+		"transaction_at@lte": true,
+		category_id: true,
+	};
+
+	const params = new URLSearchParams({
+		displayedFilters: JSON.stringify(displayedFilters),
+		filter: JSON.stringify(filter),
+		order: "DESC",
+		page: "1",
+		perPage: "50",
+		sort: "transaction_at",
+	});
+
 	return (
-		<Item className="bg-background border-2 border-border">
-			<ItemContent className="flex  flex-row justify-between">
-				<ItemTitle>{title}</ItemTitle>
-				<p>{formatNIS(amount)}</p>
-			</ItemContent>
-		</Item>
+		<Link to={`/transaction?${params.toString()}`}>
+			<Item className="bg-background border-2 border-border">
+				<ItemContent className="flex flex-row justify-between">
+					<ItemTitle>{title}</ItemTitle>
+					<p>{formatNIS(amount)}</p>
+				</ItemContent>
+			</Item>
+		</Link>
 	);
 }
-
 function BalanceCard({
 	title,
 	className,
@@ -56,14 +89,26 @@ export function BalanceByCategory({
 
 	const incomeList = [...incomeCategories]
 		.sort((a, b) => b.amount - a.amount)
-		.map(({ category, amount }) => (
-			<CategoryItem key={category} title={category} amount={amount} />
+		.map(({ category, amount, categoryId }) => (
+			<CategoryItem
+				dateRange={dateRange}
+				categoryId={categoryId}
+				key={category}
+				title={category}
+				amount={amount}
+			/>
 		));
 
 	const expenseList = [...expenseCategories]
 		.sort((a, b) => b.amount - a.amount)
-		.map(({ category, amount }) => (
-			<CategoryItem key={category} title={category} amount={amount} />
+		.map(({ category, amount, categoryId }) => (
+			<CategoryItem
+				dateRange={dateRange}
+				key={category}
+				categoryId={categoryId}
+				title={category}
+				amount={amount}
+			/>
 		));
 
 	return (
