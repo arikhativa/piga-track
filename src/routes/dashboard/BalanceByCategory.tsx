@@ -12,9 +12,13 @@ import { formatNIS } from "#/lib/format/formatNIS";
 function CategoryItem({
 	title,
 	amount,
+	isBoth,
+	isIncome,
 	categoryId,
 	dateRange,
 }: {
+	isIncome: boolean;
+	isBoth: boolean;
 	title: string;
 	amount: number;
 	categoryId: number;
@@ -24,12 +28,16 @@ function CategoryItem({
 		"transaction_at@gte": dateRange.from,
 		"transaction_at@lte": dateRange.to,
 		category_id: String(categoryId),
+		// TODO we need to add seperate col for value
+		// amountFilter: isBoth ? (isIncome ? "positive" : "negative") : undefined,
 	};
 
 	const displayedFilters = {
 		"transaction_at@gte": true,
 		"transaction_at@lte": true,
 		category_id: true,
+		// TODO we need to add seperate col for value
+		// amountFilter: isBoth,
 	};
 
 	const params = new URLSearchParams({
@@ -52,6 +60,7 @@ function CategoryItem({
 		</Link>
 	);
 }
+
 function BalanceCard({
 	title,
 	className,
@@ -89,8 +98,10 @@ export function BalanceByCategory({
 
 	const incomeList = [...incomeCategories]
 		.sort((a, b) => b.amount - a.amount)
-		.map(({ category, amount, categoryId }) => (
+		.map(({ category, amount, categoryId, isBoth }) => (
 			<CategoryItem
+				isIncome
+				isBoth={!!isBoth}
 				dateRange={dateRange}
 				categoryId={categoryId}
 				key={category}
@@ -101,8 +112,10 @@ export function BalanceByCategory({
 
 	const expenseList = [...expenseCategories]
 		.sort((a, b) => b.amount - a.amount)
-		.map(({ category, amount, categoryId }) => (
+		.map(({ category, amount, categoryId, isBoth }) => (
 			<CategoryItem
+				isIncome={false}
+				isBoth={!!isBoth}
 				dateRange={dateRange}
 				key={category}
 				categoryId={categoryId}

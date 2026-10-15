@@ -14,6 +14,7 @@ export const dashboardResponseSchema = z.object({
     z.object({
       categoryId: z.number(),
       category: z.string(),
+      isBoth: z.boolean().optional(),
       amount: z.number(),
     }),
   ),
@@ -21,6 +22,7 @@ export const dashboardResponseSchema = z.object({
   expenseCategories: z.array(
     z.object({
       categoryId: z.number(),
+      isBoth: z.boolean().optional(),
       category: z.string(),
       amount: z.number(),
     }),

@@ -19,12 +19,15 @@ export const db = drizzle(client, { schema });
 const profileId = randomUUID();
 
 async function seedTransactions() {
-	const transactions = Array.from({ length: 200 }, () => {
+	const transactions = Array.from({ length: 200 }, (_, i) => {
 		const transactionAt = new Date(
 			Date.now() - randomInt(0, 90 * 24 * 60 * 60 * 1000),
 		);
 
-		const amount = (randomInt(100, 100_000) / 100).toFixed(2);
+		const cents = i % 2 === 0 ? randomInt(1, 500001) : -randomInt(1, 500001);
+
+		const amount = (cents / 100).toFixed(2);
+
 		return {
 			profile_id: profileId,
 			amount,
@@ -32,7 +35,7 @@ async function seedTransactions() {
 			currency_id: 7,
 			transaction_type_id: randomInt(1, 6),
 			category_id: [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15][
-				randomInt(0, 14)
+				randomInt(0, 13)
 			],
 			tag_id: null,
 			project_id: null,
@@ -43,7 +46,6 @@ async function seedTransactions() {
 
 	await db.insert(transaction).values(transactions);
 }
-
 async function seed() {
 	await db
 		.insert(transactionType)

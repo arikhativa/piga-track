@@ -36,6 +36,16 @@ const transactionFilters = [
 	<ReferenceInput key="tag" source="tag_id" reference="transaction_tag">
 		<SelectInput label="Content" optionText={tagOptionText} />
 	</ReferenceInput>,
+	// TODO rethink of this
+	// <SelectInput
+	// 	key="amountFilter"
+	// 	source="amountFilter"
+	// 	label="Amount Type"
+	// 	choices={[
+	// 		{ id: "positive", name: "Income" },
+	// 		{ id: "negative", name: "Expense" },
+	// 	]}
+	// />,
 ];
 
 export const TransactionList = () => {

@@ -117,6 +117,7 @@ Deno.serve(async (req) => {
           incomeCategories.push({
             categoryId: row.categoryId,
             category: row.category,
+            isBoth: true,
             amount: positive,
           });
         }
@@ -127,6 +128,7 @@ Deno.serve(async (req) => {
           expenseCategories.push({
             categoryId: row.categoryId,
             category: row.category,
+            isBoth: true,
             amount: negative,
           });
         }
