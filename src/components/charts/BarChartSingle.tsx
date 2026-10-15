@@ -25,6 +25,7 @@ type BarChartSingleProps = {
 	data: BarChartSingleData[];
 	title?: string;
 	description?: string;
+	onBarClick?: (bucket: string) => void;
 };
 
 const chartConfig = {
@@ -38,6 +39,7 @@ export function BarChartSingle({
 	data,
 	title = "Transactions",
 	description,
+	onBarClick,
 }: BarChartSingleProps) {
 	return (
 		<Card>
@@ -81,7 +83,15 @@ export function BarChartSingle({
 							content={<ChartTooltipContent hideLabel />}
 						/>
 
-						<Bar dataKey="amount" fill="var(--color-amount)" radius={4} />
+						<Bar
+							dataKey="amount"
+							fill="var(--color-amount)"
+							radius={4}
+							onClick={(entry) => {
+								const bucket = (entry.payload as BarChartSingleData).bucket;
+								onBarClick?.(bucket);
+							}}
+						/>
 					</BarChart>
 				</ChartContainer>
 			</CardContent>

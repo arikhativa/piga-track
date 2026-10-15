@@ -1,5 +1,6 @@
 import { useGetList } from "ra-core";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { BarChartMultiple } from "#/components/charts/BarChartMultiple";
 import { BarChartSingle } from "#/components/charts/BarChartSingle";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
@@ -89,6 +90,43 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 		}, {}),
 	);
 
+	const navigate = useNavigate();
+
+	const handleBarClick = (bucket: string) => {
+		if (selectedId === undefined) return;
+
+		const [year, month] = bucket.split("-");
+		const from = `${year}-${month}-01`;
+		const to = new Date(Number(year), Number(month), 0)
+			.toISOString()
+			.slice(0, 10);
+
+		const extraFilter = isCategory ? "category_id" : "tag_id";
+
+		const filter = {
+			"transaction_at@gte": from,
+			"transaction_at@lte": to,
+			[extraFilter]: String(selectedId),
+		};
+
+		const displayedFilters = {
+			"transaction_at@gte": true,
+			"transaction_at@lte": true,
+			[extraFilter]: true,
+		};
+
+		const params = new URLSearchParams({
+			displayedFilters: JSON.stringify(displayedFilters),
+			filter: JSON.stringify(filter),
+			order: "DESC",
+			page: "1",
+			perPage: "50",
+			sort: "transaction_at",
+		});
+
+		navigate(`/transaction?${params.toString()}`);
+	};
+
 	return (
 		<>
 			<DynamicSelect
@@ -106,7 +144,11 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 			{isMultiple ? (
 				<BarChartMultiple data={multipleData} />
 			) : (
-				<BarChartSingle data={singleData} title="" />
+				<BarChartSingle
+					data={singleData}
+					title=""
+					onBarClick={handleBarClick}
+				/>
 			)}
 		</>
 	);
