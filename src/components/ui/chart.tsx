@@ -252,14 +252,16 @@ function ChartTooltipContent({
 										>
 											<div className="grid gap-1.5">
 												{nestLabel ? tooltipLabel : null}
-												<span className="text-muted-foreground">
+												{/* <span className="text-muted-foreground">
 													{itemConfig?.label ?? item.name}
-												</span>
+												</span> */}
 											</div>
 											{item.value != null && (
 												<span className="font-mono font-medium text-foreground tabular-nums">
 													{typeof item.value === "number"
-														? item.value.toLocaleString()
+														? Number(item.value).toLocaleString("he-IL", {
+																maximumFractionDigits: 0,
+															})
 														: String(item.value)}
 												</span>
 											)}

@@ -1,4 +1,4 @@
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
 	Card,
@@ -64,9 +64,17 @@ export function BarChartMultiple({ data }: BarChartMultipleProps) {
 							}}
 						/>
 
+						<YAxis
+							tickFormatter={(value) =>
+								Number(value).toLocaleString("he-IL", {
+									maximumFractionDigits: 0,
+								})
+							}
+						/>
+
 						<ChartTooltip
 							cursor={false}
-							content={<ChartTooltipContent indicator="dashed" />}
+							content={<ChartTooltipContent hideLabel />}
 						/>
 						<Bar dataKey="expenses" fill="var(--color-expenses)" radius={4} />
 

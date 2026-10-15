@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
 	Card,
@@ -68,9 +68,17 @@ export function BarChartSingle({
 							}}
 						/>
 
+						<YAxis
+							tickFormatter={(value) =>
+								Number(value).toLocaleString("he-IL", {
+									maximumFractionDigits: 0,
+								})
+							}
+						/>
+
 						<ChartTooltip
 							cursor={false}
-							content={<ChartTooltipContent indicator="dashed" />}
+							content={<ChartTooltipContent hideLabel />}
 						/>
 
 						<Bar dataKey="amount" fill="var(--color-amount)" radius={4} />
