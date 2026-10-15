@@ -76,20 +76,14 @@ export function DynamicSelect({
 		};
 
 		window.addEventListener("popstate", handlePopState);
-
-		return () => {
-			window.removeEventListener("popstate", handlePopState);
-		};
+		return () => window.removeEventListener("popstate", handlePopState);
 	}, []);
 
 	const openDialog = () => {
 		if (disabled || isPending || open) return;
 
 		window.history.pushState(
-			{
-				...window.history.state,
-				[HISTORY_KEY]: true,
-			},
+			{ ...window.history.state, [HISTORY_KEY]: true },
 			"",
 			window.location.href,
 		);
@@ -98,11 +92,11 @@ export function DynamicSelect({
 		setOpen(true);
 	};
 
-	const closeDialog = () => {
+	const closeDialog = (goBack = true) => {
 		setOpen(false);
 		setSearch("");
 
-		if (hasHistoryEntry.current) {
+		if (goBack && hasHistoryEntry.current) {
 			hasHistoryEntry.current = false;
 			window.history.back();
 		}
@@ -117,19 +111,18 @@ export function DynamicSelect({
 	};
 
 	const handleSelect = (choice: any) => {
-		closeDialog();
+		closeDialog(false);
 		onChange(getChoiceValue(choice));
 	};
 
 	const handleCreate = async () => {
 		const newValue = search.trim();
-
 		if (!newValue || !onCreate) return;
 
 		const id = await onCreate(newValue);
 
+		closeDialog(false);
 		onChange(id);
-		closeDialog();
 	};
 
 	const handleClear = () => {

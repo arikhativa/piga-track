@@ -140,7 +140,6 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 				choices={choices}
 				optionText="value"
 				value={selectedId ?? undefined}
-				emptyText={isCategory ? "Category" : "Tag"}
 				isPending={isChoicesPending}
 				onChange={(value) => {
 					const id = value ? Number(value) : null;
