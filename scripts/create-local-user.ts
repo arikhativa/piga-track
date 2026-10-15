@@ -1,8 +1,27 @@
+import { execFileSync } from "node:child_process";
 import { createClient } from "@supabase/supabase-js";
+
+const statusOutput = execFileSync("supabase", ["status", "-o", "json"], {
+	encoding: "utf8",
+});
+const jsonStart = statusOutput.indexOf("{");
+const jsonEnd = statusOutput.lastIndexOf("}");
+
+if (jsonStart === -1 || jsonEnd === -1 || jsonStart > jsonEnd) {
+	throw new Error("Could not parse output from `supabase status -o json`.");
+}
+
+const status = JSON.parse(statusOutput.slice(jsonStart, jsonEnd + 1)) as {
+	SERVICE_ROLE_KEY?: string;
+};
+
+if (!status.SERVICE_ROLE_KEY) {
+	throw new Error("`SERVICE_ROLE_KEY` was not found in `supabase status` output.");
+}
 
 const supabase = createClient(
 	"http://127.0.0.1:54321",
-	"", // Note: this is the local secret
+	status.SERVICE_ROLE_KEY,
 );
 
 const { data, error } = await supabase.auth.admin.createUser({
