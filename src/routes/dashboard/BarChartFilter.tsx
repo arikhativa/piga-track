@@ -1,5 +1,6 @@
+import { parseAsInteger, useQueryStates } from "nuqs";
 import { useGetList } from "ra-core";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarChartMultiple } from "#/components/charts/BarChartMultiple";
 import { BarChartSingle } from "#/components/charts/BarChartSingle";
@@ -15,10 +16,18 @@ type BarChartFilterProps = {
 	filterType: FilterType;
 };
 
-export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
-	const [selectedId, setSelectedId] = useState<number | undefined>();
+const selectionParsers = {
+	categoryId: parseAsInteger,
+	tagId: parseAsInteger,
+};
 
+export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 	const isCategory = filterType === "category";
+	const extraFilter = isCategory ? "category_id" : "tag_id";
+
+	const [queryState, setQueryState] = useQueryStates(selectionParsers);
+
+	const selectedId = isCategory ? queryState.categoryId : queryState.tagId;
 
 	const { data: categories = [], isPending: isCategoriesPending } =
 		useGetList<TransactionCategory>("transaction_category", {
@@ -44,22 +53,21 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 			),
 			to: dateRange.to,
 		}),
-		[dateRange],
+		[dateRange.from, dateRange.to],
 	);
 
 	const { data } = useTransactionData({
 		dateRange: transactionDateRange,
 		bucket: "calendar_month",
-		category_list: isCategory && selectedId ? [selectedId] : [],
-		tag_list: !isCategory && selectedId ? [selectedId] : [],
-		enabled: selectedId !== undefined,
+		category_list: isCategory && selectedId !== null ? [selectedId] : [],
+		tag_list: !isCategory && selectedId !== null ? [selectedId] : [],
+		enabled: selectedId !== null,
 	});
 
 	const buckets = data?.buckets ?? [];
 
 	const hasIncome = buckets.some((bucket) => bucket.type === "income");
 	const hasExpense = buckets.some((bucket) => bucket.type === "expense");
-
 	const isMultiple = hasIncome && hasExpense;
 
 	const singleData = buckets.map((bucket) => ({
@@ -93,15 +101,13 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 	const navigate = useNavigate();
 
 	const handleBarClick = (bucket: string) => {
-		if (selectedId === undefined) return;
+		if (selectedId === null) return;
 
-		const [year, month] = bucket.split("-");
-		const from = `${year}-${month}-01`;
-		const to = new Date(Number(year), Number(month), 0)
-			.toISOString()
-			.slice(0, 10);
-
-		const extraFilter = isCategory ? "category_id" : "tag_id";
+		const [year, month] = bucket.split("-").map(Number);
+		const monthString = String(month).padStart(2, "0");
+		const from = `${year}-${monthString}-01`;
+		const lastDay = new Date(year, month, 0).getDate();
+		const to = `${year}-${monthString}-${String(lastDay).padStart(2, "0")}`;
 
 		const filter = {
 			"transaction_at@gte": from,
@@ -133,11 +139,15 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 				className="max-w-lg"
 				choices={choices}
 				optionText="value"
-				value={selectedId}
+				value={selectedId ?? undefined}
 				emptyText={isCategory ? "Category" : "Tag"}
 				isPending={isChoicesPending}
 				onChange={(value) => {
-					setSelectedId(value ? Number(value) : undefined);
+					const id = value ? Number(value) : null;
+
+					void setQueryState({
+						[isCategory ? "categoryId" : "tagId"]: id,
+					});
 				}}
 			/>
 

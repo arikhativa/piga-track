@@ -117,8 +117,8 @@ export function DynamicSelect({
 	};
 
 	const handleSelect = (choice: any) => {
-		onChange(getChoiceValue(choice));
 		closeDialog();
+		onChange(getChoiceValue(choice));
 	};
 
 	const handleCreate = async () => {
