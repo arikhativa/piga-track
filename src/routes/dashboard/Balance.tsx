@@ -4,6 +4,7 @@ import { Separator } from "#/components/ui/separator";
 import { Spinner } from "#/components/ui/spinner";
 import { useDashboardData } from "#/hooks/use-dashboard-data";
 import type { DateRange } from "#/hooks/use-dashboard-date-range";
+import { useIsMobile } from "#/hooks/use-mobile";
 import { formatNIS } from "#/lib/format/formatNIS";
 
 function BalanceCard({
@@ -38,23 +39,25 @@ function BalanceCard({
 export function Balance({ dateRange }: { dateRange: DateRange }) {
 	const { data, isLoading } = useDashboardData(dateRange);
 
+	const isMobile = useIsMobile();
+
 	const { balance = 0, expenses = 0, income = 0 } = data ?? {};
 
 	return (
-		<div className="flex gap-4 items-center">
+		<div className="flex gap-4 items-center md:flex-col">
 			<BalanceCard
-				className="border-expense"
+				className="border-expense md:w-full"
 				title={"Expenses"}
 				amount={isLoading ? undefined : formatNIS(expenses)}
 			/>
 			<BalanceCard
-				className="border-income"
+				className="border-income md:w-full"
 				title={"Income"}
 				amount={isLoading ? undefined : formatNIS(income)}
 			/>
-			<Separator orientation="vertical" />
+			<Separator orientation={isMobile ? "vertical" : "horizontal"} />
 			<BalanceCard
-				className="border-balance"
+				className="border-balance md:w-full"
 				title={"Balance"}
 				amount={isLoading ? undefined : formatNIS(balance)}
 			/>
