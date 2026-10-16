@@ -5,6 +5,7 @@ import postgres from "postgres";
 import { transaction, transactionCategory } from "../../../src/db/schema.ts";
 import { jsonResponse } from "../../helper.ts";
 import { dashboardRequestSchema, type DashboardResponse } from "./schema.ts";
+import { number } from "zod";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -167,8 +168,20 @@ Deno.serve(async (req) => {
 
     const monthly = await getMonthly(db);
 
+    const [{ balance }] = await db
+      .select({
+        balance: sql<string>`coalesce(sum(${transaction.amount_nis}), 0)`,
+      })
+      .from(transaction)
+      .where(
+        and(
+          gte(transaction.transaction_at, new Date(from)),
+          lt(transaction.transaction_at, new Date(to)),
+        ),
+      );
+
     const response: DashboardResponse = {
-      balance: income + expenses,
+      balance: Number(balance),
       income,
       expenses,
       incomeCategories,

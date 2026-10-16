@@ -10,6 +10,7 @@ import {
 } from "./schema";
 import "dotenv/config";
 import postgres from "postgres";
+import { seedUser } from "#/db/seed-user";
 import * as schema from "./schema";
 
 const client = postgres(process.env.DATABASE_URL!);
@@ -19,14 +20,35 @@ export const db = drizzle(client, { schema });
 const profileId = randomUUID();
 
 async function seedTransactions() {
+	const categories = await db
+		.select({
+			id: transactionCategory.id,
+			isIncome: transactionCategory.is_income,
+			isExpense: transactionCategory.is_expense,
+		})
+		.from(transactionCategory);
+
 	const transactions = Array.from({ length: 200 }, (_, i) => {
+		const category = categories[randomInt(0, categories.length)];
+
+		let isPositive: boolean;
+
+		if (category.isIncome && category.isExpense) {
+			isPositive = randomInt(0, 2) === 1;
+		} else if (category.isIncome) {
+			isPositive = randomInt(0, 100) < 95;
+		} else if (category.isExpense) {
+			isPositive = randomInt(0, 100) < 5;
+		} else {
+			isPositive = randomInt(0, 2) === 1;
+		}
+
 		const transactionAt = new Date(
 			Date.now() - randomInt(0, 90 * 24 * 60 * 60 * 1000),
 		);
 
-		const cents = i % 2 === 0 ? randomInt(1, 500001) : -randomInt(1, 500001);
-
-		const amount = (cents / 100).toFixed(2);
+		const cents = randomInt(1, 500001);
+		const amount = ((isPositive ? cents : -cents) / 100).toFixed(2);
 
 		return {
 			profile_id: profileId,
@@ -34,9 +56,7 @@ async function seedTransactions() {
 			amount_nis: amount,
 			currency_id: 7,
 			transaction_type_id: randomInt(1, 6),
-			category_id: [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15][
-				randomInt(0, 13)
-			],
+			category_id: category.id,
 			tag_id: null,
 			project_id: null,
 			description: `Test transaction ${randomUUID().slice(0, 8)}`,
@@ -46,7 +66,10 @@ async function seedTransactions() {
 
 	await db.insert(transaction).values(transactions);
 }
+
 async function seed() {
+	await seedUser();
+
 	await db
 		.insert(transactionType)
 		.values([
