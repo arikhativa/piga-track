@@ -1,6 +1,7 @@
-import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
 import {
 	boolean,
+	check,
 	date,
 	integer,
 	numeric,
@@ -178,8 +179,7 @@ export const importProfile = pgTable("import_profile", {
 		.notNull()
 		.references(() => transactionType.id),
 
-	description_column_list: text("description_column_list")
-		.array(),
+	description_column_list: text("description_column_list").array(),
 
 	created_at: timestamp("created_at", { withTimezone: true })
 		.defaultNow()
@@ -241,9 +241,7 @@ export const importRow = pgTable("import_row", {
 
 	tag_id: integer("tag_id").references(() => transactionTag.id),
 
-	category_id: integer("category_id").references(() =>
-		transactionCategory.id
-	),
+	category_id: integer("category_id").references(() => transactionCategory.id),
 
 	project_id: integer("project_id").references(() => transactionProject.id),
 
@@ -254,10 +252,9 @@ export const importRow = pgTable("import_row", {
 		{ onDelete: "set null" },
 	),
 
-	transaction_id: integer("transaction_id").references(
-		() => transaction.id,
-		{ onDelete: "set null" },
-	),
+	transaction_id: integer("transaction_id").references(() => transaction.id, {
+		onDelete: "set null",
+	}),
 
 	created_at: timestamp("created_at", { withTimezone: true })
 		.defaultNow()
@@ -267,6 +264,31 @@ export const importRow = pgTable("import_row", {
 		.defaultNow()
 		.notNull(),
 });
+
+export const transactionClassificationRule = pgTable(
+	"transaction_classification_rule",
+	{
+		id: serial("id").primaryKey(),
+
+		text_to_find: text("text_to_find").notNull().unique(),
+
+		category_id: integer("category_id").references(
+			() => transactionCategory.id,
+		),
+
+		tag_id: integer("tag_id").references(() => transactionTag.id),
+
+		created_at: timestamp("created_at", { withTimezone: true })
+			.defaultNow()
+			.notNull(),
+	},
+	(table) => [
+		check(
+			"classification_rule_has_assignment",
+			sql`${table.category_id} IS NOT NULL OR ${table.tag_id} IS NOT NULL`,
+		),
+	],
+);
 
 // ============================================================================
 //	Types

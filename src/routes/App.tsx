@@ -6,6 +6,7 @@ import {
 	HandCoins,
 	Import,
 	PiggyBank,
+	Shapes,
 	Tags,
 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react";
@@ -28,6 +29,9 @@ import "../styles.css";
 import { CategoryCreate } from "#/routes/category/CategoryCreate";
 import { CategoryEdit } from "#/routes/category/CategoryEdit";
 import { CategoryList } from "#/routes/category/CategoryList";
+import { ClassificationCreate } from "#/routes/classification/ClassificationCreate";
+import { ClassificationEdit } from "#/routes/classification/ClassificationEdit";
+import { ClassificationList } from "#/routes/classification/ClassificationList";
 import { CurrencyCreate } from "#/routes/currency/CurrencyCreate";
 import { CurrencyEdit } from "#/routes/currency/CurrencyEdit";
 import { CurrencyList } from "#/routes/currency/CurrencyList";
@@ -138,11 +142,19 @@ export function App() {
 					/>
 					<Resource
 						name="transaction_type"
-						options={{ label: "Money pots", util: true }}
+						options={{ util: true }}
 						list={PotList}
 						edit={PotEdit}
 						create={PotCreate}
 						icon={PiggyBank}
+					/>
+					<Resource
+						name="transaction_classification_rule"
+						options={{ label: "Classification", util: true }}
+						create={ClassificationCreate}
+						edit={ClassificationEdit}
+						list={ClassificationList}
+						icon={Shapes}
 					/>
 				</Admin>
 			</TooltipProvider>
