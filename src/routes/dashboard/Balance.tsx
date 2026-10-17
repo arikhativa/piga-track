@@ -39,25 +39,22 @@ function BalanceCard({
 export function Balance({ dateRange }: { dateRange: DateRange }) {
 	const { data, isLoading } = useDashboardData(dateRange);
 
-	const isMobile = useIsMobile();
-
 	const { balance = 0, expenses = 0, income = 0 } = data ?? {};
 
 	return (
-		<div className="flex gap-4 items-center md:flex-col">
+		<div className="flex gap-4 items-center">
 			<BalanceCard
-				className="border-expense md:w-full"
+				className="border-expense"
 				title={"Expenses"}
 				amount={isLoading ? undefined : formatNIS(expenses)}
 			/>
 			<BalanceCard
-				className="border-income md:w-full"
+				className="border-income"
 				title={"Income"}
 				amount={isLoading ? undefined : formatNIS(income)}
 			/>
-			<Separator orientation={isMobile ? "vertical" : "horizontal"} />
 			<BalanceCard
-				className="border-balance md:w-full"
+				className="border-balance"
 				title={"Balance"}
 				amount={isLoading ? undefined : formatNIS(balance)}
 			/>

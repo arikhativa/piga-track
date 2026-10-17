@@ -1,8 +1,6 @@
 import { Translate } from "ra-core";
 import { Breadcrumb } from "#/components/admin";
-import { Separator } from "#/components/ui/separator";
 import { useDashboardDateRange } from "#/hooks/use-dashboard-date-range";
-import { useIsMobile } from "#/hooks/use-mobile";
 import { Balance } from "#/routes/dashboard/Balance";
 import { BalanceByCategory } from "#/routes/dashboard/BalanceByCategory";
 import { BarChartFilter } from "#/routes/dashboard/BarChartFilter";
@@ -12,7 +10,6 @@ import { DashboardSection } from "#/routes/dashboard/DashboardSection";
 
 export function Dashboard() {
 	const [dateRange, setDateRange] = useDashboardDateRange();
-	const isMobile = useIsMobile();
 
 	return (
 		<>
@@ -23,17 +20,11 @@ export function Dashboard() {
 			</Breadcrumb>
 			<article className="py-6 flex flex-col gap-4">
 				<DashboardFilters value={dateRange} onChange={setDateRange} />
-				<div className="flex flex-col gap-4 ">
-					<div className="flex flex-col md:flex-row md:justify-center gap-4">
-						{isMobile && <Separator />}
+				<div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
+					<div className="flex flex-col md:flex-1 gap-4 max-w-3xl">
 						<Balance dateRange={dateRange} />
-						<Separator orientation={!isMobile ? "vertical" : "horizontal"} />
-						<div className="flex-1">
-							<BarChartSection dateRange={dateRange} />
-						</div>
+						<BarChartSection dateRange={dateRange} />
 					</div>
-					<Separator className="hidden md:block" orientation="vertical" />
-
 					<BalanceByCategory className={""} dateRange={dateRange} />
 				</div>
 
