@@ -1,10 +1,9 @@
 import { eq } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-
+import { DB } from "../../../types.ts";
 import { importBatch, importRow } from "../../../../src/db/schema.ts";
 
 export async function updateBatchStatus(
-  db: PostgresJsDatabase,
+  db: DB,
   batchId: number,
 ) {
   const rows = await db

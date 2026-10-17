@@ -1,6 +1,4 @@
 import { and, eq, sql } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import * as schema from "../../../src/db/schema.ts";
 import {
   importBatch,
   importRow,
@@ -8,13 +6,12 @@ import {
   transactionClassificationRule,
 } from "../../../src/db/schema.ts";
 import type { CreateImportBatchInput } from "./schema.ts";
-
-type Db = PostgresJsDatabase<typeof schema>;
+import { DB } from "../../types.ts";
 
 const normalize = (value: string) => value.trim().toLowerCase();
 
 export function createImportBatch(
-  db: Db,
+  db: DB,
   body: CreateImportBatchInput,
 ) {
   return db.transaction(async (tx) => {

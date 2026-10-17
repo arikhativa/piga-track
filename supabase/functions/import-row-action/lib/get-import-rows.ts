@@ -1,10 +1,9 @@
 import { inArray } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-
+import { DB } from "../../../types.ts";
 import { importRow } from "../../../../src/db/schema.ts";
 
 export async function getImportRows(
-  db: PostgresJsDatabase,
+  db: DB,
   ids: number[],
 ) {
   const rows = await db

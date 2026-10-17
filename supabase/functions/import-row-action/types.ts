@@ -1,6 +1,6 @@
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { ImportRow } from "../../../src/db/schema.ts";
 import { ImportRowActionInput } from "./schema.ts";
+import { DB } from "../../types.ts";
 
 export type ImportRowActionContext =
   & Omit<
@@ -8,7 +8,7 @@ export type ImportRowActionContext =
     "import_row_ids" | "action"
   >
   & {
-    db: PostgresJsDatabase;
+    db: DB;
     rows: ImportRow[];
   };
 

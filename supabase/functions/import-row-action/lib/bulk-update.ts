@@ -1,6 +1,5 @@
 import { inArray } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-
+import { DB } from "../../../types.ts";
 import { importRow, ImportRowStatusEnum } from "../../../../src/db/schema.ts";
 
 type BulkUpdateData = {
@@ -11,7 +10,7 @@ type BulkUpdateData = {
 };
 
 export function bulkUpdateImportRows(
-  db: PostgresJsDatabase,
+  db: DB,
   ids: number[],
   data: BulkUpdateData,
 ) {

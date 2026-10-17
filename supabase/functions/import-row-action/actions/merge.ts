@@ -10,14 +10,13 @@ import {
 import { validatePending } from "../lib/validate-import-rows.ts";
 import type { ImportRowAction } from "../types.ts";
 import { updateBatchStatus } from "../lib/update-batch-status.ts";
+import { upsertClassificationRules } from "../lib/upsert-classification-rules.ts.ts";
 
 export const merge: ImportRowAction = async ({
   db,
   rows,
   profileId,
 }) => {
-  console.log("in merge");
-
   validatePending(rows);
 
   for (const row of rows) {
@@ -90,6 +89,8 @@ export const merge: ImportRowAction = async ({
     .where(inArray(importRow.id, rows.map((row) => row.id)));
 
   await updateBatchStatus(db, batchId);
+
+  upsertClassificationRules(db, rows);
 
   return {
     action: "merge",
