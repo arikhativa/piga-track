@@ -5,7 +5,6 @@ import postgres from "postgres";
 import { transaction, transactionCategory } from "../../../src/db/schema.ts";
 import { jsonResponse } from "../../helper.ts";
 import { dashboardRequestSchema, type DashboardResponse } from "./schema.ts";
-import { number } from "zod";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
