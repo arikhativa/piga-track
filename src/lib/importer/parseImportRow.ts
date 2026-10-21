@@ -26,21 +26,21 @@ function getValue(row: unknown[], column: string | null): string | null {
 }
 
 function formatAmount(value: string | null): number | null {
-	const number = Number(value);
-	if (Number.isNaN(number)) {
+	if (value === null) {
 		return null;
 	}
 
-	const cleaned = String(value)
+	const cleaned = value
 		.trim()
 		.replace(/,/g, "")
 		.replace(/[^\d.-]/g, "");
 
-	const ret = Number(cleaned);
-	if (Number.isNaN(ret)) {
+	if (!cleaned) {
 		return null;
 	}
-	return ret;
+
+	const amount = Number(cleaned);
+	return Number.isFinite(amount) ? amount : null;
 }
 
 function getDescription(
@@ -67,24 +67,20 @@ function getAmount(row: unknown[], profile: ImportProfile): string | null {
 		profile.positive_amount_column === profile.negative_amount_column;
 
 	if (sameColumn) {
-		const value = positive; // negative is the same
-
-		if (!value) {
+		if (positive === null) {
 			return null;
 		}
 
-		const number = Number(value);
-
 		// if the received amount is marked with negative
 		if (profile.positive_amount_sign) {
-			return number.toString();
+			return positive.toString();
 		}
 
 		// if the received amount is marked with positive
-		return (number * -1).toString();
+		return (positive * -1).toString();
 	}
 
-	if (positive) {
+	if (positive !== null && positive !== 0) {
 		const number = Number(positive);
 
 		// if the received amount is marked with negative
@@ -94,14 +90,20 @@ function getAmount(row: unknown[], profile: ImportProfile): string | null {
 		return (number * -1).toString();
 	}
 
-	if (negative) {
-		const number = Number(negative);
-
+	if (negative !== null && negative !== 0) {
 		// if the spent amount is marked with negative
 		if (profile.negative_amount_sign) {
-			return (number * -1).toString();
+			return (negative * -1).toString();
 		}
-		return number.toString();
+		return negative.toString();
+	}
+
+	if (positive !== null) {
+		return (profile.positive_amount_sign ? positive : positive * -1).toString();
+	}
+
+	if (negative !== null) {
+		return (profile.negative_amount_sign ? negative * -1 : negative).toString();
 	}
 
 	return null;
@@ -194,10 +196,16 @@ export function parseImportRow(
 		const baseDate = getValue(row, profile.date_column);
 		const date = toDateStringGeneric(baseDate || "");
 
+		const parsedAmount = getAmount(row, profile);
+		if (parsedAmount !== null && Number(parsedAmount) === 0) {
+			continue;
+		}
+
+		const amount = parsedAmount || "";
 		rows.push({
 			row_number: index + 1,
 			date,
-			amount: getAmount(row, profile) || "",
+			amount,
 			description: getDescription(
 				row,
 				drizzleTextArray(profile.description_column_list),
