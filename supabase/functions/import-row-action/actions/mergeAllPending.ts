@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 import { importRow } from "../../../../src/db/schema.ts";
 import type { ImportRowAction } from "../types.ts";
@@ -22,6 +22,7 @@ export const mergeAllPending: ImportRowAction = async ({
       and(
         eq(importRow.import_batch_id, batchId),
         eq(importRow.status, "pending"),
+        isNull(importRow.duplicate_transaction_id),
       ),
     );
 
