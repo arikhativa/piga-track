@@ -303,6 +303,8 @@ export type ImportBatchStatusEnum =
 	(typeof importBatchStatusEnum.enumValues)[number];
 export type ImportRowStatusEnum =
 	(typeof importRowStatusEnum.enumValues)[number];
+export type TransactionClassificationRuleActionEnum =
+	(typeof transactionClassificationRuleActionEnum.enumValues)[number];
 
 export type ImportRow = InferSelectModel<typeof importRow>;
 export type ImportRowInsert = typeof importRow.$inferInsert;

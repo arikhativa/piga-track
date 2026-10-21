@@ -1,3 +1,5 @@
+import { EnumSelectInput } from "#/components/form/EnumSelectInput";
+import { transactionClassificationRuleActionEnum } from "#/db/schema";
 import {
 	ReferenceInput,
 	SelectInput,
@@ -9,6 +11,13 @@ export function ClassificationForm() {
 	return (
 		<SimpleForm>
 			<TextInput source="text_to_find" />
+
+			<EnumSelectInput
+				source="action"
+				label="Action"
+				labelGroup="classificationRuleAction"
+				values={transactionClassificationRuleActionEnum.enumValues}
+			/>
 
 			<ReferenceInput source="category_id" reference="transaction_category">
 				<SelectInput label="Category" optionText="value" />

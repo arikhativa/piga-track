@@ -1,5 +1,8 @@
 import { sql } from "drizzle-orm";
-import { transactionClassificationRule } from "../../../../src/db/schema.ts";
+import {
+  transactionClassificationRule,
+  type TransactionClassificationRuleActionEnum,
+} from "../../../../src/db/schema.ts";
 import { DB } from "../../../types.ts";
 
 export async function upsertClassificationRules(
@@ -9,13 +12,13 @@ export async function upsertClassificationRules(
     category_id: number | null;
     tag_id: number | null;
   }[],
-action: "addData" | "dropRow" = "addData",
+  action: TransactionClassificationRuleActionEnum = "addData",
 ) {
   const rules = new Map<
     string,
     {
       text_to_find: string;
-      action: "addData" | "dropRow";
+      action: TransactionClassificationRuleActionEnum;
       category_id: number | null;
       tag_id: number | null;
     }

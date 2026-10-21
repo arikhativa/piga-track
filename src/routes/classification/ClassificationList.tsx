@@ -1,9 +1,21 @@
+import type { TransactionClassificationRuleActionEnum } from "#/db/schema";
+import { getEnumLabel } from "#/lib/enum-labels";
 import { DataTable, List, ReferenceField } from "@/components/admin";
 
 export const ClassificationList = () => (
 	<List>
 		<DataTable>
 			<DataTable.Col source="text_to_find" />
+
+			<DataTable.Col
+				label="Action"
+				render={({ action }) =>
+					getEnumLabel(
+						"classificationRuleAction",
+						action as TransactionClassificationRuleActionEnum,
+					)
+				}
+			/>
 
 			<DataTable.Col label="Category">
 				<ReferenceField
