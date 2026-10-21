@@ -17,11 +17,7 @@ export async function updateBatchStatus(
     return;
   }
 
-  const mergedCount = rows.filter(
-    (row) => row.status === "merged",
-  ).length;
-
-  const status = mergedCount > rows.length / 2 ? "approved" : "cancelled";
+  const status = "approved";
 
   await db
     .update(importBatch)
