@@ -11,6 +11,7 @@ type DynamicSelectInputProps = ChoicesProps &
 		emptyText?: string;
 	};
 
+// TODO: there is a bug with the lookup cus we are missing some values
 export function DynamicSelectInput({
 	optionText = "name",
 	emptyText = "",
