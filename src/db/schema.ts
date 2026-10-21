@@ -265,12 +265,21 @@ export const importRow = pgTable("import_row", {
 		.notNull(),
 });
 
+export const transactionClassificationRuleActionEnum = pgEnum(
+	"transaction_classification_rule_action",
+	["addData", "dropRow"],
+);
+
 export const transactionClassificationRule = pgTable(
 	"transaction_classification_rule",
 	{
 		id: serial("id").primaryKey(),
 
 		text_to_find: text("text_to_find").notNull().unique(),
+
+		action: transactionClassificationRuleActionEnum("action")
+			.notNull()
+			.default("addData"),
 
 		category_id: integer("category_id").references(
 			() => transactionCategory.id,
@@ -281,13 +290,7 @@ export const transactionClassificationRule = pgTable(
 		created_at: timestamp("created_at", { withTimezone: true })
 			.defaultNow()
 			.notNull(),
-	},
-	(table) => [
-		check(
-			"classification_rule_has_assignment",
-			sql`${table.category_id} IS NOT NULL OR ${table.tag_id} IS NOT NULL`,
-		),
-	],
+	}
 );
 
 // ============================================================================

@@ -9,11 +9,13 @@ export async function upsertClassificationRules(
     category_id: number | null;
     tag_id: number | null;
   }[],
+action: "addData" | "dropRow" = "addData",
 ) {
   const rules = new Map<
     string,
     {
       text_to_find: string;
+      action: "addData" | "dropRow";
       category_id: number | null;
       tag_id: number | null;
     }
@@ -24,13 +26,14 @@ export async function upsertClassificationRules(
 
     if (
       !description ||
-      (row.category_id == null && row.tag_id == null)
+      (action === "addData" && row.category_id == null && row.tag_id == null)
     ) {
       continue;
     }
 
     rules.set(description, {
       text_to_find: description,
+      action,
       category_id: row.category_id,
       tag_id: row.tag_id,
     });
@@ -46,6 +49,7 @@ export async function upsertClassificationRules(
     .onConflictDoUpdate({
       target: transactionClassificationRule.text_to_find,
       set: {
+        action: sql`excluded.action`,
         category_id: sql`coalesce(excluded.category_id, ${transactionClassificationRule.category_id})`,
         tag_id: sql`coalesce(excluded.tag_id, ${transactionClassificationRule.tag_id})`,
       },

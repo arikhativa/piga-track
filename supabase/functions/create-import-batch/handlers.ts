@@ -28,6 +28,7 @@ export function createImportBatch(
         textToFind: transactionClassificationRule.text_to_find,
         categoryId: transactionClassificationRule.category_id,
         tagId: transactionClassificationRule.tag_id,
+        action: transactionClassificationRule.action,
       })
       .from(transactionClassificationRule);
 
@@ -63,8 +64,15 @@ export function createImportBatch(
         .insert(importRow)
         .values({
           ...row,
-          category_id: row.category_id ?? matchedRule?.categoryId ?? null,
-          tag_id: row.tag_id ?? matchedRule?.tagId ?? null,
+          category_id:
+            row.category_id ??
+            (matchedRule?.action === "addData" ? matchedRule.categoryId : null) ??
+            null,
+          tag_id:
+            row.tag_id ??
+            (matchedRule?.action === "addData" ? matchedRule.tagId : null) ??
+            null,
+          status: matchedRule?.action === "dropRow" ? "dropped" : "pending",
           import_batch_id: batch.id,
           duplicate_transaction_id: duplicate?.id ?? null,
         })

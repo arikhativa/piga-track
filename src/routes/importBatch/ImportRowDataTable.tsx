@@ -149,12 +149,11 @@ export const ImportRowDataTable = () => {
 									size="icon"
 									variant="destructive"
 									onClick={async () => {
-										await dataProvider.update("import_row", {
-											id: record.id,
-											data: {
-												status: "dropped",
-											},
-											previousData: record,
+										await importRowAction({
+											profileId: userProfile.id,
+											import_row_ids: [Number(record.id)],
+											action: "set_status",
+											value: "dropped",
 										});
 
 										refresh();

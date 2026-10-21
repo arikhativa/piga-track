@@ -10,7 +10,7 @@ import {
 import { validatePending } from "../lib/validate-import-rows.ts";
 import type { ImportRowAction } from "../types.ts";
 import { updateBatchStatus } from "../lib/update-batch-status.ts";
-import { upsertClassificationRules } from "../lib/upsert-classification-rules.ts.ts";
+import { upsertClassificationRules } from "../lib/upsert-classification-rules.ts";
 
 export const merge: ImportRowAction = async ({
   db,
@@ -90,6 +90,7 @@ export const merge: ImportRowAction = async ({
 
   await updateBatchStatus(db, batchId);
 
+  // Note: we don't need to await here
   upsertClassificationRules(db, rows);
 
   return {

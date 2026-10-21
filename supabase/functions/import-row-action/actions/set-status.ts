@@ -1,4 +1,5 @@
 import { bulkUpdateImportRows } from "../lib/bulk-update.ts";
+import { upsertClassificationRules } from "../lib/upsert-classification-rules.ts";
 import type { ImportRowAction } from "../types.ts";
 
 export const setStatus: ImportRowAction = async ({
@@ -19,6 +20,10 @@ export const setStatus: ImportRowAction = async ({
     rows.map((row) => row.id),
     { status: value },
   );
+
+  if (value === "dropped") {
+    upsertClassificationRules(db, rows, "dropRow");
+  }
 
   return {
     action: "set_status",
