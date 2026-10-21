@@ -1,10 +1,11 @@
-import { useDataProvider, useGetList, useRefresh } from "ra-core";
+import { useCreate, useDataProvider, useGetList, useRefresh } from "ra-core";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
 import type { ImportRow, TransactionCategory } from "#/db/schema";
 
 export function ImportRowCategory({ record }: { record: ImportRow }) {
 	const dataProvider = useDataProvider();
 	const refresh = useRefresh();
+	const [create] = useCreate();
 
 	const { data: categories = [], isPending } = useGetList<TransactionCategory>(
 		"transaction_category",
@@ -19,6 +20,20 @@ export function ImportRowCategory({ record }: { record: ImportRow }) {
 			},
 		},
 	);
+
+	const handleCreate = async (value: string) => {
+		const category = await create(
+			"transaction_category",
+			{
+				data: { value },
+			},
+			{
+				returnPromise: true,
+			},
+		);
+
+		return category.id;
+	};
 
 	const handleChange = async (value: string | number | null) => {
 		await dataProvider.update("import_row", {
@@ -40,6 +55,7 @@ export function ImportRowCategory({ record }: { record: ImportRow }) {
 			optionText="value"
 			emptyText="Category"
 			isPending={isPending}
+			onCreate={handleCreate}
 			onChange={handleChange}
 		/>
 	);

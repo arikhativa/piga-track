@@ -208,17 +208,19 @@ async function getMonthly(
     $client: postgres.Sql<{}>;
   },
 ) {
+  const now = new Date();
+
+  const from = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1),
+  );
+
+  const transactionMonth = sql`
+		date_trunc('month', ${transaction.transaction_at})
+	`;
+
   const monthlyRows = await db
     .select({
-      month: sql<string>`
-				to_char(
-					date_trunc(
-						'month',
-						${transaction.transaction_at} - interval '8 days'
-					),
-					'YYYY-MM'
-				)
-			`,
+      month: sql<string>`to_char(${transactionMonth}, 'YYYY-MM')`,
 
       categoryId: transactionCategory.id,
       isIncome: transactionCategory.is_income,
@@ -261,36 +263,17 @@ async function getMonthly(
     )
     .where(
       and(
-        gte(
-          transaction.transaction_at,
-          new Date(
-            new Date().getFullYear(),
-            new Date().getMonth() - 6,
-            9,
-          ),
-        ),
-        lt(transaction.transaction_at, new Date()),
+        gte(transaction.transaction_at, from),
+        lt(transaction.transaction_at, now),
       ),
     )
     .groupBy(
-      sql`
-				date_trunc(
-					'month',
-					${transaction.transaction_at} - interval '8 days'
-				)
-			`,
+      transactionMonth,
       transactionCategory.id,
       transactionCategory.is_income,
       transactionCategory.is_expense,
     )
-    .orderBy(
-      sql`
-				date_trunc(
-					'month',
-					${transaction.transaction_at} - interval '8 days'
-				)
-			`,
-    );
+    .orderBy(transactionMonth);
 
   const monthly = new Map<
     string,
