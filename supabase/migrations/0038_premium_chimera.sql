@@ -1,0 +1,2 @@
+ALTER TABLE "transaction_category" ADD CONSTRAINT "transaction_category_value_unique" UNIQUE("value");--> statement-breakpoint
+ALTER TABLE "transaction_tag" ADD CONSTRAINT "transaction_tag_value_unique" UNIQUE("value");

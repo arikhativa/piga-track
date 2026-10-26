@@ -51,7 +51,7 @@ export const profile = pgTable("profile", {
 
 export const transactionTag = pgTable("transaction_tag", {
 	id: serial("id").primaryKey(),
-	value: text("value").notNull(),
+	value: text("value").unique().notNull(),
 });
 
 export const transactionProject = pgTable("transaction_project", {
@@ -65,7 +65,7 @@ export const transactionProject = pgTable("transaction_project", {
 
 export const transactionCategory = pgTable("transaction_category", {
 	id: serial("id").primaryKey(),
-	value: text("value").notNull(),
+	value: text("value").unique().notNull(),
 	is_income: boolean("is_income").default(false).notNull(),
 	is_expense: boolean("is_expense").default(true).notNull(),
 });
@@ -290,7 +290,7 @@ export const transactionClassificationRule = pgTable(
 		created_at: timestamp("created_at", { withTimezone: true })
 			.defaultNow()
 			.notNull(),
-	}
+	},
 );
 
 // ============================================================================
