@@ -50,7 +50,11 @@ export function TransactionForm({
 			<Separator />
 
 			<div className="grid grid-cols-2 gap-4">
-				<ReferenceInput source="tag_id" reference="transaction_tag">
+				<ReferenceInput
+					source="tag_id"
+					reference="transaction_tag"
+					perPage={1000}
+				>
 					<DynamicSelectInput label="Content" optionText="value" />
 				</ReferenceInput>
 
