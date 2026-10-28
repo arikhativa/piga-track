@@ -6,6 +6,7 @@ import { NIS } from "#/lib/constant";
 import { toSmallDate, toTime } from "#/lib/format/toSmallDate";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, ReferenceField } from "@/components/admin";
+import { formatCurrency, formatNIS } from "#/lib/format/formatNIS";
 
 type ColToHideOptions = "project" | "category" | "tag";
 
@@ -32,7 +33,7 @@ export const TransactionDataTable = ({
 
 					return (
 						<>
-							{Math.abs(record.amount)} {currency?.symbol}
+							{formatCurrency(Math.abs(record.amount))} {currency?.symbol}
 						</>
 					);
 				}}
@@ -42,16 +43,14 @@ export const TransactionDataTable = ({
 				source="amount_nis"
 				render={(record: Transaction) => {
 					if (record.amount_nis) {
-						return (
-							<>
-								{Math.abs(Number(record.amount_nis))} {NIS}
-							</>
-						);
+						return <>{formatNIS(Math.abs(Number(record.amount_nis)))}</>;
 					} else {
 						return "--";
 					}
 				}}
 			/>
+
+			<DataTable.Col source="description" />
 
 			{colToHide?.includes("tag") ? null : (
 				<DataTable.Col label="Content">

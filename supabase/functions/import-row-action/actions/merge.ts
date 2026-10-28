@@ -9,7 +9,6 @@ import {
 } from "../../../../src/db/schema.ts";
 import { validatePending } from "../lib/validate-import-rows.ts";
 import type { ImportRowAction } from "../types.ts";
-import { updateBatchStatus } from "../lib/update-batch-status.ts";
 import { upsertClassificationRules } from "../lib/upsert-classification-rules.ts";
 
 export const merge: ImportRowAction = async ({
@@ -87,8 +86,6 @@ export const merge: ImportRowAction = async ({
       updated_at: new Date(),
     })
     .where(inArray(importRow.id, rows.map((row) => row.id)));
-
-  await updateBatchStatus(db, batchId);
 
   // Note: we don't need to await here
   upsertClassificationRules(db, rows);

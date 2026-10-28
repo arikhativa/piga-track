@@ -3,6 +3,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { importRow } from "../../../../src/db/schema.ts";
 import type { ImportRowAction } from "../types.ts";
 import { merge } from "./merge.ts";
+import { updateBatchStatus } from "../lib/update-batch-status.ts";
 
 export const mergeAllPending: ImportRowAction = async ({
   db,
@@ -30,9 +31,13 @@ export const mergeAllPending: ImportRowAction = async ({
     throw new Error("No pending import rows found");
   }
 
-  return merge({
+  const ret = await merge({
     db,
     rows: pendingRows,
     profileId,
   });
+
+  await updateBatchStatus(db, batchId);
+
+  return ret
 };
