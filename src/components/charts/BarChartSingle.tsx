@@ -1,5 +1,3 @@
-"use client";
-
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -84,6 +82,7 @@ export function BarChartSingle({
 						/>
 
 						<Bar
+							className={onBarClick ? "cursor-pointer" : undefined}
 							dataKey="amount"
 							fill="var(--color-amount)"
 							radius={4}

@@ -64,6 +64,7 @@ export const TransactionList = () => {
 			exporter={transactionExporter}
 			filters={transactionFilters}
 			sort={{ field: "transaction_at", order: "DESC" }}
+			perPage={50}
 		>
 			<TransactionDataTable />
 		</List>
