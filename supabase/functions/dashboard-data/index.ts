@@ -1,58 +1,58 @@
 import { and, eq, gte, lt, sql } from "drizzle-orm";
-import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { transaction, transactionCategory } from "../../../src/db/schema.ts";
 import { jsonResponse } from "../../helper.ts";
-import { dashboardRequestSchema, type DashboardResponse } from "./schema.ts";
+import { type DashboardResponse, dashboardRequestSchema } from "./schema.ts";
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return jsonResponse("ok");
-  }
+	if (req.method === "OPTIONS") {
+		return jsonResponse("ok");
+	}
 
-  let client;
+	let client;
 
-  try {
-    const connectionString = Deno.env.get("SUPABASE_DB_URL");
+	try {
+		const connectionString = Deno.env.get("SUPABASE_DB_URL");
 
-    if (!connectionString) {
-      throw new Error("SUPABASE_DB_URL is not configured");
-    }
+		if (!connectionString) {
+			throw new Error("SUPABASE_DB_URL is not configured");
+		}
 
-    client = postgres(connectionString, {
-      prepare: false,
-    });
+		client = postgres(connectionString, {
+			prepare: false,
+		});
 
-    const db = drizzle(client);
+		const db = drizzle(client);
 
-    const result = dashboardRequestSchema.safeParse(await req.json());
+		const result = dashboardRequestSchema.safeParse(await req.json());
 
-    if (!result.success) {
-      return jsonResponse(
-        {
-          error: "Invalid request",
-          issues: result.error.issues,
-        },
-        400,
-      );
-    }
+		if (!result.success) {
+			return jsonResponse(
+				{
+					error: "Invalid request",
+					issues: result.error.issues,
+				},
+				400,
+			);
+		}
 
-    const { from, to } = result.data;
+		const { from, to } = result.data;
 
-    const rows = await db
-      .select({
-        categoryId: transactionCategory.id,
-        category: transactionCategory.value,
-        isIncome: transactionCategory.is_income,
-        isExpense: transactionCategory.is_expense,
+		const rows = await db
+			.select({
+				categoryId: transactionCategory.id,
+				category: transactionCategory.value,
+				isIncome: transactionCategory.is_income,
+				isExpense: transactionCategory.is_expense,
 
-        // Used for income-only / expense-only categories.
-        total: sql<string>`
+				// Used for income-only / expense-only categories.
+				total: sql<string>`
 					coalesce(sum(${transaction.amount_nis}), 0)
 				`,
 
-        // Used for categories that are both.
-        positive: sql<string>`
+				// Used for categories that are both.
+				positive: sql<string>`
 					coalesce(
 						sum(
 							case
@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
 					)
 				`,
 
-        negative: sql<string>`
+				negative: sql<string>`
 					coalesce(
 						sum(
 							case
@@ -77,163 +77,163 @@ Deno.serve(async (req) => {
 						0
 					)
 				`,
-      })
-      .from(transaction)
-      .innerJoin(
-        transactionCategory,
-        eq(transaction.category_id, transactionCategory.id),
-      )
-      .where(
-        and(
-          gte(transaction.transaction_at, new Date(from)),
-          lt(transaction.transaction_at, new Date(to)),
-        ),
-      )
-      .groupBy(
-        transactionCategory.id,
-        transactionCategory.value,
-        transactionCategory.is_income,
-        transactionCategory.is_expense,
-      );
+			})
+			.from(transaction)
+			.innerJoin(
+				transactionCategory,
+				eq(transaction.category_id, transactionCategory.id),
+			)
+			.where(
+				and(
+					gte(transaction.transaction_at, new Date(from)),
+					lt(transaction.transaction_at, new Date(to)),
+				),
+			)
+			.groupBy(
+				transactionCategory.id,
+				transactionCategory.value,
+				transactionCategory.is_income,
+				transactionCategory.is_expense,
+			);
 
-    let income = 0;
-    let expenses = 0;
+		let income = 0;
+		let expenses = 0;
 
-    const incomeCategories: DashboardResponse["incomeCategories"] = [];
-    const expenseCategories: DashboardResponse["expenseCategories"] = [];
+		const incomeCategories: DashboardResponse["incomeCategories"] = [];
+		const expenseCategories: DashboardResponse["expenseCategories"] = [];
 
-    for (const row of rows) {
-      const total = Number(row.total);
-      const positive = Number(row.positive);
-      const negative = Number(row.negative);
+		for (const row of rows) {
+			const total = Number(row.total);
+			const positive = Number(row.positive);
+			const negative = Number(row.negative);
 
-      // Both income + expense:
-      // split positive and negative transactions.
-      if (row.isIncome && row.isExpense) {
-        if (positive !== 0) {
-          income += positive;
+			// Both income + expense:
+			// split positive and negative transactions.
+			if (row.isIncome && row.isExpense) {
+				if (positive !== 0) {
+					income += positive;
 
-          incomeCategories.push({
-            categoryId: row.categoryId,
-            category: row.category,
-            isBoth: true,
-            amount: positive,
-          });
-        }
+					incomeCategories.push({
+						categoryId: row.categoryId,
+						category: row.category,
+						isBoth: true,
+						amount: positive,
+					});
+				}
 
-        if (negative !== 0) {
-          expenses += negative;
+				if (negative !== 0) {
+					expenses += negative;
 
-          expenseCategories.push({
-            categoryId: row.categoryId,
-            category: row.category,
-            isBoth: true,
-            amount: negative,
-          });
-        }
+					expenseCategories.push({
+						categoryId: row.categoryId,
+						category: row.category,
+						isBoth: true,
+						amount: negative,
+					});
+				}
 
-        continue;
-      }
+				continue;
+			}
 
-      // Income only:
-      // sum all transactions.
-      if (row.isIncome) {
-        income += total;
+			// Income only:
+			// sum all transactions.
+			if (row.isIncome) {
+				income += total;
 
-        if (total !== 0) {
-          incomeCategories.push({
-            categoryId: row.categoryId,
-            category: row.category,
-            amount: total,
-          });
-        }
-      }
+				if (total !== 0) {
+					incomeCategories.push({
+						categoryId: row.categoryId,
+						category: row.category,
+						amount: total,
+					});
+				}
+			}
 
-      // Expense only:
-      // sum all transactions.
-      if (row.isExpense) {
-        expenses += total;
+			// Expense only:
+			// sum all transactions.
+			if (row.isExpense) {
+				expenses += total;
 
-        if (total !== 0) {
-          expenseCategories.push({
-            categoryId: row.categoryId,
-            category: row.category,
-            amount: total,
-          });
-        }
-      }
-    }
+				if (total !== 0) {
+					expenseCategories.push({
+						categoryId: row.categoryId,
+						category: row.category,
+						amount: total,
+					});
+				}
+			}
+		}
 
-    const monthly = await getMonthly(db, new Date(to));
+		const monthly = await getMonthly(db, new Date(to));
 
-    const [{ balance }] = await db
-      .select({
-        balance: sql<string>`coalesce(sum(${transaction.amount_nis}), 0)`,
-      })
-      .from(transaction)
-      .where(
-        and(
-          gte(transaction.transaction_at, new Date(from)),
-          lt(transaction.transaction_at, new Date(to)),
-        ),
-      );
+		const [{ balance }] = await db
+			.select({
+				balance: sql<string>`coalesce(sum(${transaction.amount_nis}), 0)`,
+			})
+			.from(transaction)
+			.where(
+				and(
+					gte(transaction.transaction_at, new Date(from)),
+					lt(transaction.transaction_at, new Date(to)),
+				),
+			);
 
-    const response: DashboardResponse = {
-      balance: Number(balance),
-      income,
-      expenses,
-      incomeCategories,
-      expenseCategories,
-      monthly,
-    };
+		const response: DashboardResponse = {
+			balance: Number(balance),
+			income,
+			expenses,
+			incomeCategories,
+			expenseCategories,
+			monthly,
+		};
 
-    return jsonResponse(response);
-  } catch (error) {
-    console.error(error);
+		return jsonResponse(response);
+	} catch (error) {
+		console.error(error);
 
-    return jsonResponse(
-      {
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      500,
-    );
-  } finally {
-    await client?.end();
-  }
+		return jsonResponse(
+			{
+				error: error instanceof Error ? error.message : "Unknown error",
+			},
+			500,
+		);
+	} finally {
+		await client?.end();
+	}
 });
 
 async function getMonthly(
-  db: PostgresJsDatabase<Record<string, never>> & {
-    // deno-lint-ignore ban-types
-    $client: postgres.Sql<{}>;
-  },
-  inputDate: Date,
+	db: PostgresJsDatabase<Record<string, never>> & {
+		// deno-lint-ignore ban-types
+		$client: postgres.Sql<{}>;
+	},
+	inputDate: Date,
 ) {
-  const from = new Date(
-    Date.UTC(inputDate.getUTCFullYear(), inputDate.getUTCMonth() - 5, 1),
-  );
+	const from = new Date(
+		Date.UTC(inputDate.getUTCFullYear(), inputDate.getUTCMonth() - 5, 1),
+	);
 
-  const to = new Date(
-    Date.UTC(inputDate.getUTCFullYear(), inputDate.getUTCMonth() + 1, 1),
-  );
+	const to = new Date(
+		Date.UTC(inputDate.getUTCFullYear(), inputDate.getUTCMonth() + 1, 1),
+	);
 
-  const transactionMonth = sql`
+	const transactionMonth = sql`
 		date_trunc('month', ${transaction.transaction_at})
 	`;
 
-  const monthlyRows = await db
-    .select({
-      month: sql<string>`to_char(${transactionMonth}, 'YYYY-MM')`,
+	const monthlyRows = await db
+		.select({
+			month: sql<string>`to_char(${transactionMonth}, 'YYYY-MM')`,
 
-      categoryId: transactionCategory.id,
-      isIncome: transactionCategory.is_income,
-      isExpense: transactionCategory.is_expense,
+			categoryId: transactionCategory.id,
+			isIncome: transactionCategory.is_income,
+			isExpense: transactionCategory.is_expense,
 
-      total: sql<string>`
+			total: sql<string>`
 				coalesce(sum(${transaction.amount_nis}), 0)
 			`,
 
-      positive: sql<string>`
+			positive: sql<string>`
 				coalesce(
 					sum(
 						case
@@ -246,7 +246,7 @@ async function getMonthly(
 				)
 			`,
 
-      negative: sql<string>`
+			negative: sql<string>`
 				coalesce(
 					sum(
 						case
@@ -258,66 +258,63 @@ async function getMonthly(
 					0
 				)
 			`,
-    })
-    .from(transaction)
-    .innerJoin(
-      transactionCategory,
-      eq(transaction.category_id, transactionCategory.id),
-    )
-    .where(
-      and(
-        gte(transaction.transaction_at, from),
-        lt(transaction.transaction_at, to),
-      ),
-    )
-    .groupBy(
-      transactionMonth,
-      transactionCategory.id,
-      transactionCategory.is_income,
-      transactionCategory.is_expense,
-    )
-    .orderBy(transactionMonth);
+		})
+		.from(transaction)
+		.innerJoin(
+			transactionCategory,
+			eq(transaction.category_id, transactionCategory.id),
+		)
+		.where(
+			and(
+				gte(transaction.transaction_at, from),
+				lt(transaction.transaction_at, to),
+			),
+		)
+		.groupBy(
+			transactionMonth,
+			transactionCategory.id,
+			transactionCategory.is_income,
+			transactionCategory.is_expense,
+		)
+		.orderBy(transactionMonth);
 
-  const monthly = new Map<
-    string,
-    { income: number; expenses: number }
-  >();
+	const monthly = new Map<string, { income: number; expenses: number }>();
 
-  for (const row of monthlyRows) {
-    const current = monthly.get(row.month) ?? {
-      income: 0,
-      expenses: 0,
-    };
+	for (const row of monthlyRows) {
+		const current = monthly.get(row.month) ?? {
+			income: 0,
+			expenses: 0,
+		};
 
-    const total = Number(row.total);
-    const positive = Number(row.positive);
-    const negative = Number(row.negative);
+		const total = Number(row.total);
+		const positive = Number(row.positive);
+		const negative = Number(row.negative);
 
-    // Both income + expense:
-    // split positive and negative.
-    if (row.isIncome && row.isExpense) {
-      current.income += positive;
-      current.expenses += negative;
-    }
+		// Both income + expense:
+		// split positive and negative.
+		if (row.isIncome && row.isExpense) {
+			current.income += positive;
+			current.expenses += negative;
+		}
 
-    // Income only:
-    // use the signed total.
-    if (row.isIncome && !row.isExpense) {
-      current.income += total;
-    }
+		// Income only:
+		// use the signed total.
+		if (row.isIncome && !row.isExpense) {
+			current.income += total;
+		}
 
-    // Expense only:
-    // use the signed total.
-    if (row.isExpense && !row.isIncome) {
-      current.expenses += total;
-    }
+		// Expense only:
+		// use the signed total.
+		if (row.isExpense && !row.isIncome) {
+			current.expenses += total;
+		}
 
-    monthly.set(row.month, current);
-  }
+		monthly.set(row.month, current);
+	}
 
-  return [...monthly.entries()].map(([month, values]) => ({
-    month,
-    income: values.income,
-    expenses: values.expenses,
-  }));
+	return [...monthly.entries()].map(([month, values]) => ({
+		month,
+		income: values.income,
+		expenses: values.expenses,
+	}));
 }

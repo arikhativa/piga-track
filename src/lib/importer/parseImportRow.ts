@@ -116,7 +116,7 @@ export function toDateStringGeneric(value: string): string | null {
 		return null;
 	}
 
-	const parts = input.split(/[\/.-]/).map(Number);
+	const parts = input.split(/[/.-]/).map(Number);
 
 	if (parts.length !== 3 || parts.some(Number.isNaN)) {
 		return null;

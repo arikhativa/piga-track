@@ -26,8 +26,6 @@ export const useProjectCosts = (record?: TransactionProject) => {
 
 			return Math.abs(sum);
 		},
-		enabled: Boolean(record?.id) &&
-			!isPending &&
-			!error,
+		enabled: Boolean(record?.id) && !isPending && !error,
 	});
 };

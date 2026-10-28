@@ -1,22 +1,20 @@
 import type { ImportRow } from "../../../src/db/schema.ts";
-import { ImportRowActionInput } from "./schema.ts";
-import { DB } from "../../types.ts";
+import type { DB } from "../../types.ts";
+import type { ImportRowActionInput } from "./schema.ts";
 
-export type ImportRowActionContext =
-  & Omit<
-    ImportRowActionInput,
-    "import_row_ids" | "action"
-  >
-  & {
-    db: DB;
-    rows: ImportRow[];
-  };
+export type ImportRowActionContext = Omit<
+	ImportRowActionInput,
+	"import_row_ids" | "action"
+> & {
+	db: DB;
+	rows: ImportRow[];
+};
 
 export type ImportRowActionResult = {
-  action: string;
-  rows: unknown[];
+	action: string;
+	rows: unknown[];
 };
 
 export type ImportRowAction = (
-  context: ImportRowActionContext,
+	context: ImportRowActionContext,
 ) => Promise<ImportRowActionResult>;

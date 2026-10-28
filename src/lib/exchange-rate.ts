@@ -58,14 +58,10 @@ export const callExchangeRateProviderRange = async ({
 		to: toDate,
 	});
 
-	const response = await fetch(
-		`${RATE_PROVIDER_URL}/rates?${params}`,
-	);
+	const response = await fetch(`${RATE_PROVIDER_URL}/rates?${params}`);
 
 	if (!response.ok) {
-		throw new Error(
-			`Frankfurter API error: ${response.status}`,
-		);
+		throw new Error(`Frankfurter API error: ${response.status}`);
 	}
 
 	const data: ExchangeRateProviderRangeResponse[] = await response.json();
@@ -191,39 +187,31 @@ export const resolveAmountNis = ({
 	return amount * rate;
 };
 
-export async function getExchangeRate(
-	{ queryClient, isoCode, dateString }: {
-		queryClient: QueryClient;
-		isoCode: string;
-		dateString: string;
-	},
-): Promise<number | null> {
+export async function getExchangeRate({
+	queryClient,
+	isoCode,
+	dateString,
+}: {
+	queryClient: QueryClient;
+	isoCode: string;
+	dateString: string;
+}): Promise<number | null> {
 	return queryClient.query({
 		queryKey: ["exchange-rate", isoCode, dateString],
 		queryFn: async (): Promise<number | null> => {
 			if (isoCode === BASE_CURRENCY) {
 				return 1;
 			}
-			const existing = await getExchangeRateFromDB(
-				isoCode,
-				dateString,
-			);
+			const existing = await getExchangeRateFromDB(isoCode, dateString);
 
 			if (existing !== null) {
 				return existing;
 			}
 
 			try {
-				const newRate = await callExchangeRateProvider(
-					isoCode,
-					dateString,
-				);
+				const newRate = await callExchangeRateProvider(isoCode, dateString);
 
-				await insertExchangeRate(
-					isoCode,
-					dateString,
-					newRate,
-				);
+				await insertExchangeRate(isoCode, dateString, newRate);
 
 				return newRate;
 			} catch {

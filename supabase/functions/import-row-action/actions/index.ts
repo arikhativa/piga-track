@@ -9,11 +9,11 @@ import { setTag } from "./set-tag.ts";
 import { undo } from "./undo.ts";
 
 export const actions: Record<string, ImportRowAction> = {
-  merge,
-  mergeAllPending,
-  undo,
-  set_category: setCategory,
-  set_project: setProject,
-  set_tag: setTag,
-  set_status: setStatus,
+	merge,
+	mergeAllPending,
+	undo,
+	set_category: setCategory,
+	set_project: setProject,
+	set_tag: setTag,
+	set_status: setStatus,
 };

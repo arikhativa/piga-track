@@ -2,89 +2,84 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-
+import z from "zod";
 import { jsonResponse } from "../../helper.ts";
-import { importRowActionSchema } from "./schema.ts";
+import { actions } from "./actions/index.ts";
 import { getImportRows } from "./lib/get-import-rows.ts";
 import { validateSameBatch } from "./lib/validate-import-rows.ts";
-import { actions } from "./actions/index.ts";
-import z from "zod";
+import { importRowActionSchema } from "./schema.ts";
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return jsonResponse("ok");
-  }
+	if (req.method === "OPTIONS") {
+		return jsonResponse("ok");
+	}
 
-  let client;
+	let client;
 
-  try {
-    const connectionString = Deno.env.get("SUPABASE_DB_URL");
+	try {
+		const connectionString = Deno.env.get("SUPABASE_DB_URL");
 
-    if (!connectionString) {
-      throw new Error("SUPABASE_DB_URL is not configured");
-    }
+		if (!connectionString) {
+			throw new Error("SUPABASE_DB_URL is not configured");
+		}
 
-    client = postgres(connectionString, {
-      prepare: false,
-    });
+		client = postgres(connectionString, {
+			prepare: false,
+		});
 
-    const db = drizzle({ client });
+		const db = drizzle({ client });
 
-    const body = importRowActionSchema.parse(await req.json());
+		const body = importRowActionSchema.parse(await req.json());
 
-    const result = await db.transaction(async (tx) => {
-      let rows;
+		const result = await db.transaction(async (tx) => {
+			let rows;
 
-      if (body.import_row_ids.length) {
-        rows = await getImportRows(
-          tx,
-          body.import_row_ids,
-        );
+			if (body.import_row_ids.length) {
+				rows = await getImportRows(tx, body.import_row_ids);
 
-        validateSameBatch(rows);
-      }
+				validateSameBatch(rows);
+			}
 
-      const action = actions[body.action];
+			const action = actions[body.action];
 
-      if (!action) {
-        throw new Error(
-          `Unsupported action: ${body.action}`,
-        );
-      }
+			if (!action) {
+				throw new Error(`Unsupported action: ${body.action}`);
+			}
 
-      return action({
-        db: tx,
-        rows: rows || [],
-        profileId: body.profileId,
-        value: body.value,
-      });
-    });
+			return action({
+				db: tx,
+				rows: rows || [],
+				profileId: body.profileId,
+				value: body.value,
+			});
+		});
 
-    await client.end();
+		await client.end();
 
-    return jsonResponse({ data: result }, 200);
-  } catch (error) {
-    console.error(error);
+		return jsonResponse({ data: result }, 200);
+	} catch (error) {
+		console.error(error);
 
-    if (error instanceof z.ZodError) {
-      return jsonResponse(
-        {
-          error: "Invalid request",
-          issues: error.issues,
-        },
-        400,
-      );
-    }
+		if (error instanceof z.ZodError) {
+			return jsonResponse(
+				{
+					error: "Invalid request",
+					issues: error.issues,
+				},
+				400,
+			);
+		}
 
-    return jsonResponse(
-      {
-        error: error instanceof Error
-          ? error.message
-          : "Failed to process import rows",
-      },
-      500,
-    );
-  } finally {
-    await client?.end();
-  }
+		return jsonResponse(
+			{
+				error:
+					error instanceof Error
+						? error.message
+						: "Failed to process import rows",
+			},
+			500,
+		);
+	} finally {
+		await client?.end();
+	}
 });

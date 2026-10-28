@@ -50,9 +50,7 @@ export const transactionExporter = async (
 			category: transaction.category_id
 				? categoryOptionText(categories[transaction.category_id])
 				: "",
-			tag: transaction.tag_id
-				? tagOptionText(tags[transaction.tag_id])
-				: "",
+			tag: transaction.tag_id ? tagOptionText(tags[transaction.tag_id]) : "",
 			description: transaction.description ?? "",
 			transaction_at: transaction.transaction_at,
 		};

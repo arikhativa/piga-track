@@ -1,40 +1,40 @@
 import { z } from "zod";
 
 export const dashboardRequestSchema = z.object({
-  from: z.iso.datetime(),
-  to: z.iso.datetime(),
+	from: z.iso.datetime(),
+	to: z.iso.datetime(),
 });
 
 export const dashboardResponseSchema = z.object({
-  balance: z.number(),
-  income: z.number(),
-  expenses: z.number(),
+	balance: z.number(),
+	income: z.number(),
+	expenses: z.number(),
 
-  incomeCategories: z.array(
-    z.object({
-      categoryId: z.number(),
-      category: z.string(),
-      isBoth: z.boolean().optional(),
-      amount: z.number(),
-    }),
-  ),
+	incomeCategories: z.array(
+		z.object({
+			categoryId: z.number(),
+			category: z.string(),
+			isBoth: z.boolean().optional(),
+			amount: z.number(),
+		}),
+	),
 
-  expenseCategories: z.array(
-    z.object({
-      categoryId: z.number(),
-      isBoth: z.boolean().optional(),
-      category: z.string(),
-      amount: z.number(),
-    }),
-  ),
+	expenseCategories: z.array(
+		z.object({
+			categoryId: z.number(),
+			isBoth: z.boolean().optional(),
+			category: z.string(),
+			amount: z.number(),
+		}),
+	),
 
-  monthly: z.array(
-    z.object({
-      month: z.string(),
-      income: z.number(),
-      expenses: z.number(),
-    }),
-  ),
+	monthly: z.array(
+		z.object({
+			month: z.string(),
+			income: z.number(),
+			expenses: z.number(),
+		}),
+	),
 });
 
 // NOTE - these are copied to the front end
