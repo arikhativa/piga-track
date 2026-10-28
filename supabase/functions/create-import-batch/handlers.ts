@@ -56,6 +56,7 @@ export function createImportBatch(
           and(
             sql`${transaction.transaction_at}::date = ${row.date}`,
             eq(transaction.amount, row.amount),
+            sql`${transaction.description} IS NOT DISTINCT FROM ${row.description ?? null}`,
           ),
         )
         .limit(1);

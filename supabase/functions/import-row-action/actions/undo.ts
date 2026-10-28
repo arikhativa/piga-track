@@ -1,4 +1,4 @@
-import { inArray } from "drizzle-orm";
+import { inArray, sql } from "drizzle-orm";
 
 import { importRow, transaction } from "../../../../src/db/schema.ts";
 import type { ImportRow } from "../../../../src/db/schema.ts";
@@ -25,7 +25,11 @@ export const undo: ImportRowAction = async ({ db, rows }) => {
   await db
     .update(importRow)
     .set({
-      status: "pending",
+      status: sql`CASE
+        WHEN ${importRow.duplicate_transaction_id} IS NOT NULL
+          THEN 'duplicates'::"import_row_status"
+        ELSE 'pending'::"import_row_status"
+      END`,
       transaction_id: null,
       updated_at: new Date(),
     })
@@ -36,8 +40,6 @@ export const undo: ImportRowAction = async ({ db, rows }) => {
       .delete(transaction)
       .where(inArray(transaction.id, transactionIds));
   }
-
-  const batchId = rows[0].import_batch_id;
 
   return {
     action: "undo",

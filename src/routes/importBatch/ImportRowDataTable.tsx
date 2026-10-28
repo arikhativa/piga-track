@@ -1,6 +1,6 @@
 import { capitalize } from "lodash";
-import { Minus, Plus, RotateCcw } from "lucide-react";
-import { useDataProvider, useNavigate, useRefresh } from "ra-core";
+import { Eye, Minus, Plus, RotateCcw } from "lucide-react";
+import { useNavigate, useRefresh } from "ra-core";
 import { useCallback } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
@@ -8,6 +8,7 @@ import { Badge } from "#/components/ui/badge";
 import { Button } from "#/components/ui/button";
 import type { ImportRow } from "#/db/schema";
 import { useProfile } from "#/hooks/use-profile";
+import { formatCurrency } from "#/lib/format/formatNIS";
 import { importRowAction } from "#/lib/importer/importRowAction";
 import { getRowStateVariant } from "#/lib/variant/getRowStateVariant";
 import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
@@ -15,11 +16,9 @@ import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { ImportRowTag } from "#/routes/importBatch/ImportRowTag";
 import { DataTable, DateField } from "@/components/admin";
-import { formatCurrency } from "#/lib/format/formatNIS";
 
 export const ImportRowDataTable = () => {
 	const { isSuccess, data: userProfile } = useProfile();
-	const dataProvider = useDataProvider();
 
 	const navigate = useNavigate();
 	const refresh = useRefresh();
@@ -104,9 +103,7 @@ export const ImportRowDataTable = () => {
 				source="status"
 				render={(record: ImportRow) => (
 					<Badge variant={getRowStateVariant(record.status)}>
-						{record.status === "duplicates" && record.duplicate_transaction_id
-							? `Duplicates transaction ${record.duplicate_transaction_id}`
-							: capitalize(record.status)}
+						{capitalize(record.status)}
 					</Badge>
 				)}
 			/>
@@ -116,9 +113,61 @@ export const ImportRowDataTable = () => {
 				headerClassName="flex items-center justify-center"
 				cellClassName={"flex items-center justify-center py-2 gap-4"}
 				render={(record: ImportRow) => {
-					if (record.duplicate_transaction_id) {
-						return;
+					if (
+						record.status === "duplicates" &&
+						record.duplicate_transaction_id
+					) {
+						return (
+							<>
+								<Button
+									type="button"
+									size="icon"
+									title="Merge duplicate"
+									onClick={async () => {
+										await importRowAction({
+											profileId: userProfile.id,
+											import_row_ids: [Number(record.id)],
+											action: "merge",
+										});
+										refresh();
+									}}
+								>
+									<Plus />
+								</Button>
+
+								<Button
+									type="button"
+									size="icon"
+									variant="destructive"
+									title="Drop duplicate"
+									onClick={async () => {
+										await importRowAction({
+											profileId: userProfile.id,
+											import_row_ids: [Number(record.id)],
+											action: "set_status",
+											value: "dropped",
+										});
+										refresh();
+									}}
+								>
+									<Minus />
+								</Button>
+
+								<Button
+									type="button"
+									size="icon"
+									variant="outline"
+									title="View linked transaction"
+									onClick={() =>
+										navigate(`/transaction/${record.duplicate_transaction_id}`)
+									}
+								>
+									<Eye />
+								</Button>
+							</>
+						);
 					}
+
 					if (record.status === "pending") {
 						return (
 							<>
@@ -166,21 +215,11 @@ export const ImportRowDataTable = () => {
 								className={"text-foreground"}
 								variant="outline"
 								onClick={async () => {
-									if (record.status === "dropped") {
-										await dataProvider.update("import_row", {
-											id: record.id,
-											data: {
-												status: "pending",
-											},
-											previousData: record,
-										});
-									} else {
-										await importRowAction({
-											profileId: userProfile.id,
-											import_row_ids: [Number(record.id)],
-											action: "undo",
-										});
-									}
+									await importRowAction({
+										profileId: userProfile.id,
+										import_row_ids: [Number(record.id)],
+										action: "undo",
+									});
 									refresh();
 								}}
 							>

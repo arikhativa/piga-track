@@ -7,7 +7,7 @@ import {
   NIS_ID,
   transaction,
 } from "../../../../src/db/schema.ts";
-import { validatePending } from "../lib/validate-import-rows.ts";
+import { validateMergeable } from "../lib/validate-import-rows.ts";
 import type { ImportRowAction } from "../types.ts";
 import { upsertClassificationRules } from "../lib/upsert-classification-rules.ts";
 
@@ -16,7 +16,7 @@ export const merge: ImportRowAction = async ({
   rows,
   profileId,
 }) => {
-  validatePending(rows);
+  validateMergeable(rows);
 
   for (const row of rows) {
     if (!row.date) {

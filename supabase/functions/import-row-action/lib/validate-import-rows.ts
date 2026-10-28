@@ -14,10 +14,10 @@ export function validateSameBatch(rows: ImportRow[]) {
   return batchId;
 }
 
-export function validatePending(rows: ImportRow[]) {
+export function validateMergeable(rows: ImportRow[]) {
   for (const row of rows) {
-    if (row.status !== "pending") {
-      throw new Error(`Import row ${row.id} is not pending`);
+    if (row.status !== "pending" && row.status !== "duplicates") {
+      throw new Error(`Import row ${row.id} is not mergeable`);
     }
   }
 }
