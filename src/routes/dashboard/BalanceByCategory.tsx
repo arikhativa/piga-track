@@ -52,7 +52,7 @@ function CategoryItem({
 	return (
 		<Link to={`/transaction?${params.toString()}`}>
 			<Item className="bg-background border-2 border-border">
-				<ItemContent className="flex flex-row justify-between">
+				<ItemContent className="flex flex-row justify-between gap-4">
 					<ItemTitle>{title}</ItemTitle>
 					<p>{formatNIS(amount)}</p>
 				</ItemContent>

@@ -25,7 +25,10 @@ export function Dashboard() {
 						<Balance dateRange={dateRange} />
 						<BarChartSection dateRange={dateRange} />
 					</div>
-					<BalanceByCategory className={""} dateRange={dateRange} />
+					<BalanceByCategory
+						className={"md:flex-1 md:min-w-fit"}
+						dateRange={dateRange}
+					/>
 				</div>
 
 				<div className="flex flex-col md:grid grid-cols-2 md:gap-8 ">

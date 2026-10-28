@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    const monthly = await getMonthly(db);
+    const monthly = await getMonthly(db, new Date(to));
 
     const [{ balance }] = await db
       .select({
@@ -207,11 +207,14 @@ async function getMonthly(
     // deno-lint-ignore ban-types
     $client: postgres.Sql<{}>;
   },
+  inputDate: Date,
 ) {
-  const now = new Date();
-
   const from = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1),
+    Date.UTC(inputDate.getUTCFullYear(), inputDate.getUTCMonth() - 5, 1),
+  );
+
+  const to = new Date(
+    Date.UTC(inputDate.getUTCFullYear(), inputDate.getUTCMonth() + 1, 1),
   );
 
   const transactionMonth = sql`
@@ -264,7 +267,7 @@ async function getMonthly(
     .where(
       and(
         gte(transaction.transaction_at, from),
-        lt(transaction.transaction_at, now),
+        lt(transaction.transaction_at, to),
       ),
     )
     .groupBy(
