@@ -6,7 +6,10 @@ import postgrestRestProvider, {
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
 import { type DataProvider, fetchUtils } from "ra-core";
-import { createImportBatch } from "#/lib/importer/createImportBatch";
+import {
+	type CreateImportBatchInput,
+	createImportBatch,
+} from "#/lib/importer/createImportBatch";
 
 type WithApiKey = {
 	instanceUrl: string;
@@ -99,7 +102,10 @@ export const supabaseDataProvider = ({
 
 		create: async (resource, params) => {
 			if (resource === "import_batch") {
-				const result = await createImportBatch(params.data);
+				const result = await createImportBatch(
+					// NOTE: maybe we should have a propare check here
+					params.data as CreateImportBatchInput,
+				);
 
 				return {
 					data: result.batch,
@@ -109,9 +115,11 @@ export const supabaseDataProvider = ({
 			return baseProvider.create(resource, params);
 		},
 
+		// biome-ignore lint/suspicious/noExplicitAny: external code
 		supabaseClient: (url: string, options?: any) =>
 			httpClient(`${config.apiUrl}/${url}`, options),
 
+		// biome-ignore lint/suspicious/noExplicitAny: external code
 		getSchema: async (): Promise<any> => {
 			const { json } = await httpClient(`${config.apiUrl}/`, {});
 

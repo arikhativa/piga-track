@@ -28,7 +28,7 @@ async function seedTransactions() {
 		})
 		.from(transactionCategory);
 
-	const transactions = Array.from({ length: 200 }, (_, i) => {
+	const transactions = Array.from({ length: 200 }, () => {
 		const category = categories[randomInt(0, categories.length)];
 
 		let isPositive: boolean;

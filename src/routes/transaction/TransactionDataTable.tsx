@@ -2,11 +2,10 @@ import type { ReactNode } from "react";
 import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
 import type { Transaction } from "#/db/schema";
 import { useCurrencyList } from "#/hooks/use-currency-list";
-import { NIS } from "#/lib/constant";
+import { formatCurrency, formatNIS } from "#/lib/format/formatNIS";
 import { toSmallDate, toTime } from "#/lib/format/toSmallDate";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, ReferenceField } from "@/components/admin";
-import { formatCurrency, formatNIS } from "#/lib/format/formatNIS";
 
 type ColToHideOptions = "project" | "category" | "tag";
 

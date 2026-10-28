@@ -1,7 +1,6 @@
-import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import {
 	boolean,
-	check,
 	date,
 	integer,
 	numeric,

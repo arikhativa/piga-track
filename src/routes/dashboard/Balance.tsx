@@ -1,10 +1,8 @@
 import { cn } from "cn";
 import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
-import { Separator } from "#/components/ui/separator";
 import { Spinner } from "#/components/ui/spinner";
 import { useDashboardData } from "#/hooks/use-dashboard-data";
 import type { DateRange } from "#/hooks/use-dashboard-date-range";
-import { useIsMobile } from "#/hooks/use-mobile";
 import { formatNIS } from "#/lib/format/formatNIS";
 
 function BalanceCard({

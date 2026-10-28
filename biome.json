@@ -10,6 +10,7 @@
 		"includes": [
 			"./drizzle.config.ts",
 			"**/src/**/*",
+			"supabase/functions/**/*",
 			"**/.vscode/**/*",
 			"**/index.html",
 			"**/vite.config.ts",

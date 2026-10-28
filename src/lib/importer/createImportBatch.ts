@@ -1,6 +1,6 @@
 import { supabaseClient } from "#/lib/supabaseClient";
 
-type CreateImportBatchInput = {
+export type CreateImportBatchInput = {
 	batch_name: string;
 	import_profile_id: number;
 	rows: {

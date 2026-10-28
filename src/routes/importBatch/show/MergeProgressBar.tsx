@@ -40,6 +40,7 @@ export function MergeProgressBar({ className }: { className?: string }) {
 			pending: 0,
 			merged: 0,
 			dropped: 0,
+			duplicates: 0,
 		},
 	);
 
@@ -53,6 +54,7 @@ export function MergeProgressBar({ className }: { className?: string }) {
 	const droppedPercent = (counts.dropped / total) * 100;
 	const pendingPercent = 100 - mergedPercent - droppedPercent;
 
+	// TODO: add here duplicates logic and the orage color
 	return (
 		<div
 			className={cn(

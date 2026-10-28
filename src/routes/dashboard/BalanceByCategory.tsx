@@ -12,8 +12,8 @@ import { formatNIS } from "#/lib/format/formatNIS";
 function CategoryItem({
 	title,
 	amount,
-	isBoth,
-	isIncome,
+	// isBoth,
+	// isIncome,
 	categoryId,
 	dateRange,
 }: {

@@ -1,4 +1,3 @@
-import { Coins, PiggyBank } from "lucide-react";
 import { Form, required, useLogin, useNotify } from "ra-core";
 import { useState } from "react";
 import type { FieldValues, SubmitHandler } from "react-hook-form";
