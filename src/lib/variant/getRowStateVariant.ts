@@ -7,6 +7,7 @@ export function getRowStateVariant(stt: ImportRowStatusEnum) {
 		case "merged":
 			return "green";
 		case "dropped":
+		case "duplicates":
 			return "destructive";
 	}
 }

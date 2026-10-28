@@ -72,7 +72,11 @@ export function createImportBatch(
             row.tag_id ??
             (matchedRule?.action === "addData" ? matchedRule.tagId : null) ??
             null,
-          status: matchedRule?.action === "dropRow" ? "dropped" : "pending",
+          status: duplicate
+            ? "duplicates"
+            : matchedRule?.action === "dropRow"
+              ? "dropped"
+              : "pending",
           import_batch_id: batch.id,
           duplicate_transaction_id: duplicate?.id ?? null,
         })

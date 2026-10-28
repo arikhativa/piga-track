@@ -15,6 +15,7 @@ import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { ImportRowTag } from "#/routes/importBatch/ImportRowTag";
 import { DataTable, DateField } from "@/components/admin";
+import { formatCurrency } from "#/lib/format/formatNIS";
 
 export const ImportRowDataTable = () => {
 	const { isSuccess, data: userProfile } = useProfile();
@@ -60,7 +61,7 @@ export const ImportRowDataTable = () => {
 				onCellClick={navToRealTrans}
 				source="amount"
 				render={(record) => {
-					return <>{Math.abs(Number(record.amount))}</>;
+					return <>{formatCurrency(Math.abs(Number(record.amount)))}</>;
 				}}
 			/>
 
@@ -101,20 +102,13 @@ export const ImportRowDataTable = () => {
 
 			<DataTable.Col
 				source="status"
-				render={(record: ImportRow) => {
-					if (record.duplicate_transaction_id) {
-						return (
-							<Badge
-								variant={"destructive"}
-							>{`Duplicates transaction ${record.duplicate_transaction_id}`}</Badge>
-						);
-					}
-					return (
-						<Badge variant={getRowStateVariant(record.status)}>
-							{capitalize(record.status)}
-						</Badge>
-					);
-				}}
+				render={(record: ImportRow) => (
+					<Badge variant={getRowStateVariant(record.status)}>
+						{record.status === "duplicates" && record.duplicate_transaction_id
+							? `Duplicates transaction ${record.duplicate_transaction_id}`
+							: capitalize(record.status)}
+					</Badge>
+				)}
 			/>
 
 			<DataTable.Col

@@ -220,6 +220,7 @@ export const importRowStatusEnum = pgEnum("import_row_status", [
 	"pending",
 	"merged",
 	"dropped",
+	"duplicates",
 ]);
 
 export const importRow = pgTable("import_row", {

@@ -1,0 +1,1 @@
+ALTER TYPE "public"."import_row_status" ADD VALUE 'duplicates';
