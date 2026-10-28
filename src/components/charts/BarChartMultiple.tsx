@@ -22,6 +22,7 @@ type MonthlyData = {
 
 type BarChartMultipleProps = {
 	data: MonthlyData[];
+	onBarClick?: (month: string) => void;
 };
 
 const chartConfig = {
@@ -35,7 +36,7 @@ const chartConfig = {
 	},
 } satisfies ChartConfig;
 
-export function BarChartMultiple({ data }: BarChartMultipleProps) {
+export function BarChartMultiple({ data, onBarClick }: BarChartMultipleProps) {
 	return (
 		<Card>
 			<CardHeader>
@@ -76,9 +77,25 @@ export function BarChartMultiple({ data }: BarChartMultipleProps) {
 							cursor={false}
 							content={<ChartTooltipContent hideLabel />}
 						/>
-						<Bar dataKey="expenses" fill="var(--color-expenses)" radius={4} />
+						<Bar
+							dataKey="expenses"
+							fill="var(--color-expenses)"
+							radius={4}
+							onClick={(entry) => {
+								const month = (entry.payload as MonthlyData).month;
+								onBarClick?.(month);
+							}}
+						/>
 
-						<Bar dataKey="income" fill="var(--color-income)" radius={4} />
+						<Bar
+							dataKey="income"
+							fill="var(--color-income)"
+							radius={4}
+							onClick={(entry) => {
+								const month = (entry.payload as MonthlyData).month;
+								onBarClick?.(month);
+							}}
+						/>
 					</BarChart>
 				</ChartContainer>
 			</CardContent>

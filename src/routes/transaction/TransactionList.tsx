@@ -3,9 +3,11 @@ import { categoryOptionText } from "#/lib/form/categoryOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
 import { tagOptionText } from "#/lib/form/tagOptionText";
 import { TransactionDataTable } from "#/routes/transaction/TransactionDataTable";
+
 import {
 	DateInput,
 	List,
+	NumberInput,
 	ReferenceInput,
 	SelectInput,
 } from "@/components/admin";
@@ -17,6 +19,15 @@ const transactionFilters = [
 		label="From"
 	/>,
 	<DateInput key="transaction_at@lte" source="transaction_at@lte" label="To" />,
+	<SelectInput
+		key="amountType"
+		source="amountType"
+		label="Amount type"
+		choices={[
+			{ id: "negative", name: "Negative" },
+			{ id: "positive", name: "Positive" },
+		]}
+	/>,
 	<ReferenceInput
 		key="project"
 		source="project_id"
@@ -24,7 +35,6 @@ const transactionFilters = [
 	>
 		<SelectInput label="Project" optionText={projectOptionText} />
 	</ReferenceInput>,
-
 	<ReferenceInput
 		key="category"
 		source="category_id"
@@ -36,16 +46,16 @@ const transactionFilters = [
 	<ReferenceInput key="tag" source="tag_id" reference="transaction_tag">
 		<SelectInput label="Content" optionText={tagOptionText} />
 	</ReferenceInput>,
-	// TODO rethink of this
-	// <SelectInput
-	// 	key="amountFilter"
-	// 	source="amountFilter"
-	// 	label="Amount Type"
-	// 	choices={[
-	// 		{ id: "positive", name: "Income" },
-	// 		{ id: "negative", name: "Expense" },
-	// 	]}
-	// />,
+	<NumberInput
+		key="amount_nis@gte"
+		source="amount_nis@gte"
+		label="Minimum amount"
+	/>,
+	<NumberInput
+		key="amount_nis@lte"
+		source="amount_nis@lte"
+		label="Maximum amount"
+	/>,
 ];
 
 export const TransactionList = () => {

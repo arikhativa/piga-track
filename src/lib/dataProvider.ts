@@ -50,17 +50,19 @@ export const supabaseDataProvider = ({
 	primaryKeys = defaultPrimaryKeys,
 	schema = defaultSchema,
 	...rest
-}:
-	& (WithApiKey | WithSupabaseClient)
-	& Partial<Omit<IDataProviderConfig, "apiUrl">>): DataProvider => {
-	const supabaseClient = supabaseClientParam ??
-		(apiKey ? createClient(instanceUrl, apiKey) : (() => {
-			throw new Error(
-				"Either apiKey or supabaseClient must be provided to supabaseDataProvider",
-			);
-		})());
-	const httpClient = httpClientParam ??
-		supabaseHttpClient({ apiKey, supabaseClient });
+}: (WithApiKey | WithSupabaseClient) &
+	Partial<Omit<IDataProviderConfig, "apiUrl">>): DataProvider => {
+	const supabaseClient =
+		supabaseClientParam ??
+		(apiKey
+			? createClient(instanceUrl, apiKey)
+			: (() => {
+					throw new Error(
+						"Either apiKey or supabaseClient must be provided to supabaseDataProvider",
+					);
+				})());
+	const httpClient =
+		httpClientParam ?? supabaseHttpClient({ apiKey, supabaseClient });
 
 	const config: IDataProviderConfig = {
 		apiUrl: `${instanceUrl}/rest/v1`,
@@ -75,6 +77,25 @@ export const supabaseDataProvider = ({
 
 	return {
 		...baseProvider,
+
+		getList: (resource, params) => {
+			if (resource !== "transaction" || !("amountType" in params.filter)) {
+				return baseProvider.getList(resource, params);
+			}
+
+			const { amountType, ...filter } = params.filter;
+			const amountFilter =
+				amountType === "negative"
+					? { "amount_nis@lt": 0 }
+					: amountType === "positive"
+						? { "amount_nis@gt": 0 }
+						: {};
+
+			return baseProvider.getList(resource, {
+				...params,
+				filter: { ...filter, ...amountFilter },
+			});
+		},
 
 		create: async (resource, params) => {
 			if (resource === "import_batch") {
@@ -109,37 +130,38 @@ export const supabaseDataProvider = ({
  * @param supabaseClient The Supabase client
  * @returns A httpClient for Supabase
  */
-export const supabaseHttpClient = ({
-	apiKey,
-	supabaseClient,
-}: {
-	apiKey?: string;
-	supabaseClient: SupabaseClient;
-}) =>
-async (url: string, options: any = {}) => {
-	const { data } = await supabaseClient.auth.getSession();
-	if (!options.headers) options.headers = new Headers({});
+export const supabaseHttpClient =
+	({
+		apiKey,
+		supabaseClient,
+	}: {
+		apiKey?: string;
+		supabaseClient: SupabaseClient;
+	}) =>
+	async (url: string, options: any = {}) => {
+		const { data } = await supabaseClient.auth.getSession();
+		if (!options.headers) options.headers = new Headers({});
 
-	if (supabaseClient["headers"]) {
-		Object.entries(supabaseClient["headers"]).forEach(([name, value]) => {
-			options.headers.set(name, value);
-		});
-	}
-	if (data.session) {
-		options.user = {
-			authenticated: true,
-			// This ensures that users are identified correctly and that RLS can be applied
-			token: `Bearer ${data.session.access_token}`,
-		};
-	}
-	// When apiKey is explicitly provided, set it in the header to ensure it
-	// takes precedence over the supabaseClient internal headers. When omitted,
-	// the key from supabaseClient['headers'] (set by the copy loop above) is
-	// used instead — this supports the publishable key format (`sb_publishable_*`)
-	// where the supabase-js client manages the key internally.
-	if (apiKey !== undefined) {
-		options.headers.set("apiKey", apiKey);
-	}
+		if (supabaseClient["headers"]) {
+			Object.entries(supabaseClient["headers"]).forEach(([name, value]) => {
+				options.headers.set(name, value);
+			});
+		}
+		if (data.session) {
+			options.user = {
+				authenticated: true,
+				// This ensures that users are identified correctly and that RLS can be applied
+				token: `Bearer ${data.session.access_token}`,
+			};
+		}
+		// When apiKey is explicitly provided, set it in the header to ensure it
+		// takes precedence over the supabaseClient internal headers. When omitted,
+		// the key from supabaseClient['headers'] (set by the copy loop above) is
+		// used instead — this supports the publishable key format (`sb_publishable_*`)
+		// where the supabase-js client manages the key internally.
+		if (apiKey !== undefined) {
+			options.headers.set("apiKey", apiKey);
+		}
 
-	return fetchUtils.fetchJson(url, options);
-};
+		return fetchUtils.fetchJson(url, options);
+	};
