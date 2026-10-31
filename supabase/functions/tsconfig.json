@@ -1,14 +1,14 @@
 {
-  "compilerOptions": {
-    // Deno owns semantic checking here through each function's deno.json.
-    // This project prevents vtsls from reporting Node-resolution errors in Zed.
-    // Use pnpm check:functions for validation; tsc does not check this project.
-    "noCheck": true,
-    "noEmit": true,
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true
-  },
-  "include": ["**/*.ts", "**/*.tsx"]
+	"compilerOptions": {
+		// Deno owns semantic checking here through each function's deno.json.
+		// This project prevents vtsls from reporting Node-resolution errors in Zed.
+		// Use pnpm check:functions for validation; tsc does not check this project.
+		"noCheck": true,
+		"noEmit": true,
+		"target": "ES2022",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true
+	},
+	"include": ["**/*.ts", "**/*.tsx"]
 }

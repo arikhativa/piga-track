@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import GlareHover from "#/components/GlareHover";
-import PixelIcon from "#/components/icon/lord pigafetta";
+import PixelIcon from "#/components/icon/lord-pigafetta";
 import { Card, CardContent } from "#/components/ui/card";
 import { Button } from "@/components/ui/button";
 

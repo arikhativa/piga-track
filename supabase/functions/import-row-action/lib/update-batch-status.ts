@@ -1,4 +1,4 @@
-import { importBatch, importRow } from "@piga/db/schema";
+import { importBatch } from "@piga/db/schema";
 import { eq } from "drizzle-orm";
 import type { DB } from "../../_shared/types.ts";
 

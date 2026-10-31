@@ -10,7 +10,7 @@ import {
 } from "ra-core";
 import { createElement } from "react";
 import { DevBadge } from "#/components/DevBadge";
-import PixelIcon from "#/components/icon/lord pigafetta";
+import PixelIcon from "#/components/icon/lord-pigafetta";
 import {
 	Sidebar,
 	SidebarContent,

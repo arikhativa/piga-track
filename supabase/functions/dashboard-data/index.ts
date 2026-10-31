@@ -1,8 +1,8 @@
 import { transaction, transactionCategory } from "@piga/db/schema";
 import { and, eq, gte, lt, sql } from "drizzle-orm";
-import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { createDb } from "../_shared/db.ts";
 import { jsonResponse } from "../_shared/helper.ts";
+import type { DB } from "../_shared/types.ts";
 import { type DashboardResponse, dashboardRequestSchema } from "./schema.ts";
 
 Deno.serve(async (req) => {
@@ -10,20 +10,10 @@ Deno.serve(async (req) => {
 		return jsonResponse("ok");
 	}
 
-	let client;
+	let db: ReturnType<typeof createDb> | undefined;
 
 	try {
-		const connectionString = Deno.env.get("SUPABASE_DB_URL");
-
-		if (!connectionString) {
-			throw new Error("SUPABASE_DB_URL is not configured");
-		}
-
-		client = postgres(connectionString, {
-			prepare: false,
-		});
-
-		const db = drizzle(client);
+		db = createDb();
 
 		const result = dashboardRequestSchema.safeParse(await req.json());
 
@@ -198,17 +188,11 @@ Deno.serve(async (req) => {
 			500,
 		);
 	} finally {
-		await client?.end();
+		await db?.$client.end();
 	}
 });
 
-async function getMonthly(
-	db: PostgresJsDatabase<Record<string, never>> & {
-		// deno-lint-ignore ban-types
-		$client: postgres.Sql<{}>;
-	},
-	inputDate: Date,
-) {
+async function getMonthly(db: DB, inputDate: Date) {
 	const from = new Date(
 		Date.UTC(inputDate.getUTCFullYear(), inputDate.getUTCMonth() - 5, 1),
 	);

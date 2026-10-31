@@ -61,9 +61,20 @@
       },
     },
     "JSON": {
+      "prettier": { "allowed": false },
       "formatter": {
-        "language_server": {
-          "name": "biome",
+        "external": {
+          "command": "pnpm",
+          "arguments": ["exec", "biome", "format", "--stdin-file-path", "{buffer_path}"],
+        },
+      },
+    },
+    "JSONC": {
+      "prettier": { "allowed": false },
+      "formatter": {
+        "external": {
+          "command": "pnpm",
+          "arguments": ["exec", "biome", "format", "--stdin-file-path", "{buffer_path}"],
         },
       },
     },

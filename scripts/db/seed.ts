@@ -1,5 +1,4 @@
 import { randomInt, randomUUID } from "node:crypto";
-import { drizzle } from "drizzle-orm/postgres-js";
 import {
 	profile,
 	transaction,
@@ -8,11 +7,13 @@ import {
 	transactionTag,
 	transactionType,
 } from "@piga/db/schema";
+import { drizzle } from "drizzle-orm/postgres-js";
 import "dotenv/config";
+import * as schema from "@piga/db/schema";
 import postgres from "postgres";
 import { seedUser } from "./seed-user.ts";
-import * as schema from "@piga/db/schema";
 
+// biome-ignore lint/style/noNonNullAssertion: this is for local dev
 const client = postgres(process.env.DATABASE_URL!);
 
 export const db = drizzle(client, { schema });

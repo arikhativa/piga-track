@@ -9,7 +9,6 @@
     "./import-row-action": "./src/import-row-action.ts"
   },
   "scripts": {
-    "test": "tsx --test tests/*.test.ts",
     "check:ts": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": { "zod": "4.6.1" },

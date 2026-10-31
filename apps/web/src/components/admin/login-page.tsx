@@ -1,7 +1,7 @@
 import { Form, required, useLogin, useNotify } from "ra-core";
 import { useState } from "react";
 import type { FieldValues, SubmitHandler } from "react-hook-form";
-import PixelIcon from "#/components/icon/lord pigafetta";
+import PixelIcon from "#/components/icon/lord-pigafetta";
 import { Notification } from "@/components/admin/notification";
 import { TextInput } from "@/components/admin/text-input";
 import { Button } from "@/components/ui/button";

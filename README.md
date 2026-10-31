@@ -26,7 +26,6 @@ Use `@piga/db/schema` for tables/constants and `@piga/db/types` for type-only im
 | `pnpm check:ts`        | Check web, both shared packages, contract tests, and Node tooling       |
 | `pnpm check:functions` | Check all four function entrypoints using their individual Deno configs |
 | `pnpm check`           | Run Biome over configured workspace files                               |
-| `pnpm test`            | Run contract tests through tsx and `node:test`                          |
 | `pnpm functions`       | Serve local Supabase functions                                          |
 | `pnpm db:seed`         | Run `scripts/db/seed.ts` from the repository root                       |
 
@@ -59,7 +58,6 @@ pnpm install --frozen-lockfile
 pnpm check:ts
 pnpm check:functions
 pnpm check
-pnpm test
 pnpm build
 ```
 
