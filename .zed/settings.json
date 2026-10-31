@@ -1,7 +1,24 @@
 {
   "format_on_save": "on",
+  "lsp": {
+    "deno": {
+      "settings": {
+        "deno": {
+          "enable": true,
+          "enablePaths": ["./supabase/functions"],
+          "lint": true,
+        },
+      },
+    },
+  },
   "languages": {
     "JavaScript": {
+      "language_servers": [
+        "deno",
+        "vtsls",
+        "!typescript-language-server",
+        "...",
+      ],
       "code_actions_on_format": {
         "source.organizeImports.biome": true,
       },
@@ -12,6 +29,12 @@
       },
     },
     "TypeScript": {
+      "language_servers": [
+        "deno",
+        "vtsls",
+        "!typescript-language-server",
+        "...",
+      ],
       "code_actions_on_format": {
         "source.organizeImports.biome": true,
       },
@@ -22,6 +45,12 @@
       },
     },
     "TSX": {
+      "language_servers": [
+        "deno",
+        "vtsls",
+        "!typescript-language-server",
+        "...",
+      ],
       "code_actions_on_format": {
         "source.organizeImports.biome": true,
       },
@@ -32,9 +61,20 @@
       },
     },
     "JSON": {
+      "prettier": { "allowed": false },
       "formatter": {
-        "language_server": {
-          "name": "biome",
+        "external": {
+          "command": "pnpm",
+          "arguments": ["exec", "biome", "format", "--stdin-file-path", "{buffer_path}"],
+        },
+      },
+    },
+    "JSONC": {
+      "prettier": { "allowed": false },
+      "formatter": {
+        "external": {
+          "command": "pnpm",
+          "arguments": ["exec", "biome", "format", "--stdin-file-path", "{buffer_path}"],
         },
       },
     },

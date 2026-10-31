@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.4.5/schema.json",
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
@@ -9,6 +9,8 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"./drizzle.config.ts",
+			"packages/contracts/tests/**/*.ts",
+			"scripts/**/*.ts",
 			"**/src/**/*",
 			"supabase/functions/**/*",
 			"**/.vscode/**/*",
@@ -28,7 +30,10 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off"
+			}
 		}
 	},
 	"javascript": {

@@ -1,11 +1,11 @@
-import * as drizzleOrm from "drizzle-orm";
 import {
 	importBatch,
 	importProfile,
 	importRow,
 	NIS_ID,
 	transaction,
-} from "../../../../src/db/schema.ts";
+} from "@piga/db/schema";
+import * as drizzleOrm from "drizzle-orm";
 import { upsertClassificationRules } from "../lib/upsert-classification-rules.ts";
 import { validateMergeable } from "../lib/validate-import-rows.ts";
 import type { ImportRowAction } from "../types.ts";

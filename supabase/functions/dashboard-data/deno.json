@@ -1,9 +1,14 @@
 {
 	"imports": {
+		"@piga/contracts/dashboard-data": "../../../packages/contracts/src/dashboard-data.ts",
+		"@piga/db/types": "../../../packages/db/src/types.ts",
+		"@piga/db/schema": "../../../packages/db/src/schema.ts",
 		"@supabase/functions-js": "jsr:@supabase/functions-js@^2",
 		"@supabase/server": "npm:@supabase/server@^1",
 		"drizzle-orm": "npm:drizzle-orm@0.45.2",
+		"drizzle-orm/pg-core": "npm:drizzle-orm@0.45.2/pg-core",
+		"drizzle-orm/postgres-js": "npm:drizzle-orm@0.45.2/postgres-js",
 		"postgres": "npm:postgres@3.4.9",
-		"zod": "npm:zod@^4.5.4"
+		"zod": "npm:zod@4.6.1"
 	}
 }

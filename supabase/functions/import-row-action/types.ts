@@ -1,5 +1,5 @@
-import type { ImportRow } from "../../../src/db/schema.ts";
-import type { DB } from "../../types.ts";
+import type { ImportRow } from "@piga/db/types";
+import type { DB } from "../_shared/types.ts";
 import type { ImportRowActionInput } from "./schema.ts";
 
 export type ImportRowActionContext = Omit<

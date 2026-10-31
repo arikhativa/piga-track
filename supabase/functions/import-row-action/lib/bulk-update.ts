@@ -1,9 +1,7 @@
+import { importRow } from "@piga/db/schema";
+import type { ImportRowStatusEnum } from "@piga/db/types";
 import { inArray } from "drizzle-orm";
-import {
-	type ImportRowStatusEnum,
-	importRow,
-} from "../../../../src/db/schema.ts";
-import type { DB } from "../../../types.ts";
+import type { DB } from "../../_shared/types.ts";
 
 type BulkUpdateData = {
 	category_id?: number | null;

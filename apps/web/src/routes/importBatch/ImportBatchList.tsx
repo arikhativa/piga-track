@@ -1,0 +1,60 @@
+import type { ImportBatch, ImportProfile } from "@piga/db/types";
+import { capitalize } from "lodash";
+import { Badge } from "#/components/ui/badge";
+import { importProfileOptionText } from "#/lib/form/importProfileOptionText";
+import { getBatchStatusVariant } from "#/lib/variant/getBatchStateVariant";
+import { ImportBatchDateRange } from "#/routes/importBatch/list/ImportBatchDateRange";
+import {
+	DataTable,
+	List,
+	ReferenceField,
+	ReferenceInput,
+	SelectInput,
+} from "@/components/admin";
+
+// TODO sort them by create date and allow to sort by date range
+export const ImportBatchList = () => (
+	<List
+		filters={[
+			<ReferenceInput
+				key="import_profile_id"
+				source="import_profile_id"
+				reference="import_profile"
+			>
+				<SelectInput label="Profile" optionText={importProfileOptionText} />
+			</ReferenceInput>,
+		]}
+	>
+		<DataTable>
+			<DataTable.Col source="batch_name" />
+
+			<DataTable.Col source="import_profile_id">
+				<ReferenceField
+					source="import_profile_id"
+					reference="import_profile"
+					render={({ referenceRecord }) =>
+						importProfileOptionText(referenceRecord as ImportProfile)
+					}
+				></ReferenceField>
+			</DataTable.Col>
+
+			<DataTable.Col
+				label="Date range"
+				render={(record: ImportBatch) => {
+					return <ImportBatchDateRange id={record.id} />;
+				}}
+			/>
+
+			<DataTable.Col
+				source="status"
+				render={(record: ImportBatch) => {
+					return (
+						<Badge variant={getBatchStatusVariant(record.status)}>
+							{capitalize(record.status)}
+						</Badge>
+					);
+				}}
+			/>
+		</DataTable>
+	</List>
+);

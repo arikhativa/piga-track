@@ -1,9 +1,8 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import z from "zod";
-import { jsonResponse } from "../../helper.ts";
+import { createDb } from "../_shared/db.ts";
+import { jsonResponse } from "../_shared/helper.ts";
 import { actions } from "./actions/index.ts";
 import { getImportRows } from "./lib/get-import-rows.ts";
 import { validateSameBatch } from "./lib/validate-import-rows.ts";
@@ -13,26 +12,15 @@ Deno.serve(async (req) => {
 	if (req.method === "OPTIONS") {
 		return jsonResponse("ok");
 	}
-
-	let client;
+	let db: ReturnType<typeof createDb> | undefined;
 
 	try {
-		const connectionString = Deno.env.get("SUPABASE_DB_URL");
-
-		if (!connectionString) {
-			throw new Error("SUPABASE_DB_URL is not configured");
-		}
-
-		client = postgres(connectionString, {
-			prepare: false,
-		});
-
-		const db = drizzle({ client });
+		db = createDb();
 
 		const body = importRowActionSchema.parse(await req.json());
 
 		const result = await db.transaction(async (tx) => {
-			let rows;
+			let rows: Awaited<ReturnType<typeof getImportRows>> | undefined;
 
 			if (body.import_row_ids.length) {
 				rows = await getImportRows(tx, body.import_row_ids);
@@ -53,8 +41,6 @@ Deno.serve(async (req) => {
 				value: body.value,
 			});
 		});
-
-		await client.end();
 
 		return jsonResponse({ data: result }, 200);
 	} catch (error) {
@@ -80,6 +66,6 @@ Deno.serve(async (req) => {
 			500,
 		);
 	} finally {
-		await client?.end();
+		await db?.$client.end();
 	}
 });

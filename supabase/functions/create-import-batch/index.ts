@@ -1,8 +1,6 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import * as schema from "../../../src/db/schema.ts";
-import { jsonResponse } from "../../helper.ts";
+import { createDb } from "../_shared/db.ts";
+import { jsonResponse } from "../_shared/helper.ts";
 import { createImportBatch } from "./handlers.ts";
 import { createImportBatchSchema } from "./schema.ts";
 
@@ -21,11 +19,10 @@ Deno.serve(async (req) => {
 		return jsonResponse({ error: "Database configuration missing" }, 500);
 	}
 
-	const client = postgres(connectionString, { prepare: false });
+	const db = createDb();
 
 	try {
 		const body = createImportBatchSchema.parse(await req.json());
-		const db = drizzle({ client, schema });
 
 		const result = await createImportBatch(db, body);
 
@@ -50,6 +47,6 @@ Deno.serve(async (req) => {
 			500,
 		);
 	} finally {
-		await client.end();
+		await db.$client.end();
 	}
 });

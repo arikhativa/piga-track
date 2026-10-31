@@ -1,0 +1,20 @@
+{
+  "name": "@piga/contracts",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./dashboard-data": "./src/dashboard-data.ts",
+    "./get-transaction-data": "./src/get-transaction-data.ts",
+    "./create-import-batch": "./src/create-import-batch.ts",
+    "./import-row-action": "./src/import-row-action.ts"
+  },
+  "scripts": {
+    "check:ts": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": { "zod": "4.6.1" },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,10 +1,8 @@
+import { transaction, transactionCategory } from "@piga/db/schema";
 import { and, eq, gte, inArray, lt, sql } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { createDb } from "../_shared/db.ts";
 
-import { transaction, transactionCategory } from "../../../src/db/schema.ts";
-
-import { jsonResponse } from "../../helper.ts";
+import { jsonResponse } from "../_shared/helper.ts";
 import {
 	type TransactionDataResponse,
 	transactionDataRequestSchema,
@@ -15,20 +13,10 @@ Deno.serve(async (req) => {
 		return jsonResponse("ok");
 	}
 
-	let client;
+	let db: ReturnType<typeof createDb> | undefined;
 
 	try {
-		const connectionString = Deno.env.get("SUPABASE_DB_URL");
-
-		if (!connectionString) {
-			throw new Error("SUPABASE_DB_URL is not configured");
-		}
-
-		client = postgres(connectionString, {
-			prepare: false,
-		});
-
-		const db = drizzle(client);
+		db = createDb();
 
 		const result = transactionDataRequestSchema.safeParse(await req.json());
 
@@ -197,6 +185,6 @@ Deno.serve(async (req) => {
 			500,
 		);
 	} finally {
-		await client?.end();
+		await db?.$client.end();
 	}
 });

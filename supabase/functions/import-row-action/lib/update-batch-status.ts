@@ -1,6 +1,6 @@
+import { importBatch } from "@piga/db/schema";
 import { eq } from "drizzle-orm";
-import { importBatch, importRow } from "../../../../src/db/schema.ts";
-import type { DB } from "../../../types.ts";
+import type { DB } from "../../_shared/types.ts";
 
 export async function updateBatchStatus(db: DB, batchId: number) {
 	await db
