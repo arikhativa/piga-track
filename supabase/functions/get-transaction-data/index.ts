@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
 		return jsonResponse("ok");
 	}
 
-	let client;
+	let client: ReturnType<typeof postgres> | undefined;
 
 	try {
 		const connectionString = Deno.env.get("SUPABASE_DB_URL");

@@ -13,6 +13,12 @@
   },
   "languages": {
     "JavaScript": {
+      "language_servers": [
+        "deno",
+        "vtsls",
+        "!typescript-language-server",
+        "...",
+      ],
       "code_actions_on_format": {
         "source.organizeImports.biome": true,
       },
@@ -23,7 +29,12 @@
       },
     },
     "TypeScript": {
-      "language_servers": ["vtsls", "deno", "..."],
+      "language_servers": [
+        "deno",
+        "vtsls",
+        "!typescript-language-server",
+        "...",
+      ],
       "code_actions_on_format": {
         "source.organizeImports.biome": true,
       },
@@ -34,6 +45,12 @@
       },
     },
     "TSX": {
+      "language_servers": [
+        "deno",
+        "vtsls",
+        "!typescript-language-server",
+        "...",
+      ],
       "code_actions_on_format": {
         "source.organizeImports.biome": true,
       },

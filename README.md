@@ -38,7 +38,9 @@ Node database tooling loads root environment files. Drizzle loads `.env` by defa
 
 Vite now runs from `apps/web` and loads app-local environment files by default, such as `apps/web/.env.local`. Move only the frontend's required public configuration into those files. Any `VITE_*` value is public browser configuration: never put database credentials or service-role keys there. Existing environment files were not read or moved during this migration.
 
-Zed retains frontend/tooling TypeScript support through vtsls and enables Deno only for `supabase/functions`. Install/enable the Deno extension and Deno runtime for function support. Each function's own Deno configuration remains authoritative. Root `tsconfig.json` selects Node tooling; the app and shared packages have separate configs.
+Open the repository root in one Zed window. Root editor settings start vtsls and Deno, with Deno enabled only for `supabase/functions` through `enablePaths`. Install/enable the Deno extension and Deno runtime. Each function's own `deno.json` remains authoritative; there is no root Deno workspace.
+
+`supabase/functions/tsconfig.json` uses `noCheck` to delegate semantic checking to Deno instead of letting vtsls report Node-resolution errors for Deno imports and globals. This requires TypeScript 5.6 or newer in vtsls. It does not disable Deno checks, but `tsc -p supabase/functions` intentionally does not validate functions: use `pnpm check:functions`. Both servers can still offer editor features; syntax diagnostics may overlap. Root `tsconfig.json` selects Node tooling; the app and shared packages retain normal TypeScript checking in their separate configs.
 
 ## Render
 
