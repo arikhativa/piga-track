@@ -1,4 +1,4 @@
-import type { ImportRow } from "../../../../src/db/schema.ts";
+import type { ImportRow } from "@piga/db/types";
 
 export function validateSameBatch(rows: ImportRow[]) {
 	if (rows.length === 0) {

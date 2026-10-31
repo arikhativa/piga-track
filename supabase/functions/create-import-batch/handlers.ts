@@ -1,16 +1,16 @@
-import { and, eq, sql } from "drizzle-orm";
 import {
 	importBatch,
 	importRow,
 	transaction,
 	transactionClassificationRule,
-} from "../../../src/db/schema.ts";
-import type { DB } from "../../types.ts";
-import type { CreateImportBatchInput } from "./schema.ts";
+} from "@piga/db/schema";
+import { and, eq, sql } from "drizzle-orm";
+import type { DB } from "../_shared/types.ts";
+import type { CreateImportBatchRequest } from "./schema.ts";
 
 const normalize = (value: string) => value.trim().toLowerCase();
 
-export function createImportBatch(db: DB, body: CreateImportBatchInput) {
+export function createImportBatch(db: DB, body: CreateImportBatchRequest) {
 	return db.transaction(async (tx) => {
 		const [batch] = await tx
 			.insert(importBatch)

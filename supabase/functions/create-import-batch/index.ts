@@ -1,8 +1,8 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
+import * as schema from "@piga/db/schema";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "../../../src/db/schema.ts";
-import { jsonResponse } from "../../helper.ts";
+import { jsonResponse } from "../_shared/helper.ts";
 import { createImportBatch } from "./handlers.ts";
 import { createImportBatchSchema } from "./schema.ts";
 

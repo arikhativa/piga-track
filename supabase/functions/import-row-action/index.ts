@@ -3,7 +3,7 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import z from "zod";
-import { jsonResponse } from "../../helper.ts";
+import { jsonResponse } from "../_shared/helper.ts";
 import { actions } from "./actions/index.ts";
 import { getImportRows } from "./lib/get-import-rows.ts";
 import { validateSameBatch } from "./lib/validate-import-rows.ts";

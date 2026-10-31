@@ -1,6 +1,6 @@
+import { importRow } from "@piga/db/schema";
 import { inArray } from "drizzle-orm";
-import { importRow } from "../../../../src/db/schema.ts";
-import type { DB } from "../../../types.ts";
+import type { DB } from "../../_shared/types.ts";
 
 export async function getImportRows(db: DB, ids: number[]) {
 	const rows = await db

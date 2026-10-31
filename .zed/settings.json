@@ -1,5 +1,16 @@
 {
   "format_on_save": "on",
+  "lsp": {
+    "deno": {
+      "settings": {
+        "deno": {
+          "enable": true,
+          "enablePaths": ["./supabase/functions"],
+          "lint": true,
+        },
+      },
+    },
+  },
   "languages": {
     "JavaScript": {
       "code_actions_on_format": {
@@ -12,6 +23,7 @@
       },
     },
     "TypeScript": {
+      "language_servers": ["vtsls", "deno", "..."],
       "code_actions_on_format": {
         "source.organizeImports.biome": true,
       },

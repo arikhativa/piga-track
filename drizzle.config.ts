@@ -8,7 +8,7 @@ dotenv.config({
 
 export default defineConfig({
 	out: "./supabase/migrations",
-	schema: "./src/db/schema.ts",
+	schema: "./packages/db/src/schema.ts",
 	dialect: "postgresql",
 	schemaFilter: ["public"],
 	dbCredentials: {

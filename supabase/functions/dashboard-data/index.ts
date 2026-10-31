@@ -1,8 +1,8 @@
+import { transaction, transactionCategory } from "@piga/db/schema";
 import { and, eq, gte, lt, sql } from "drizzle-orm";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { transaction, transactionCategory } from "../../../src/db/schema.ts";
-import { jsonResponse } from "../../helper.ts";
+import { jsonResponse } from "../_shared/helper.ts";
 import { type DashboardResponse, dashboardRequestSchema } from "./schema.ts";
 
 Deno.serve(async (req) => {

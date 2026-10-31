@@ -1,0 +1,37 @@
+import { z } from "zod";
+
+export const transactionDataRequestSchema = z.object({
+	dateRange: z.object({
+		from: z.iso.datetime(),
+		to: z.iso.datetime(),
+	}),
+
+	bucket: z.enum(["none", "calendar_month"]),
+
+	category_list: z.array(z.number().int()).default([]),
+	tag_list: z.array(z.number().int()).default([]),
+	project_list: z.array(z.number().int()).default([]),
+});
+
+export type TransactionDataRequestInput = z.input<
+	typeof transactionDataRequestSchema
+>;
+export type TransactionDataRequest = z.output<
+	typeof transactionDataRequestSchema
+>;
+
+export const transactionDataResponseSchema = z.object({
+	total: z.number(),
+
+	buckets: z.array(
+		z.object({
+			bucket: z.string(),
+			amount: z.number(),
+			type: z.enum(["income", "expense"]),
+		}),
+	),
+});
+
+export type TransactionDataResponse = z.infer<
+	typeof transactionDataResponseSchema
+>;

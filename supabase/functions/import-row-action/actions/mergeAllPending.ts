@@ -1,6 +1,5 @@
+import { importRow } from "@piga/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
-
-import { importRow } from "../../../../src/db/schema.ts";
 import { updateBatchStatus } from "../lib/update-batch-status.ts";
 import type { ImportRowAction } from "../types.ts";
 import { merge } from "./merge.ts";

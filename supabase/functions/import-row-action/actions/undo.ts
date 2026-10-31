@@ -1,6 +1,6 @@
+import { importRow, transaction } from "@piga/db/schema";
+import type { ImportRow } from "@piga/db/types";
 import { inArray, sql } from "drizzle-orm";
-import type { ImportRow } from "../../../../src/db/schema.ts";
-import { importRow, transaction } from "../../../../src/db/schema.ts";
 import type { ImportRowAction } from "../types.ts";
 
 function validateUndoable(rows: ImportRow[]) {

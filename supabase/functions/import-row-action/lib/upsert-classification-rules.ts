@@ -1,9 +1,7 @@
+import { transactionClassificationRule } from "@piga/db/schema";
+import type { TransactionClassificationRuleActionEnum } from "@piga/db/types";
 import { sql } from "drizzle-orm";
-import {
-	type TransactionClassificationRuleActionEnum,
-	transactionClassificationRule,
-} from "../../../../src/db/schema.ts";
-import type { DB } from "../../../types.ts";
+import type { DB } from "../../_shared/types.ts";
 
 export async function upsertClassificationRules(
 	db: DB,

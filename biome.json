@@ -9,6 +9,8 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"./drizzle.config.ts",
+			"packages/contracts/tests/**/*.ts",
+			"scripts/**/*.ts",
 			"**/src/**/*",
 			"supabase/functions/**/*",
 			"**/.vscode/**/*",
