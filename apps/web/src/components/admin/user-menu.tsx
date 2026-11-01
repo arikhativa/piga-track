@@ -1,12 +1,13 @@
-import { Children, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Translate,
+  LinkBase,
   useAuthProvider,
   useGetIdentity,
   useLogout,
   UserMenuContext,
 } from "ra-core";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -72,8 +73,15 @@ export function UserMenu({ children }: UserMenuProps) {
             </DropdownMenuLabel>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
+          <DropdownMenuItem
+            render={<LinkBase to="/profile/me" />}
+            onClick={handleClose}
+            className="cursor-pointer"
+          >
+            <User />
+            Edit profile
+          </DropdownMenuItem>
           {children}
-          {Children.count(children) > 0 && <DropdownMenuSeparator />}
           <DropdownMenuItem onClick={() => logout()} className="cursor-pointer">
             <LogOut />
             <Translate i18nKey="ra.auth.logout">Log out</Translate>

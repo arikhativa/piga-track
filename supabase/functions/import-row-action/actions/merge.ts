@@ -10,7 +10,7 @@ import { upsertClassificationRules } from "../lib/upsert-classification-rules.ts
 import { validateMergeable } from "../lib/validate-import-rows.ts";
 import type { ImportRowAction } from "../types.ts";
 
-export const merge: ImportRowAction = async ({ db, rows, profileId }) => {
+export const merge: ImportRowAction = async ({ db, rows }) => {
 	validateMergeable(rows);
 
 	for (const row of rows) {
@@ -46,7 +46,7 @@ export const merge: ImportRowAction = async ({ db, rows, profileId }) => {
 	}
 
 	const transactionValues = rows.map((row) => ({
-		profile_id: profileId,
+		profile_id: row.profile_id ?? null,
 		tag_id: row.tag_id,
 		transaction_at: new Date(`${row.date}T00:00:00.000Z`),
 		project_id: row.project_id,

@@ -6,6 +6,7 @@ export function ProfileFullName() {
 		<ReferenceField
 			source="profile_id"
 			reference="profile"
+			empty="--"
 			render={({ referenceRecord }) =>
 				referenceRecord ? (
 					<Badge

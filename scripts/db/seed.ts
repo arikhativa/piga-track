@@ -164,6 +164,7 @@ async function seed() {
 		first_name: "Test",
 		last_name: "User",
 		email: `test-${profileId}@example.com`,
+		credit_card: "3020",
 		default_currency_id: 7,
 		default_transaction_type_id: 1,
 		default_category_id: null,

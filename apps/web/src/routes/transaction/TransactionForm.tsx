@@ -81,7 +81,6 @@ export function TransactionForm({
 						optionText={(profile) =>
 							`${profile.first_name} ${profile.last_name}`
 						}
-						validate={required()}
 					/>
 				</ReferenceInput>
 			</div>

@@ -1,4 +1,4 @@
-import type { ImportProfile, ImportRowData } from "@piga/db/types";
+import type { ImportProfile, ImportRowData, Profile } from "@piga/db/types";
 import { drizzleTextArray } from "#/lib/format/drizzleTextArray";
 
 function columnToIndex(column: string): number {
@@ -181,34 +181,46 @@ function isEmptyRow(row: unknown[], profile: ImportProfile): boolean {
 
 export function parseImportRow(
 	table: unknown[][],
-	profile: ImportProfile,
+	importProfile: ImportProfile,
+	userProfiles: Pick<Profile, "id" | "credit_card">[],
 ): ImportRowData[] {
-	const startIndex = Math.max((profile.start_row ?? 1) - 1, 0);
+	const profileIdsByCreditCard = new Map(
+		userProfiles
+			.filter((userProfile) => userProfile.credit_card)
+			// biome-ignore lint/style/noNonNullAssertion: the filter made sure of this
+			.map((userProfile) => [userProfile.credit_card!.trim(), userProfile.id]),
+	);
+	const startIndex = Math.max((importProfile.start_row ?? 1) - 1, 0);
 	const rows: ImportRowData[] = [];
 
 	for (let index = startIndex; index < table.length; index++) {
 		const row = table[index];
 
-		if (isEmptyRow(row, profile)) {
+		if (isEmptyRow(row, importProfile)) {
 			break;
 		}
 
-		const baseDate = getValue(row, profile.date_column);
+		const baseDate = getValue(row, importProfile.date_column);
 		const date = toDateStringGeneric(baseDate || "");
 
-		const parsedAmount = getAmount(row, profile);
+		const parsedAmount = getAmount(row, importProfile);
 		if (parsedAmount !== null && Number(parsedAmount) === 0) {
 			continue;
 		}
 
 		const amount = parsedAmount || "";
+		const creditCard = getValue(row, importProfile.credit_card_column);
+
 		rows.push({
+			profile_id: creditCard
+				? (profileIdsByCreditCard.get(creditCard) ?? null)
+				: null,
 			row_number: index + 1,
 			date,
 			amount,
 			description: getDescription(
 				row,
-				drizzleTextArray(profile.description_column_list),
+				drizzleTextArray(importProfile.description_column_list),
 			),
 			category_id: null,
 			project_id: null,

@@ -44,6 +44,7 @@ export async function seedUser() {
 		id: user.id,
 		first_name: "יואב",
 		last_name: "רבי",
+		credit_card: "8724",
 		// biome-ignore lint/style/noNonNullAssertion: for local dev
 		email: user.email!,
 		default_currency_id: 7,

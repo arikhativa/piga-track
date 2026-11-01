@@ -6,6 +6,7 @@ import {
 
 const importRowSchema = z.object({
 	row_number: z.number().int().positive(),
+	profile_id: z.uuid().nullable().optional(),
 	date: z.string().nullable(),
 	amount: z.string(),
 	tag_id: z.number().int().nullable().optional(),

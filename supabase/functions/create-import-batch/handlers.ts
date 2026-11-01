@@ -60,6 +60,7 @@ export function createImportBatch(db: DB, body: CreateImportBatchRequest) {
 				.insert(importRow)
 				.values({
 					...row,
+					profile_id: row.profile_id ?? null,
 					category_id:
 						row.category_id ??
 						(matchedRule?.action === "addData"

@@ -4,6 +4,7 @@ import { useImportProfiles } from "#/hooks/use-import-profiles";
 import { importProfileOptionText } from "#/lib/form/importProfileOptionText";
 import { parseImportRow } from "#/lib/importer/parseImportRow";
 import { readSpreadsheet } from "#/lib/importer/readSpreadsheet";
+import { supabaseClient } from "#/lib/supabaseClient";
 import {
 	Create,
 	FileField,
@@ -40,7 +41,17 @@ export function ImportBatchCreate() {
 				}
 
 				const spreadsheet = await readSpreadsheet(file);
-				const rows = parseImportRow(spreadsheet, importProfile);
+				let userProfiles: { id: string; credit_card: string | null }[] = [];
+				if (importProfile.credit_card_column) {
+					const { data: profiles, error } = await supabaseClient
+						.from("profile")
+						.select("id, credit_card")
+						.not("credit_card", "is", null);
+
+					if (error) throw error;
+					userProfiles = profiles ?? [];
+				}
+				const rows = parseImportRow(spreadsheet, importProfile, userProfiles);
 
 				return {
 					batch_name: data.batch_name,

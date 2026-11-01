@@ -11,6 +11,7 @@ import {
 	text,
 	timestamp,
 	uuid,
+	varchar,
 } from "drizzle-orm/pg-core";
 
 export const NIS_ID = 7 as const; // NOTE: this is nis - it will be in DB cus there is a mig before this
@@ -28,6 +29,8 @@ export const profile = pgTable("profile", {
 	first_name: text("first_name").notNull(),
 	last_name: text("last_name").notNull(),
 	email: text("email").notNull().unique(),
+
+	credit_card: varchar("credit_card", { length: 8 }).unique(),
 
 	default_currency_id: integer("default_currency_id")
 		.notNull()
@@ -106,9 +109,7 @@ export const transactionType = pgTable("transaction_type", {
 export const transaction = pgTable("transaction", {
 	id: serial("id").primaryKey(),
 
-	profile_id: uuid("profile_id")
-		.notNull()
-		.references(() => profile.id),
+	profile_id: uuid("profile_id").references(() => profile.id),
 
 	tag_id: integer("tag_id").references(() => transactionTag.id),
 
@@ -163,6 +164,8 @@ export const importProfile = pgTable("import_profile", {
 	start_row: integer("start_row"),
 
 	date_column: text("date_column"),
+
+	credit_card_column: text("credit_card_column"),
 
 	positive_amount_column: text("positive_amount_column"),
 	negative_amount_column: text("negative_amount_column"),
@@ -224,6 +227,8 @@ export const importRowStatusEnum = pgEnum("import_row_status", [
 
 export const importRow = pgTable("import_row", {
 	id: serial("id").primaryKey(),
+
+	profile_id: uuid("profile_id").references(() => profile.id),
 
 	import_batch_id: integer("import_batch_id")
 		.notNull()

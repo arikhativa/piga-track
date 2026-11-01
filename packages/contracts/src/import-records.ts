@@ -13,6 +13,7 @@ export const serializedImportBatchSchema = z.object({
 export const serializedImportRowSchema = z.object({
 	id: z.number().int(),
 	import_batch_id: z.number().int(),
+	profile_id: z.uuid().nullable(),
 	row_number: z.number().int(),
 	date: z.iso.date().nullable(),
 	amount: z.string(),

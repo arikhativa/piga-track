@@ -5,7 +5,7 @@ import { serializedImportRowSchema } from "./import-records.ts";
 export const importRowActionSchema = z.object({
 	import_row_ids: z.array(z.number().int().positive()),
 
-	profileId: z.uuid(),
+	profileId: z.uuid().nullable().optional(),
 
 	action: z.enum([
 		"mergeAllPending",

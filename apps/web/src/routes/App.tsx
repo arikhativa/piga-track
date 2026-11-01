@@ -1,3 +1,4 @@
+import "../styles.css";
 import {
 	Bookmark,
 	ChartGantt,
@@ -8,6 +9,7 @@ import {
 	PiggyBank,
 	Shapes,
 	Tags,
+	User,
 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { CustomRoutes, Resource } from "ra-core";
@@ -18,14 +20,6 @@ import { supabaseAuthProvider } from "#/lib/authProvider";
 import { supabaseDataProvider } from "#/lib/dataProvider";
 import { getIdentity } from "#/lib/getIdentity";
 import { supabaseClient } from "#/lib/supabaseClient";
-import { TransactionCreate } from "#/routes/transaction/TransactionCreate";
-import { TransactionEdit } from "#/routes/transaction/TransactionEdit";
-import { TransactionList } from "#/routes/transaction/TransactionList";
-import { TransactionTagCreate } from "#/routes/transactionTag/TransactionTagCreate";
-import { TransactionTagEdit } from "#/routes/transactionTag/TransactionTagEdit";
-import { TransactionTagList } from "#/routes/transactionTag/TransactionTagList";
-
-import "../styles.css";
 import { CategoryCreate } from "#/routes/category/CategoryCreate";
 import { CategoryEdit } from "#/routes/category/CategoryEdit";
 import { CategoryList } from "#/routes/category/CategoryList";
@@ -49,10 +43,17 @@ import { PotCreate } from "#/routes/pot/PotCreate";
 import { PotEdit } from "#/routes/pot/PotEdit";
 import { PotList } from "#/routes/pot/PotList";
 import { ProfileBaseEdit } from "#/routes/profile/ProfileBaseEdit";
+import { ProfileList } from "#/routes/profile/ProfileList";
 import { ProjectCreate } from "#/routes/project/ProjectCreate";
 import { ProjectEdit } from "#/routes/project/ProjectEdit";
 import { ProjectList } from "#/routes/project/ProjectList";
 import { ProjectShow } from "#/routes/project/ProjectShow";
+import { TransactionCreate } from "#/routes/transaction/TransactionCreate";
+import { TransactionEdit } from "#/routes/transaction/TransactionEdit";
+import { TransactionList } from "#/routes/transaction/TransactionList";
+import { TransactionTagCreate } from "#/routes/transactionTag/TransactionTagCreate";
+import { TransactionTagEdit } from "#/routes/transactionTag/TransactionTagEdit";
+import { TransactionTagList } from "#/routes/transactionTag/TransactionTagList";
 
 const instanceUrl = import.meta.env.VITE_SUPABASE_URL;
 const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -72,7 +73,7 @@ export function App() {
 				<Admin authProvider={authProvider} dataProvider={dataProvider}>
 					<CustomRoutes>
 						<Route path="/" element={<Home />} />
-						<Route path="/profile" element={<ProfileBaseEdit />} />
+						<Route path="/profile/me" element={<ProfileBaseEdit />} />
 						<Route path="/defaults" element={<DefaultsBaseEdit />} />
 						<Route path="/dashboard" element={<Dashboard />} />
 					</CustomRoutes>
@@ -114,16 +115,15 @@ export function App() {
 						show={ImportBatchShow}
 						icon={Import}
 					/>
-					<Resource
-						name="import_profile"
-						options={{ importCSV: true, label: "Import Profile" }}
-						list={ImportProfileList}
-						edit={ImportProfileEdit}
-						create={ImportProfileCreate}
-						icon={FileSliders}
-					/>
 
 					{/* Utils */}
+					<Resource
+						name="profile"
+						options={{ label: "Profiles", util: true }}
+						list={ProfileList}
+						// edit={ProfileEdit} TODO: users cant edit others info
+						icon={User}
+					/>
 					<Resource
 						name="transaction_tag"
 						options={{ label: "Tags", util: true }}
@@ -131,6 +131,14 @@ export function App() {
 						edit={TransactionTagEdit}
 						create={TransactionTagCreate}
 						icon={Tags}
+					/>
+					<Resource
+						name="import_profile"
+						options={{ util: true, label: "Import Profile" }}
+						list={ImportProfileList}
+						edit={ImportProfileEdit}
+						create={ImportProfileCreate}
+						icon={FileSliders}
 					/>
 					<Resource
 						name="currency"

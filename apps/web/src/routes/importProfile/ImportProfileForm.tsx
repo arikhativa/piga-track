@@ -38,6 +38,8 @@ export function ImportProfileForm() {
 
 			<TextInput source="date_column" />
 
+			<TextInput source="credit_card_column" label="Credit card column" />
+
 			<div className="py-4 space-y-4">
 				<TextInput
 					source="positive_amount_column"

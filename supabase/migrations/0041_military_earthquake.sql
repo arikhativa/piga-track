@@ -1,0 +1,2 @@
+ALTER TABLE "import_row" ADD COLUMN "profile_id" uuid;--> statement-breakpoint
+ALTER TABLE "import_row" ADD CONSTRAINT "import_row_profile_id_profile_id_fk" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE no action ON UPDATE no action;

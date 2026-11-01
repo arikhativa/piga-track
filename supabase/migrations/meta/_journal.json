@@ -281,6 +281,20 @@
       "when": 1793185863119,
       "tag": "0039_overjoyed_the_renegades",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1793518427994,
+      "tag": "0040_next_alex_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1793519391795,
+      "tag": "0041_military_earthquake",
+      "breakpoints": true
     }
   ]
 }
