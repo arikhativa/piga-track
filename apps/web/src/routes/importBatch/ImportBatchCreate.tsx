@@ -41,7 +41,7 @@ export function ImportBatchCreate() {
 				}
 
 				const spreadsheet = await readSpreadsheet(file);
-				let userProfiles: { id: string; credit_card: string | null }[] = [];
+				let userProfiles: { id: string; credit_card: string[] | null }[] = [];
 				if (importProfile.credit_card_column) {
 					const { data: profiles, error } = await supabaseClient
 						.from("profile")

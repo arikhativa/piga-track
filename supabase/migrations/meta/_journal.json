@@ -295,6 +295,13 @@
       "when": 1793519391795,
       "tag": "0041_military_earthquake",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1793522651932,
+      "tag": "0042_medical_imperial_guard",
+      "breakpoints": true
     }
   ]
 }

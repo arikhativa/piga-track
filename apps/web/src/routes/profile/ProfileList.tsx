@@ -6,7 +6,11 @@ export const ProfileList = () => (
 			<DataTable.Col source="first_name" />
 			<DataTable.Col source="last_name" />
 			<DataTable.Col source="email" />
-			<DataTable.Col source="credit_card" />
+			<DataTable.Col
+				source="credit_card"
+				label="Credit cards"
+				render={(record) => record.credit_card?.join(", ") || "--"}
+			/>
 		</DataTable>
 	</List>
 );

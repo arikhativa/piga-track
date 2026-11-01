@@ -30,7 +30,7 @@ export const profile = pgTable("profile", {
 	last_name: text("last_name").notNull(),
 	email: text("email").notNull().unique(),
 
-	credit_card: varchar("credit_card", { length: 8 }).unique(),
+	credit_card: varchar("credit_card", { length: 8 }).array(),
 
 	default_currency_id: integer("default_currency_id")
 		.notNull()

@@ -1,5 +1,5 @@
-import { email, maxLength, required } from "ra-core";
-import { SimpleForm, TextInput } from "@/components/admin";
+import { email, required } from "ra-core";
+import { SimpleForm, TextArrayInput, TextInput } from "@/components/admin";
 
 export function ProfileForm() {
 	return (
@@ -10,7 +10,16 @@ export function ProfileForm() {
 
 			<TextInput source="email" type="email" validate={[required(), email()]} />
 
-			<TextInput source="credit_card" validate={maxLength(8)} />
+			<TextArrayInput
+				source="credit_card"
+				label="Credit cards"
+				helperText="Press Enter to add each card. Maximum 8 characters per card."
+				validate={(cards: string[] | null) =>
+					cards?.some((card) => card.length > 8)
+						? "Each credit card must be at most 8 characters."
+						: undefined
+				}
+			/>
 		</SimpleForm>
 	);
 }

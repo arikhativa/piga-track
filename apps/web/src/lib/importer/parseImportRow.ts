@@ -184,12 +184,23 @@ export function parseImportRow(
 	importProfile: ImportProfile,
 	userProfiles: Pick<Profile, "id" | "credit_card">[],
 ): ImportRowData[] {
-	const profileIdsByCreditCard = new Map(
-		userProfiles
-			.filter((userProfile) => userProfile.credit_card)
-			// biome-ignore lint/style/noNonNullAssertion: the filter made sure of this
-			.map((userProfile) => [userProfile.credit_card!.trim(), userProfile.id]),
-	);
+	const profileIdsByCreditCard = new Map<string, string | null>();
+	for (const userProfile of userProfiles) {
+		for (const card of userProfile.credit_card ?? []) {
+			const creditCard = card.trim();
+			if (!creditCard) continue;
+
+			// A card shared by multiple profiles cannot identify a single owner.
+			if (
+				profileIdsByCreditCard.has(creditCard) &&
+				profileIdsByCreditCard.get(creditCard) !== userProfile.id
+			) {
+				profileIdsByCreditCard.set(creditCard, null);
+			} else {
+				profileIdsByCreditCard.set(creditCard, userProfile.id);
+			}
+		}
+	}
 	const startIndex = Math.max((importProfile.start_row ?? 1) - 1, 0);
 	const rows: ImportRowData[] = [];
 
