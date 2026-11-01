@@ -1,7 +1,8 @@
+import { DEFAULT_PER_PAGE } from "#/lib/constant";
 import { DataTable, List } from "@/components/admin";
 
 export const ProjectList = () => (
-	<List>
+	<List perPage={DEFAULT_PER_PAGE}>
 		<DataTable>
 			<DataTable.Col label="Name" source="value" />
 			<DataTable.Col

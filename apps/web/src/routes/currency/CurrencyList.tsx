@@ -2,6 +2,7 @@ import { useNotify } from "ra-core";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { useCurrencyList } from "#/hooks/use-currency-list";
+import { DEFAULT_PER_PAGE } from "#/lib/constant";
 import { fixAmountNisNull } from "#/lib/transaction/fixAmountNisNull";
 import { DataTable, List } from "@/components/admin";
 
@@ -44,7 +45,7 @@ export const CurrencyList = () => {
 	};
 
 	return (
-		<List>
+		<List perPage={DEFAULT_PER_PAGE}>
 			<div className="py-4">
 				<Button disabled={!isSuccess || isFixing} onClick={handleFixNull}>
 					{isFixing ? "Fixing..." : "Fix Amount NIS"}

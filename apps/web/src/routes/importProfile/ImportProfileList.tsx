@@ -1,9 +1,10 @@
 import type { Currency, ImportProfile } from "@piga/db/types";
+import { DEFAULT_PER_PAGE } from "#/lib/constant";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
 import { DataTable, List, ReferenceField } from "@/components/admin";
 
 export const ImportProfileList = () => (
-	<List>
+	<List perPage={DEFAULT_PER_PAGE}>
 		<DataTable>
 			<DataTable.Col source="name" />
 			<DataTable.Col source="currency_id">

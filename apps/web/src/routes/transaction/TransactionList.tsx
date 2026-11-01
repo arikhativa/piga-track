@@ -1,3 +1,4 @@
+import { DEFAULT_PER_PAGE } from "#/lib/constant";
 import { transactionExporter } from "#/lib/exporter/transactionExporter";
 import { categoryOptionText } from "#/lib/form/categoryOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
@@ -64,7 +65,7 @@ export const TransactionList = () => {
 			exporter={transactionExporter}
 			filters={transactionFilters}
 			sort={{ field: "transaction_at", order: "DESC" }}
-			perPage={50}
+			perPage={DEFAULT_PER_PAGE}
 		>
 			<TransactionDataTable />
 		</List>

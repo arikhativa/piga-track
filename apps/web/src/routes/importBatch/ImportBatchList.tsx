@@ -1,6 +1,7 @@
 import type { ImportBatch, ImportProfile } from "@piga/db/types";
 import { capitalize } from "lodash";
 import { Badge } from "#/components/ui/badge";
+import { DEFAULT_PER_PAGE } from "#/lib/constant";
 import { importProfileOptionText } from "#/lib/form/importProfileOptionText";
 import { getBatchStatusVariant } from "#/lib/variant/getBatchStateVariant";
 import { ImportBatchDateRange } from "#/routes/importBatch/list/ImportBatchDateRange";
@@ -15,6 +16,7 @@ import {
 // TODO sort them by create date and allow to sort by date range
 export const ImportBatchList = () => (
 	<List
+		perPage={DEFAULT_PER_PAGE}
 		filters={[
 			<ReferenceInput
 				key="import_profile_id"

@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { LayoutDashboard, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import GlareHover from "#/components/GlareHover";
 import PixelIcon from "#/components/icon/lord-pigafetta";
@@ -31,7 +31,11 @@ export function Home() {
 				</Link>
 			</div>
 
-			<div className="flex justify-center items-center">
+			<div className="flex flex-col gap-4 md:flex-row md:justify-center md:items-center px-20 md:px-auto">
+				<Button nativeButton={false} render={<Link to="/dashboard" />}>
+					<LayoutDashboard />
+					<span>Dashboard</span>
+				</Button>
 				<Button nativeButton={false} render={<Link to="/transaction/create" />}>
 					<Plus />
 					<span>New Transaction</span>

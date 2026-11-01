@@ -181,7 +181,9 @@ export const importProfile = pgTable("import_profile", {
 		.notNull()
 		.references(() => transactionType.id),
 
-	description_column_list: text("description_column_list").array(),
+	description_column_list: varchar("description_column_list", {
+		length: 200,
+	}).array(),
 
 	created_at: timestamp("created_at", { withTimezone: true })
 		.defaultNow()

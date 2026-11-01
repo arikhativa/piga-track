@@ -1,9 +1,10 @@
 import type { TransactionClassificationRuleActionEnum } from "@piga/db/types";
+import { DEFAULT_PER_PAGE } from "#/lib/constant";
 import { getEnumLabel } from "#/lib/enum-labels";
 import { DataTable, List, ReferenceField } from "@/components/admin";
 
 export const ClassificationList = () => (
-	<List>
+	<List perPage={DEFAULT_PER_PAGE}>
 		<DataTable>
 			<DataTable.Col source="text_to_find" />
 
