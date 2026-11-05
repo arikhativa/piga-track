@@ -8,8 +8,11 @@
 	"files": {
 		"ignoreUnknown": false,
 		"includes": [
+			"./biome.json",
+			"**/package.json",
+			"**/tsconfig*.json",
+			"**/.zed/**/*",
 			"./drizzle.config.ts",
-			"packages/contracts/tests/**/*.ts",
 			"scripts/**/*.ts",
 			"**/src/**/*",
 			"supabase/functions/**/*",

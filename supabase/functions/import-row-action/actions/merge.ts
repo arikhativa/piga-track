@@ -1,4 +1,5 @@
 import {
+	autoSyncConf,
 	importBatch,
 	importProfile,
 	importRow,
@@ -23,40 +24,88 @@ export const merge: ImportRowAction = async ({ db, rows }) => {
 		}
 	}
 
+	if (rows.length === 0) {
+		throw new Error("No import rows provided");
+	}
+
 	const batchId = rows[0].import_batch_id;
+	let batchCurrencyId: number | undefined;
+	let transactionTypeId: number;
 
-	const [batch] = await db
-		.select()
-		.from(importBatch)
-		.where(drizzleOrm.eq(importBatch.id, batchId))
-		.limit(1);
+	if (batchId != null) {
+		if (rows.some((row) => row.import_batch_id !== batchId)) {
+			throw new Error("All import rows must belong to the same batch");
+		}
 
-	if (!batch) {
-		throw new Error("Import batch not found");
+		const [batch] = await db
+			.select()
+			.from(importBatch)
+			.where(drizzleOrm.eq(importBatch.id, batchId))
+			.limit(1);
+
+		if (!batch) {
+			throw new Error("Import batch not found");
+		}
+
+		const [profile] = await db
+			.select()
+			.from(importProfile)
+			.where(drizzleOrm.eq(importProfile.id, batch.import_profile_id))
+			.limit(1);
+
+		if (!profile) {
+			throw new Error("Import profile not found");
+		}
+
+		batchCurrencyId = profile.currency_id;
+		transactionTypeId = profile.transaction_type_id;
+	} else {
+		if (
+			rows.some(
+				(row) => row.import_batch_id != null || row.max_sync_table_id == null,
+			)
+		) {
+			throw new Error("Sync merge requires MAX sync rows");
+		}
+
+		const [config] = await db
+			.select({ transaction_type_id: autoSyncConf.transaction_type_id })
+			.from(autoSyncConf)
+			.where(drizzleOrm.eq(autoSyncConf.srcName, "Max"))
+			.limit(1);
+
+		if (config?.transaction_type_id == null) {
+			throw new Error("MAX sync configuration has no transaction type");
+		}
+
+		transactionTypeId = config.transaction_type_id;
 	}
 
-	const [profile] = await db
-		.select()
-		.from(importProfile)
-		.where(drizzleOrm.eq(importProfile.id, batch.import_profile_id))
-		.limit(1);
+	const transactionValues = rows.map((row) => {
+		const currencyId = batchCurrencyId ?? row.currency_id;
+		if (currencyId == null) {
+			throw new Error(`Import row ${row.id} has no currency`);
+		}
 
-	if (!profile) {
-		throw new Error("Import profile not found");
-	}
-
-	const transactionValues = rows.map((row) => ({
-		profile_id: row.profile_id ?? null,
-		tag_id: row.tag_id,
-		transaction_at: new Date(`${row.date}T00:00:00.000Z`),
-		project_id: row.project_id,
-		category_id: row.category_id,
-		currency_id: profile.currency_id,
-		transaction_type_id: profile.transaction_type_id,
-		amount: row.amount,
-		amount_nis: profile.currency_id === NIS_ID ? row.amount : null,
-		description: row.description,
-	}));
+		return {
+			max_sync_table_id: row.max_sync_table_id,
+			profile_id: row.profile_id ?? null,
+			tag_id: row.tag_id,
+			transaction_at: new Date(`${row.date}T00:00:00.000Z`),
+			project_id: row.project_id,
+			category_id: row.category_id,
+			currency_id: currencyId,
+			transaction_type_id: transactionTypeId,
+			amount: row.amount,
+			amount_nis:
+				batchId != null
+					? currencyId === NIS_ID
+						? row.amount
+						: null
+					: row.amount_nis,
+			description: row.description,
+		};
+	});
 
 	const newTransactions = await db
 		.insert(transaction)
@@ -78,6 +127,7 @@ export const merge: ImportRowAction = async ({ db, rows }) => {
 		.set({
 			transaction_id: drizzleOrm.sql`CASE ${transactionCase} ELSE NULL END::integer`,
 			status: "merged",
+			touched_by_user: new Date(),
 			updated_at: new Date(),
 		})
 		.where(

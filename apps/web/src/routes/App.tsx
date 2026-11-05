@@ -1,14 +1,15 @@
 import "../styles.css";
 import {
 	Bookmark,
+	BookOpenCheck,
 	ChartGantt,
+	CloudSync,
 	Coins,
 	FileSliders,
 	HandCoins,
 	Import,
 	PiggyBank,
 	Shapes,
-	Tags,
 	User,
 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react";
@@ -20,6 +21,8 @@ import { supabaseAuthProvider } from "#/lib/authProvider";
 import { supabaseDataProvider } from "#/lib/dataProvider";
 import { getIdentity } from "#/lib/getIdentity";
 import { supabaseClient } from "#/lib/supabaseClient";
+import { AutoSyncConfEdit } from "#/routes/autoSyncConf/AutoSyncConfEdit";
+import { AutoSyncConfList } from "#/routes/autoSyncConf/AutoSyncConfList";
 import { CategoryCreate } from "#/routes/category/CategoryCreate";
 import { CategoryEdit } from "#/routes/category/CategoryEdit";
 import { CategoryList } from "#/routes/category/CategoryList";
@@ -54,6 +57,7 @@ import { TransactionList } from "#/routes/transaction/TransactionList";
 import { TransactionTagCreate } from "#/routes/transactionTag/TransactionTagCreate";
 import { TransactionTagEdit } from "#/routes/transactionTag/TransactionTagEdit";
 import { TransactionTagList } from "#/routes/transactionTag/TransactionTagList";
+import { ImportRowSyncList } from "./importRowSync/ImportRowSyncList";
 
 const instanceUrl = import.meta.env.VITE_SUPABASE_URL;
 const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -116,6 +120,13 @@ export function App() {
 						icon={Import}
 					/>
 
+					<Resource
+						name="import_row"
+						options={{ importCSV: true, label: "Sync" }}
+						list={ImportRowSyncList}
+						icon={BookOpenCheck}
+					/>
+
 					{/* Utils */}
 					<Resource
 						name="profile"
@@ -124,41 +135,54 @@ export function App() {
 						// edit={ProfileEdit} TODO: users cant edit others info
 						icon={User}
 					/>
+
 					<Resource
 						name="transaction_tag"
 						options={{ label: "Tags", util: true }}
 						list={TransactionTagList}
 						edit={TransactionTagEdit}
 						create={TransactionTagCreate}
-						icon={Tags}
 					/>
+
+					{/* Admin */}
+					<Resource
+						name="auto_sync_conf"
+						options={{ admin: true }}
+						list={AutoSyncConfList}
+						edit={AutoSyncConfEdit}
+						icon={CloudSync}
+					/>
+
 					<Resource
 						name="import_profile"
-						options={{ util: true, label: "Import Profile" }}
+						options={{ admin: true, label: "Import Profile" }}
 						list={ImportProfileList}
 						edit={ImportProfileEdit}
 						create={ImportProfileCreate}
 						icon={FileSliders}
 					/>
+
 					<Resource
 						name="currency"
-						options={{ util: true }}
+						options={{ admin: true }}
 						list={CurrencyList}
 						edit={CurrencyEdit}
 						create={CurrencyCreate}
 						icon={Coins}
 					/>
+
 					<Resource
 						name="transaction_type"
-						options={{ util: true }}
+						options={{ admin: true }}
 						list={PotList}
 						edit={PotEdit}
 						create={PotCreate}
 						icon={PiggyBank}
 					/>
+
 					<Resource
 						name="transaction_classification_rule"
-						options={{ label: "Classification", util: true }}
+						options={{ label: "Classification", admin: true }}
 						create={ClassificationCreate}
 						edit={ClassificationEdit}
 						list={ClassificationList}

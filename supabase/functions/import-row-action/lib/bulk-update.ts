@@ -8,6 +8,7 @@ type BulkUpdateData = {
 	project_id?: number | null;
 	tag_id?: number | null;
 	status?: ImportRowStatusEnum;
+	touched_by_user?: Date;
 };
 
 export function bulkUpdateImportRows(

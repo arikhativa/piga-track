@@ -12,11 +12,18 @@ import { Button } from "#/components/ui/button";
 import { Separator } from "#/components/ui/separator";
 import { importRowAction } from "#/lib/importer/importRowAction";
 
-export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
+export function BulkActionButtons({
+	profileId,
+	allowHideRows = false,
+}: {
+	profileId: Profile["id"];
+	allowHideRows?: boolean;
+}) {
 	const notify = useNotify();
 	const refresh = useRefresh();
-	const { selectedIds, data } = useListContext();
+	const { selectedIds, data, onUnselectItems } = useListContext();
 
+	const [isSubmittingHide, setIsSubmittingHide] = useState(false);
 	const [isSubmittingUndo, setIsSubmittingUndo] = useState(false);
 	const [isSubmittingMerge, setIsSubmittingMerge] = useState(false);
 	const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
@@ -64,6 +71,8 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 	const canMerge = sameStatus && statuses[0] === "pending";
 	const canUndo =
 		sameStatus && (statuses[0] === "merged" || statuses[0] === "dropped");
+
+	const canHide = allowHideRows && statuses.length > 0;
 
 	const canSetCategory = canMerge;
 	const canSetProject = canMerge;
@@ -146,6 +155,25 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 		}
 	};
 
+	const handleHide = async () => {
+		if (!canHide) return;
+
+		try {
+			setIsSubmittingHide(true);
+			await importRowAction({
+				import_row_ids: selectedIds as number[],
+				action: "hide_rows",
+			});
+			notify(`${selectedIds.length} rows hidden`, { type: "success" });
+			onUnselectItems();
+			refresh();
+		} catch {
+			notify("Failed to hide rows", { type: "error" });
+		} finally {
+			setIsSubmittingHide(false);
+		}
+	};
+
 	const handleUndo = async () => {
 		try {
 			setIsSubmittingUndo(true);
@@ -204,11 +232,24 @@ export function BulkActionButtons({ profileId }: { profileId: Profile["id"] }) {
 				</>
 			)}
 
-			{(canMerge || canUndo) && (
+			{(canMerge || canUndo || canHide) && (
 				<>
 					<Separator orientation="vertical" />
 
 					<div className="flex gap-2">
+						{canHide && (
+							<Button
+								type="button"
+								variant="outline"
+								disabled={isSubmittingHide}
+								onClick={handleHide}
+							>
+								{isSubmittingHide ? (
+									<Loader2 className="me-2 h-4 w-4 animate-spin" />
+								) : null}
+								Hide rows
+							</Button>
+						)}
 						{canMerge && (
 							<Button
 								type="button"

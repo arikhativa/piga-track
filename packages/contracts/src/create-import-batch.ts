@@ -5,7 +5,6 @@ import {
 } from "./import-records.ts";
 
 const importRowSchema = z.object({
-	row_number: z.number().int().positive(),
 	profile_id: z.uuid().nullable().optional(),
 	date: z.string().nullable(),
 	amount: z.string(),

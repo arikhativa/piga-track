@@ -5,6 +5,7 @@ export function CurrencyForm() {
 		<SimpleForm>
 			<TextInput autoFocus source="name" />
 			<TextInput source="iso_code" />
+			<TextInput source="iso_numeric_code" />
 			<TextInput source="symbol" />
 		</SimpleForm>
 	);
