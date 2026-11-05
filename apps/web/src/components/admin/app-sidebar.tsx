@@ -60,9 +60,11 @@ export function AppSidebar() {
 	);
 
 	const utilsPages = Object.keys(resources).filter(
+		(name) =>
+			resources[name].hasList && resources[name]?.options?.util === true,
   );
 
-const adminPages = Object.keys(resources).filter(
+  const adminPages = Object.keys(resources).filter(
 		(name) =>
 			resources[name].hasList && resources[name]?.options?.admin === true,
 	);
@@ -214,9 +216,11 @@ const adminPages = Object.keys(resources).filter(
 									/>
 								))}
 							</SidebarMenu>
+						</SidebarGroupContent>
+					</SidebarGroup>
         )}
 
-				{/* Admin */}
+        {/* Admin */}
 				{adminPages.length > 0 && (
 					<SidebarGroup>
 						<SidebarGroupLabel>Admin</SidebarGroupLabel>
@@ -234,6 +238,7 @@ const adminPages = Object.keys(resources).filter(
 						</SidebarGroupContent>
 					</SidebarGroup>
         )}
+
 
 			</SidebarContent>
 

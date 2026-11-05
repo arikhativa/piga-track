@@ -52,8 +52,11 @@ export const CurrencyList = () => {
 				</Button>
 			</div>
 
+			<DataTable>
+				<DataTable.Col source="symbol" />
 				<DataTable.Col source="iso_code" />
 				<DataTable.Col source="iso_numeric_code" />
+				<DataTable.Col source="name" />
 			</DataTable>
 		</List>
 	);

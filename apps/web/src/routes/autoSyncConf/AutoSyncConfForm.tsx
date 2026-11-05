@@ -6,6 +6,8 @@ import {
 	ReferenceInput,
 	SelectInput,
 	SimpleForm,
+	TextInput,
+} from "#/components/admin";
 import { AutoSyncCredentialsForm } from "./AutoSyncCredentialsForm";
 
 // PostgREST returns database column names, not Drizzle property names.
@@ -41,6 +43,8 @@ const validateConfiguration: ValidateForm = (values) => {
 };
 
 export const AutoSyncConfForm = () => {
+	const record = useRecordContext<AutoSyncConfRecord>();
+	return (
 		<>
 			<SimpleForm
 				validate={(values) =>

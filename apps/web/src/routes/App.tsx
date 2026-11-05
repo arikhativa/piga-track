@@ -2,14 +2,13 @@ import "../styles.css";
 import {
 	Bookmark,
 	ChartGantt,
+	CloudSync,
 	Coins,
 	FileSliders,
 	HandCoins,
 	Import,
 	PiggyBank,
-	RefreshCw,
 	Shapes,
-	Tags,
 	User,
 } from "lucide-react";
 import { NuqsAdapter } from "nuqs/adapters/react";
@@ -127,22 +126,24 @@ export function App() {
 						// edit={ProfileEdit} TODO: users cant edit others info
 						icon={User}
 					/>
+
 					<Resource
 						name="transaction_tag"
 						options={{ label: "Tags", util: true }}
 						list={TransactionTagList}
 						edit={TransactionTagEdit}
 						create={TransactionTagCreate}
+					/>
 
 					{/* Admin */}
 					<Resource
 						name="auto_sync_conf"
-						options={{ admin: true, label: "Auto Scrape Configuration" }}
-						recordRepresentation="src_label"
+						options={{ admin: true }}
 						list={AutoSyncConfList}
 						edit={AutoSyncConfEdit}
-						icon={RefreshCw}
+						icon={CloudSync}
 					/>
+
 					<Resource
 						name="import_profile"
 						options={{ admin: true, label: "Import Profile" }}
@@ -160,12 +161,18 @@ export function App() {
 						create={CurrencyCreate}
 						icon={Coins}
 					/>
+
+					<Resource
+						name="transaction_type"
 						options={{ admin: true }}
 						list={PotList}
 						edit={PotEdit}
 						create={PotCreate}
 						icon={PiggyBank}
 					/>
+
+					<Resource
+						name="transaction_classification_rule"
 						options={{ label: "Classification", admin: true }}
 						create={ClassificationCreate}
 						edit={ClassificationEdit}

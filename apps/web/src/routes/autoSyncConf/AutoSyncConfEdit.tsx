@@ -1,3 +1,4 @@
+import { Edit } from "#/components/admin";
 import { AutoSyncConfForm, type AutoSyncConfRecord } from "./AutoSyncConfForm";
 
 export const AutoSyncConfEdit = () => (
