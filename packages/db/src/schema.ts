@@ -1,10 +1,13 @@
-import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
 import {
 	boolean,
+	check,
 	date,
 	integer,
+	jsonb,
 	numeric,
 	pgEnum,
+	pgSchema,
 	pgTable,
 	primaryKey,
 	serial,
@@ -76,6 +79,7 @@ export const currency = pgTable("currency", {
 	id: serial("id").primaryKey(),
 	name: text("name").notNull(),
 	iso_code: text("iso_code").notNull().unique(),
+	iso_numeric_code: integer("iso_numeric_code").notNull().unique(),
 	symbol: text("symbol").notNull(),
 });
 
@@ -106,8 +110,77 @@ export const transactionType = pgTable("transaction_type", {
 	base: integer("base").default(0).notNull(),
 });
 
+// Supabase manages Vault; migrations must not create or modify this table.
+const vaultSecrets = pgSchema("vault").table("secrets", {
+	id: uuid("id").primaryKey(),
+});
+
+export const autoSyncConf = pgTable(
+	"auto_sync_conf",
+	{
+		id: serial("id").primaryKey(),
+		srcName: text("src_name").notNull().unique(),
+		srcLabel: text("src_label").notNull(),
+		lookback_days: integer("lookback_days").notNull(),
+		public_config: jsonb("public_config")
+			.$type<Record<string, unknown>>()
+			.notNull()
+			.default({}),
+		credentials_secret_id: uuid("credentials_secret_id").references(
+			() => vaultSecrets.id,
+		),
+		isEnabled: boolean("is_enabled").notNull().default(false),
+		transaction_type_id: integer("transaction_type_id").references(
+			() => transactionType.id,
+		),
+	},
+	(table) => [
+		check("auto_sync_conf_positive_lookback", sql`${table.lookback_days} > 0`),
+		check(
+			"auto_sync_conf_public_config_object",
+			sql`jsonb_typeof(${table.public_config}) = 'object'`,
+		),
+		check(
+			"auto_sync_conf_enabled_transaction_type",
+			sql`NOT ${table.isEnabled} OR ${table.transaction_type_id} IS NOT NULL`,
+		),
+	],
+);
+
+export const maxSyncTable = pgTable("max_sync_table", {
+	id: serial("id").primaryKey(),
+	ref_nbr: text("ref_nbr").notNull().unique(),
+	actual_payment_amount: numeric("actual_payment_amount", AMOUNT_PRECISION),
+	comments: text("comments"),
+	merchant_name: text("merchant_name"),
+	original_amount: numeric("original_amount", AMOUNT_PRECISION),
+	original_currency: text("original_currency"),
+	payment_currency: integer("payment_currency"),
+	payment_date: timestamp("payment_date"),
+	purchase_date: timestamp("purchase_date"),
+	short_card_number: text("short_card_number"),
+	plan_name: text("plan_name"),
+	promotion_club: text("promotion_club"),
+	promotion_amount: numeric("promotion_amount", AMOUNT_PRECISION),
+	merchant_address: text("merchant_address"),
+	merchant_commercial_name: text("merchant_commercial_name"),
+	merchant: text("merchant"),
+	merchant_number: text("merchant_number"),
+	deal_user_name: text("deal_user_name"),
+	deal_amount_ils: numeric("deal_amount_ils", AMOUNT_PRECISION),
+	deal_processing_date: timestamp("deal_processing_date"),
+	deal_purchase_time: text("deal_purchase_time"),
+	created_at: timestamp("created_at", { withTimezone: true })
+		.defaultNow()
+		.notNull(),
+});
+
 export const transaction = pgTable("transaction", {
 	id: serial("id").primaryKey(),
+
+	max_sync_table_id: integer("max_sync_table_id").references(
+		() => maxSyncTable.id,
+	),
 
 	profile_id: uuid("profile_id").references(() => profile.id),
 
@@ -227,50 +300,73 @@ export const importRowStatusEnum = pgEnum("import_row_status", [
 	"duplicates",
 ]);
 
-export const importRow = pgTable("import_row", {
-	id: serial("id").primaryKey(),
+export const importRow = pgTable(
+	"import_row",
+	{
+		id: serial("id").primaryKey(),
 
-	profile_id: uuid("profile_id").references(() => profile.id),
+		profile_id: uuid("profile_id").references(() => profile.id),
 
-	import_batch_id: integer("import_batch_id")
-		.notNull()
-		.references(() => importBatch.id, {
-			onDelete: "cascade",
+		import_batch_id: integer("import_batch_id").references(
+			() => importBatch.id,
+			{ onDelete: "cascade" },
+		),
+
+		date: date("date"),
+
+		amount: numeric("amount", AMOUNT_PRECISION).notNull(),
+
+		description: text("description"),
+
+		tag_id: integer("tag_id").references(() => transactionTag.id),
+
+		category_id: integer("category_id").references(
+			() => transactionCategory.id,
+		),
+
+		project_id: integer("project_id").references(() => transactionProject.id),
+
+		status: importRowStatusEnum("status").notNull().default("pending"),
+
+		currency_id: integer("currency_id").references(() => currency.id),
+		duplicate_transaction_id: integer("duplicate_transaction_id").references(
+			() => transaction.id,
+			{ onDelete: "set null" },
+		),
+
+		transaction_id: integer("transaction_id").references(() => transaction.id, {
+			onDelete: "set null",
 		}),
 
-	row_number: integer("row_number").notNull(),
+		transaction_type_id: integer("transaction_type_id").references(
+			() => transactionType.id,
+		),
 
-	date: date("date"),
+		amount_nis: numeric("amount_nis", AMOUNT_PRECISION),
 
-	amount: numeric("amount", AMOUNT_PRECISION).notNull(),
+		created_at: timestamp("created_at", { withTimezone: true })
+			.defaultNow()
+			.notNull(),
 
-	description: text("description"),
+		updated_at: timestamp("updated_at", { withTimezone: true })
+			.defaultNow()
+			.notNull(),
 
-	tag_id: integer("tag_id").references(() => transactionTag.id),
-
-	category_id: integer("category_id").references(() => transactionCategory.id),
-
-	project_id: integer("project_id").references(() => transactionProject.id),
-
-	status: importRowStatusEnum("status").notNull().default("pending"),
-
-	duplicate_transaction_id: integer("duplicate_transaction_id").references(
-		() => transaction.id,
-		{ onDelete: "set null" },
-	),
-
-	transaction_id: integer("transaction_id").references(() => transaction.id, {
-		onDelete: "set null",
-	}),
-
-	created_at: timestamp("created_at", { withTimezone: true })
-		.defaultNow()
-		.notNull(),
-
-	updated_at: timestamp("updated_at", { withTimezone: true })
-		.defaultNow()
-		.notNull(),
-});
+		max_sync_table_id: integer("max_sync_table_id")
+			.unique()
+			.references(() => maxSyncTable.id),
+	},
+	(table) => [
+		check(
+			"import_row_exactly_one_source",
+			sql`(${table.import_batch_id} IS NOT NULL) <> (${table.max_sync_table_id} IS NOT NULL)`,
+		),
+		check(
+			"import_row_auto_sync_merge_fields",
+			sql`${table.max_sync_table_id} IS NULL OR (${table.currency_id} IS NOT NULL AND ${table.transaction_type_id} IS NOT NULL)`,
+		),
+	],
+);
 
 export const transactionClassificationRuleActionEnum = pgEnum(
 	"transaction_classification_rule_action",
@@ -314,6 +410,12 @@ export type TransactionClassificationRuleActionEnum =
 	(typeof transactionClassificationRuleActionEnum.enumValues)[number];
 
 export type ImportRow = InferSelectModel<typeof importRow>;
+
+export type AutoSyncConf = InferSelectModel<typeof autoSyncConf>;
+export type AutoSyncConfInsert = InferInsertModel<typeof autoSyncConf>;
+export type MaxSyncTable = InferSelectModel<typeof maxSyncTable>;
+export type MaxSyncTableInsert = InferInsertModel<typeof maxSyncTable>;
+
 export type ImportRowInsert = typeof importRow.$inferInsert;
 export type ImportBatch = InferSelectModel<typeof importBatch>;
 export type ImportProfile = InferSelectModel<typeof importProfile>;
