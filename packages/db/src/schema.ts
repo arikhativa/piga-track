@@ -359,7 +359,7 @@ export const importRow = pgTable(
 		),
 		check(
 			"import_row_auto_sync_merge_fields",
-			sql`${table.max_sync_table_id} IS NULL OR (${table.currency_id} IS NOT NULL AND ${table.transaction_type_id} IS NOT NULL)`,
+			sql`${table.max_sync_table_id} IS NULL OR (${table.currency_id} IS NOT NULL)`,
 		),
 	],
 );

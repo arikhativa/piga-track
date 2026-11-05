@@ -1,5 +1,5 @@
 {
-  "id": "750f7a90-3269-48f5-81cb-e6bd6d938ae8",
+  "id": "6579ee67-a229-4688-96b8-6665b445098c",
   "prevId": "c4defc4a-9f5a-4a1d-861b-849a6c07f43b",
   "version": "7",
   "dialect": "postgresql",
@@ -673,7 +673,7 @@
         },
         "import_row_auto_sync_merge_fields": {
           "name": "import_row_auto_sync_merge_fields",
-          "value": "\"import_row\".\"max_sync_table_id\" IS NULL OR (\"import_row\".\"currency_id\" IS NOT NULL AND  IS NOT NULL)"
+          "value": "\"import_row\".\"max_sync_table_id\" IS NULL OR (\"import_row\".\"currency_id\" IS NOT NULL)"
         }
       },
       "isRLSEnabled": false
