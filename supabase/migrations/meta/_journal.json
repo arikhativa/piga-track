@@ -302,6 +302,13 @@
       "when": 1793522651932,
       "tag": "0042_medical_imperial_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793865477216,
+      "tag": "0043_flowery_kulan_gath",
+      "breakpoints": true
     }
   ]
 }

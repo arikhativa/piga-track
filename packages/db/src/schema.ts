@@ -338,10 +338,6 @@ export const importRow = pgTable(
 			onDelete: "set null",
 		}),
 
-		transaction_type_id: integer("transaction_type_id").references(
-			() => transactionType.id,
-		),
-
 		amount_nis: numeric("amount_nis", AMOUNT_PRECISION),
 
 		created_at: timestamp("created_at", { withTimezone: true })
