@@ -314,7 +314,12 @@
       "idx": 44,
       "version": "7",
       "when": 1793867148900,
-      "tag": "0044_rls-v10",
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1793869717988,
+      "tag": "0045_update_auto_sync_credentials",
       "breakpoints": true
     }
   ]

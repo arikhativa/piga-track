@@ -60,8 +60,11 @@ export function AppSidebar() {
 	);
 
 	const utilsPages = Object.keys(resources).filter(
+  );
+
+const adminPages = Object.keys(resources).filter(
 		(name) =>
-			resources[name].hasList && resources[name]?.options?.util === true,
+			resources[name].hasList && resources[name]?.options?.admin === true,
 	);
 
 	const importCSVPages = Object.keys(resources).filter(
@@ -211,9 +214,27 @@ export function AppSidebar() {
 									/>
 								))}
 							</SidebarMenu>
+        )}
+
+				{/* Admin */}
+				{adminPages.length > 0 && (
+					<SidebarGroup>
+						<SidebarGroupLabel>Admin</SidebarGroupLabel>
+
+						<SidebarGroupContent>
+							<SidebarMenu>
+								{adminPages.map((name) => (
+									<ResourceMenuItem
+										key={name}
+										name={name}
+										onClick={handleClick}
+									/>
+								))}
+							</SidebarMenu>
 						</SidebarGroupContent>
 					</SidebarGroup>
-				)}
+        )}
+
 			</SidebarContent>
 
 			<SidebarFooter />

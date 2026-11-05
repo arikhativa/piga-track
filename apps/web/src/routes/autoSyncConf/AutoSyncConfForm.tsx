@@ -6,11 +6,10 @@ import {
 	ReferenceInput,
 	SelectInput,
 	SimpleForm,
-	TextInput,
-} from "@/components/admin";
+import { AutoSyncCredentialsForm } from "./AutoSyncCredentialsForm";
 
 // PostgREST returns database column names, not Drizzle property names.
-type AutoSyncConfRecord = Omit<
+export type AutoSyncConfRecord = Omit<
 	AutoSyncConf,
 	"srcName" | "srcLabel" | "isEnabled"
 > & {
@@ -42,30 +41,42 @@ const validateConfiguration: ValidateForm = (values) => {
 };
 
 export const AutoSyncConfForm = () => {
-	const record = useRecordContext<AutoSyncConfRecord>();
-	return (
-		<SimpleForm validate={validateConfiguration}>
-			<TextInput source="src_name" label="Source" disabled />
-			<TextInput source="src_label" label="Label" validate={required()} />
-			<NumberInput
-				source="lookback_days"
-				label="Lookback days"
-				min={1}
-				step={1}
-				validate={required()}
-			/>
-			<ReferenceInput source="transaction_type_id" reference="transaction_type">
-				<SelectInput label="Transaction type" />
-			</ReferenceInput>
+		<>
+			<SimpleForm
+				validate={(values) =>
+					validateConfiguration({
+						...values,
+						credentials_secret_id: record?.credentials_secret_id,
+					})
+				}
+			>
+				<TextInput source="src_name" label="Source" disabled />
+				<TextInput source="src_label" label="Label" validate={required()} />
+				<NumberInput
+					source="lookback_days"
+					label="Lookback days"
+					min={1}
+					step={1}
+					validate={required()}
+				/>
+				<ReferenceInput
+					source="transaction_type_id"
+					reference="transaction_type"
+				>
+					<SelectInput label="Transaction type" />
+				</ReferenceInput>
+				{record?.src_name.toLowerCase() === "max" && (
+					<TextInput source="public_config.username" label="MAX username" />
+				)}
+
+				<BooleanInput source="is_enabled" label="Enabled" />
+			</SimpleForm>
 			{record?.src_name.toLowerCase() === "max" && (
-				<TextInput source="public_config.username" label="MAX username" />
+				<AutoSyncCredentialsForm
+					key={record.id}
+					configured={Boolean(record.credentials_secret_id)}
+				/>
 			)}
-			<p className="text-sm text-muted-foreground">
-				Credentials:{" "}
-				{record?.credentials_secret_id ? "Configured" : "Not configured"}.
-				Credential updates will be available in a later step.
-			</p>
-			<BooleanInput source="is_enabled" label="Enabled" />
-		</SimpleForm>
+		</>
 	);
 };

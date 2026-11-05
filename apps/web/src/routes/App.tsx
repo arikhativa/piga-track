@@ -133,43 +133,40 @@ export function App() {
 						list={TransactionTagList}
 						edit={TransactionTagEdit}
 						create={TransactionTagCreate}
-						icon={Tags}
-					/>
-					<Resource
-						name="import_profile"
-						options={{ util: true, label: "Import Profile" }}
-						list={ImportProfileList}
-						edit={ImportProfileEdit}
-						create={ImportProfileCreate}
-						icon={FileSliders}
-					/>
+
+					{/* Admin */}
 					<Resource
 						name="auto_sync_conf"
-						options={{ util: true, label: "Auto Scrape Configuration" }}
+						options={{ admin: true, label: "Auto Scrape Configuration" }}
 						recordRepresentation="src_label"
 						list={AutoSyncConfList}
 						edit={AutoSyncConfEdit}
 						icon={RefreshCw}
 					/>
 					<Resource
+						name="import_profile"
+						options={{ admin: true, label: "Import Profile" }}
+						list={ImportProfileList}
+						edit={ImportProfileEdit}
+						create={ImportProfileCreate}
+						icon={FileSliders}
+					/>
+
+					<Resource
 						name="currency"
-						options={{ util: true }}
+						options={{ admin: true }}
 						list={CurrencyList}
 						edit={CurrencyEdit}
 						create={CurrencyCreate}
 						icon={Coins}
 					/>
-					<Resource
-						name="transaction_type"
-						options={{ util: true }}
+						options={{ admin: true }}
 						list={PotList}
 						edit={PotEdit}
 						create={PotCreate}
 						icon={PiggyBank}
 					/>
-					<Resource
-						name="transaction_classification_rule"
-						options={{ label: "Classification", util: true }}
+						options={{ label: "Classification", admin: true }}
 						create={ClassificationCreate}
 						edit={ClassificationEdit}
 						list={ClassificationList}
