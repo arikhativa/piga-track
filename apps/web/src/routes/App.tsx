@@ -7,6 +7,7 @@ import {
 	HandCoins,
 	Import,
 	PiggyBank,
+	RefreshCw,
 	Shapes,
 	Tags,
 	User,
@@ -20,6 +21,8 @@ import { supabaseAuthProvider } from "#/lib/authProvider";
 import { supabaseDataProvider } from "#/lib/dataProvider";
 import { getIdentity } from "#/lib/getIdentity";
 import { supabaseClient } from "#/lib/supabaseClient";
+import { AutoSyncConfEdit } from "#/routes/autoSyncConf/AutoSyncConfEdit";
+import { AutoSyncConfList } from "#/routes/autoSyncConf/AutoSyncConfList";
 import { CategoryCreate } from "#/routes/category/CategoryCreate";
 import { CategoryEdit } from "#/routes/category/CategoryEdit";
 import { CategoryList } from "#/routes/category/CategoryList";
@@ -139,6 +142,14 @@ export function App() {
 						edit={ImportProfileEdit}
 						create={ImportProfileCreate}
 						icon={FileSliders}
+					/>
+					<Resource
+						name="auto_sync_conf"
+						options={{ util: true, label: "Auto Scrape Configuration" }}
+						recordRepresentation="src_label"
+						list={AutoSyncConfList}
+						edit={AutoSyncConfEdit}
+						icon={RefreshCw}
 					/>
 					<Resource
 						name="currency"

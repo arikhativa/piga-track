@@ -1,0 +1,1436 @@
+{
+  "id": "54cb9a1f-044a-4d36-a3b4-7e037abb6547",
+  "prevId": "6579ee67-a229-4688-96b8-6665b445098c",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.auto_sync_conf": {
+      "name": "auto_sync_conf",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "src_name": {
+          "name": "src_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "src_label": {
+          "name": "src_label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lookback_days": {
+          "name": "lookback_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "public_config": {
+          "name": "public_config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "credentials_secret_id": {
+          "name": "credentials_secret_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_enabled": {
+          "name": "is_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "transaction_type_id": {
+          "name": "transaction_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "auto_sync_conf_credentials_secret_id_secrets_id_fk": {
+          "name": "auto_sync_conf_credentials_secret_id_secrets_id_fk",
+          "tableFrom": "auto_sync_conf",
+          "columnsFrom": [
+            "credentials_secret_id"
+          ],
+          "tableTo": "secrets",
+          "schemaTo": "vault",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "auto_sync_conf_transaction_type_id_transaction_type_id_fk": {
+          "name": "auto_sync_conf_transaction_type_id_transaction_type_id_fk",
+          "tableFrom": "auto_sync_conf",
+          "columnsFrom": [
+            "transaction_type_id"
+          ],
+          "tableTo": "transaction_type",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "auto_sync_conf_src_name_unique": {
+          "name": "auto_sync_conf_src_name_unique",
+          "columns": [
+            "src_name"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "auto_sync_conf_positive_lookback": {
+          "name": "auto_sync_conf_positive_lookback",
+          "value": "\"auto_sync_conf\".\"lookback_days\" > 0"
+        },
+        "auto_sync_conf_public_config_object": {
+          "name": "auto_sync_conf_public_config_object",
+          "value": "jsonb_typeof(\"auto_sync_conf\".\"public_config\") = 'object'"
+        },
+        "auto_sync_conf_enabled_transaction_type": {
+          "name": "auto_sync_conf_enabled_transaction_type",
+          "value": "NOT \"auto_sync_conf\".\"is_enabled\" OR \"auto_sync_conf\".\"transaction_type_id\" IS NOT NULL"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.currency": {
+      "name": "currency",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "iso_code": {
+          "name": "iso_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "iso_numeric_code": {
+          "name": "iso_numeric_code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "symbol": {
+          "name": "symbol",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "currency_iso_code_unique": {
+          "name": "currency_iso_code_unique",
+          "columns": [
+            "iso_code"
+          ],
+          "nullsNotDistinct": false
+        },
+        "currency_iso_numeric_code_unique": {
+          "name": "currency_iso_numeric_code_unique",
+          "columns": [
+            "iso_numeric_code"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.exchange_rate": {
+      "name": "exchange_rate",
+      "schema": "",
+      "columns": {
+        "iso_code": {
+          "name": "iso_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rate": {
+          "name": "rate",
+          "type": "numeric(12, 6)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "exchange_rate_iso_code_currency_iso_code_fk": {
+          "name": "exchange_rate_iso_code_currency_iso_code_fk",
+          "tableFrom": "exchange_rate",
+          "columnsFrom": [
+            "iso_code"
+          ],
+          "tableTo": "currency",
+          "columnsTo": [
+            "iso_code"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "exchange_rate_date_iso_code_pk": {
+          "name": "exchange_rate_date_iso_code_pk",
+          "columns": [
+            "date",
+            "iso_code"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.import_batch": {
+      "name": "import_batch",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "import_profile_id": {
+          "name": "import_profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "batch_name": {
+          "name": "batch_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "import_batch_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "import_batch_import_profile_id_import_profile_id_fk": {
+          "name": "import_batch_import_profile_id_import_profile_id_fk",
+          "tableFrom": "import_batch",
+          "columnsFrom": [
+            "import_profile_id"
+          ],
+          "tableTo": "import_profile",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.import_profile": {
+      "name": "import_profile",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency_id": {
+          "name": "currency_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 7
+        },
+        "start_row": {
+          "name": "start_row",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_column": {
+          "name": "date_column",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "credit_card_column": {
+          "name": "credit_card_column",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "positive_amount_column": {
+          "name": "positive_amount_column",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "negative_amount_column": {
+          "name": "negative_amount_column",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "positive_amount_sign": {
+          "name": "positive_amount_sign",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "negative_amount_sign": {
+          "name": "negative_amount_sign",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "transaction_type_id": {
+          "name": "transaction_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "description_column_list": {
+          "name": "description_column_list",
+          "type": "varchar(200)[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "import_profile_currency_id_currency_id_fk": {
+          "name": "import_profile_currency_id_currency_id_fk",
+          "tableFrom": "import_profile",
+          "columnsFrom": [
+            "currency_id"
+          ],
+          "tableTo": "currency",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "import_profile_transaction_type_id_transaction_type_id_fk": {
+          "name": "import_profile_transaction_type_id_transaction_type_id_fk",
+          "tableFrom": "import_profile",
+          "columnsFrom": [
+            "transaction_type_id"
+          ],
+          "tableTo": "transaction_type",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.import_row": {
+      "name": "import_row",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "import_batch_id": {
+          "name": "import_batch_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tag_id": {
+          "name": "tag_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "import_row_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "currency_id": {
+          "name": "currency_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duplicate_transaction_id": {
+          "name": "duplicate_transaction_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount_nis": {
+          "name": "amount_nis",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "max_sync_table_id": {
+          "name": "max_sync_table_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "import_row_profile_id_profile_id_fk": {
+          "name": "import_row_profile_id_profile_id_fk",
+          "tableFrom": "import_row",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "tableTo": "profile",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "import_row_import_batch_id_import_batch_id_fk": {
+          "name": "import_row_import_batch_id_import_batch_id_fk",
+          "tableFrom": "import_row",
+          "columnsFrom": [
+            "import_batch_id"
+          ],
+          "tableTo": "import_batch",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "import_row_tag_id_transaction_tag_id_fk": {
+          "name": "import_row_tag_id_transaction_tag_id_fk",
+          "tableFrom": "import_row",
+          "columnsFrom": [
+            "tag_id"
+          ],
+          "tableTo": "transaction_tag",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "import_row_category_id_transaction_category_id_fk": {
+          "name": "import_row_category_id_transaction_category_id_fk",
+          "tableFrom": "import_row",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "tableTo": "transaction_category",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "import_row_project_id_transaction_project_id_fk": {
+          "name": "import_row_project_id_transaction_project_id_fk",
+          "tableFrom": "import_row",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "tableTo": "transaction_project",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "import_row_currency_id_currency_id_fk": {
+          "name": "import_row_currency_id_currency_id_fk",
+          "tableFrom": "import_row",
+          "columnsFrom": [
+            "currency_id"
+          ],
+          "tableTo": "currency",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "import_row_duplicate_transaction_id_transaction_id_fk": {
+          "name": "import_row_duplicate_transaction_id_transaction_id_fk",
+          "tableFrom": "import_row",
+          "columnsFrom": [
+            "duplicate_transaction_id"
+          ],
+          "tableTo": "transaction",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        },
+        "import_row_transaction_id_transaction_id_fk": {
+          "name": "import_row_transaction_id_transaction_id_fk",
+          "tableFrom": "import_row",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "tableTo": "transaction",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        },
+        "import_row_max_sync_table_id_max_sync_table_id_fk": {
+          "name": "import_row_max_sync_table_id_max_sync_table_id_fk",
+          "tableFrom": "import_row",
+          "columnsFrom": [
+            "max_sync_table_id"
+          ],
+          "tableTo": "max_sync_table",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "import_row_max_sync_table_id_unique": {
+          "name": "import_row_max_sync_table_id_unique",
+          "columns": [
+            "max_sync_table_id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "import_row_exactly_one_source": {
+          "name": "import_row_exactly_one_source",
+          "value": "(\"import_row\".\"import_batch_id\" IS NOT NULL) <> (\"import_row\".\"max_sync_table_id\" IS NOT NULL)"
+        },
+        "import_row_auto_sync_merge_fields": {
+          "name": "import_row_auto_sync_merge_fields",
+          "value": "\"import_row\".\"max_sync_table_id\" IS NULL OR (\"import_row\".\"currency_id\" IS NOT NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.max_sync_table": {
+      "name": "max_sync_table",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ref_nbr": {
+          "name": "ref_nbr",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actual_payment_amount": {
+          "name": "actual_payment_amount",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comments": {
+          "name": "comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "merchant_name": {
+          "name": "merchant_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "original_amount": {
+          "name": "original_amount",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "original_currency": {
+          "name": "original_currency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payment_currency": {
+          "name": "payment_currency",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payment_date": {
+          "name": "payment_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "purchase_date": {
+          "name": "purchase_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "short_card_number": {
+          "name": "short_card_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "plan_name": {
+          "name": "plan_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "promotion_club": {
+          "name": "promotion_club",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "promotion_amount": {
+          "name": "promotion_amount",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "merchant_address": {
+          "name": "merchant_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "merchant_commercial_name": {
+          "name": "merchant_commercial_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "merchant": {
+          "name": "merchant",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "merchant_number": {
+          "name": "merchant_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deal_user_name": {
+          "name": "deal_user_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deal_amount_ils": {
+          "name": "deal_amount_ils",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deal_processing_date": {
+          "name": "deal_processing_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deal_purchase_time": {
+          "name": "deal_purchase_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "max_sync_table_ref_nbr_unique": {
+          "name": "max_sync_table_ref_nbr_unique",
+          "columns": [
+            "ref_nbr"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profile": {
+      "name": "profile",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "credit_card": {
+          "name": "credit_card",
+          "type": "varchar(8)[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "default_currency_id": {
+          "name": "default_currency_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 7
+        },
+        "default_transaction_type_id": {
+          "name": "default_transaction_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "default_category_id": {
+          "name": "default_category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "default_project_id": {
+          "name": "default_project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profile_default_currency_id_currency_id_fk": {
+          "name": "profile_default_currency_id_currency_id_fk",
+          "tableFrom": "profile",
+          "columnsFrom": [
+            "default_currency_id"
+          ],
+          "tableTo": "currency",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "profile_default_transaction_type_id_transaction_type_id_fk": {
+          "name": "profile_default_transaction_type_id_transaction_type_id_fk",
+          "tableFrom": "profile",
+          "columnsFrom": [
+            "default_transaction_type_id"
+          ],
+          "tableTo": "transaction_type",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "profile_default_category_id_transaction_category_id_fk": {
+          "name": "profile_default_category_id_transaction_category_id_fk",
+          "tableFrom": "profile",
+          "columnsFrom": [
+            "default_category_id"
+          ],
+          "tableTo": "transaction_category",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "profile_default_project_id_transaction_project_id_fk": {
+          "name": "profile_default_project_id_transaction_project_id_fk",
+          "tableFrom": "profile",
+          "columnsFrom": [
+            "default_project_id"
+          ],
+          "tableTo": "transaction_project",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "profile_email_unique": {
+          "name": "profile_email_unique",
+          "columns": [
+            "email"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transaction": {
+      "name": "transaction",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "max_sync_table_id": {
+          "name": "max_sync_table_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tag_id": {
+          "name": "tag_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
+        },
+        "currency_id": {
+          "name": "currency_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 7
+        },
+        "transaction_type_id": {
+          "name": "transaction_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount_nis": {
+          "name": "amount_nis",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transaction_at": {
+          "name": "transaction_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transaction_max_sync_table_id_max_sync_table_id_fk": {
+          "name": "transaction_max_sync_table_id_max_sync_table_id_fk",
+          "tableFrom": "transaction",
+          "columnsFrom": [
+            "max_sync_table_id"
+          ],
+          "tableTo": "max_sync_table",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "transaction_profile_id_profile_id_fk": {
+          "name": "transaction_profile_id_profile_id_fk",
+          "tableFrom": "transaction",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "tableTo": "profile",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "transaction_tag_id_transaction_tag_id_fk": {
+          "name": "transaction_tag_id_transaction_tag_id_fk",
+          "tableFrom": "transaction",
+          "columnsFrom": [
+            "tag_id"
+          ],
+          "tableTo": "transaction_tag",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "transaction_project_id_transaction_project_id_fk": {
+          "name": "transaction_project_id_transaction_project_id_fk",
+          "tableFrom": "transaction",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "tableTo": "transaction_project",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "transaction_category_id_transaction_category_id_fk": {
+          "name": "transaction_category_id_transaction_category_id_fk",
+          "tableFrom": "transaction",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "tableTo": "transaction_category",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "transaction_currency_id_currency_id_fk": {
+          "name": "transaction_currency_id_currency_id_fk",
+          "tableFrom": "transaction",
+          "columnsFrom": [
+            "currency_id"
+          ],
+          "tableTo": "currency",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "transaction_transaction_type_id_transaction_type_id_fk": {
+          "name": "transaction_transaction_type_id_transaction_type_id_fk",
+          "tableFrom": "transaction",
+          "columnsFrom": [
+            "transaction_type_id"
+          ],
+          "tableTo": "transaction_type",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transaction_category": {
+      "name": "transaction_category",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_income": {
+          "name": "is_income",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_expense": {
+          "name": "is_expense",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "transaction_category_value_unique": {
+          "name": "transaction_category_value_unique",
+          "columns": [
+            "value"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transaction_classification_rule": {
+      "name": "transaction_classification_rule",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "text_to_find": {
+          "name": "text_to_find",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "transaction_classification_rule_action",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'addData'"
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tag_id": {
+          "name": "tag_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transaction_classification_rule_category_id_transaction_category_id_fk": {
+          "name": "transaction_classification_rule_category_id_transaction_category_id_fk",
+          "tableFrom": "transaction_classification_rule",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "tableTo": "transaction_category",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "transaction_classification_rule_tag_id_transaction_tag_id_fk": {
+          "name": "transaction_classification_rule_tag_id_transaction_tag_id_fk",
+          "tableFrom": "transaction_classification_rule",
+          "columnsFrom": [
+            "tag_id"
+          ],
+          "tableTo": "transaction_tag",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "transaction_classification_rule_text_to_find_unique": {
+          "name": "transaction_classification_rule_text_to_find_unique",
+          "columns": [
+            "text_to_find"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transaction_project": {
+      "name": "transaction_project",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transaction_tag": {
+      "name": "transaction_tag",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "transaction_tag_value_unique": {
+          "name": "transaction_tag_value_unique",
+          "columns": [
+            "value"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transaction_type": {
+      "name": "transaction_type",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "base": {
+          "name": "base",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.import_batch_status": {
+      "name": "import_batch_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "approved",
+        "cancelled"
+      ]
+    },
+    "public.import_row_status": {
+      "name": "import_row_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "merged",
+        "dropped",
+        "duplicates"
+      ]
+    },
+    "public.transaction_classification_rule_action": {
+      "name": "transaction_classification_rule_action",
+      "schema": "public",
+      "values": [
+        "addData",
+        "dropRow"
+      ]
+    }
+  },
+  "schemas": {},
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
