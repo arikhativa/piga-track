@@ -20,7 +20,7 @@
     "format": "biome format",
     "lint": "biome lint",
     "check:ts": "pnpm --filter @piga/web check:ts && pnpm --filter @piga/db check:ts && pnpm --filter @piga/contracts check:ts && tsc --noEmit -p tsconfig.tools.json",
-    "check:functions": "deno check --config supabase/functions/dashboard-data/deno.json supabase/functions/dashboard-data/index.ts && deno check --config supabase/functions/get-transaction-data/deno.json supabase/functions/get-transaction-data/index.ts && deno check --config supabase/functions/create-import-batch/deno.json supabase/functions/create-import-batch/index.ts && deno check --config supabase/functions/import-row-action/deno.json supabase/functions/import-row-action/index.ts",
+    "check:functions": "deno check --config supabase/functions/dashboard-data/deno.json supabase/functions/dashboard-data/index.ts && deno check --config supabase/functions/get-transaction-data/deno.json supabase/functions/get-transaction-data/index.ts && deno check --config supabase/functions/create-import-batch/deno.json supabase/functions/create-import-batch/index.ts && deno check --config supabase/functions/import-row-action/deno.json supabase/functions/import-row-action/index.ts && deno check --config supabase/functions/scrape-transactions/deno.json supabase/functions/scrape-transactions/index.ts",
     "check": "biome check",
     "fix": "biome check --write"
   },

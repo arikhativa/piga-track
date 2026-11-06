@@ -6,46 +6,79 @@ import GlareHover from "#/components/GlareHover";
 import PixelIcon from "#/components/icon/lord-pigafetta";
 import { Card, CardContent } from "#/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { supabaseClient } from "@/lib/supabaseClient";
 
+const scrapeCountLabels = [
+	["sources", "Sources"],
+	["disabledSources", "Disabled sources"],
+	["fetched", "Fetched"],
+	["inserted", "Inserted"],
+	["existing", "Existing"],
+	["changed", "Changed"],
+	["invalid", "Invalid"],
+	["pending", "Pending"],
+	["dropped", "Dropped"],
+	["duplicates", "Duplicates"],
+] as const;
+
+function formatScrapeCounts(counts: unknown): string {
+	if (!counts || typeof counts !== "object") return "";
+
+	const values = counts as Record<string, unknown>;
+	return scrapeCountLabels
+		.flatMap(([key, label]) => {
+			const count = values[key];
+			return typeof count === "number" &&
+				Number.isSafeInteger(count) &&
+				count >= 0
+				? [`${label}: ${count}`]
+				: [];
+		})
+		.join(" · ");
+}
+
 export function Home() {
+	const [scrapeSecret, setScrapeSecret] = useState("");
 	const [isScraping, setIsScraping] = useState(false);
 	const [scrapeStatus, setScrapeStatus] = useState<string | null>(null);
 
-	async function testScrape() {
-		if (isScraping) return;
+	async function runAutoSync() {
+		if (isScraping || !scrapeSecret) return;
 		setIsScraping(true);
-		setScrapeStatus("Testing Max scrape…");
-		console.info("[scrape-transactions] Testing October 1–31, 2026.");
+		setScrapeStatus("Syncing…");
 
 		try {
 			const { data, error } = await supabaseClient.functions.invoke(
 				"scrape-transactions",
-				{ body: {} },
+				{ headers: { "x-cron-secret": scrapeSecret } },
 			);
-			if (error) {
-				if (error instanceof FunctionsHttpError) {
-					const details = await error.context.json().catch(() => null);
-					console.error("[scrape-transactions] Server error:", details);
-					throw new Error(details?.error ?? error.message);
-				}
-				throw error;
+			let response: unknown = data;
+			if (error instanceof FunctionsHttpError) {
+				response = await error.context.json().catch(() => null);
 			}
-			console.info("[scrape-transactions] Logs:", data?.logs);
-			if (!data?.success) {
-				throw new Error(
-					data?.error ?? "Scrape returned an unexpected response.",
+
+			const result =
+				response && typeof response === "object"
+					? (response as Record<string, unknown>)
+					: null;
+			const counts = formatScrapeCounts(result?.counts);
+
+			if (!error && result?.skipped === "already_running") {
+				setScrapeStatus(
+					`Auto-sync skipped: another sync is already running.${counts ? ` ${counts}` : ""}`,
 				);
+			} else if (error || result?.success !== true) {
+				setScrapeStatus(
+					`Auto-sync failed. Some review rows may have been written.${counts ? ` Partial counts: ${counts}` : ""}`,
+				);
+			} else {
+				setScrapeStatus(`Auto-sync completed.${counts ? ` ${counts}` : ""}`);
 			}
-			console.log("[scrape-transactions] Full Max result:", data.result);
+		} catch {
 			setScrapeStatus(
-				"Scrape succeeded. Full result is in the browser console.",
+				"Auto-sync could not be completed. Some review rows may have been written. Please try again.",
 			);
-		} catch (error) {
-			const message =
-				error instanceof Error ? error.message : "Scrape request failed.";
-			console.error("[scrape-transactions]", message);
-			setScrapeStatus(message);
 		} finally {
 			setIsScraping(false);
 		}
@@ -85,11 +118,25 @@ export function Home() {
 					<Plus />
 					<span>New Transaction</span>
 				</Button>
-				<Button onClick={testScrape} disabled={isScraping}>
+				<Input
+					type="password"
+					aria-label="Auto-sync secret"
+					placeholder="Auto-sync secret"
+					autoComplete="off"
+					value={scrapeSecret}
+					onChange={(event) => setScrapeSecret(event.target.value)}
+					disabled={isScraping}
+					className="md:w-64"
+				/>
+				<Button onClick={runAutoSync} disabled={isScraping || !scrapeSecret}>
 					<RefreshCw className={isScraping ? "animate-spin" : undefined} />
-					<span>{isScraping ? "Testing Max…" : "Test Max Scrape"}</span>
+					<span>{isScraping ? "Syncing…" : "Run auto-sync"}</span>
 				</Button>
 			</div>
+			<p className="mt-4 px-6 text-center text-sm text-muted-foreground">
+				Auto-sync honors enabled settings and writes review rows. It does not
+				create transactions.
+			</p>
 			{scrapeStatus && (
 				<output className="mt-4 px-6 text-center text-sm text-muted-foreground">
 					{scrapeStatus}

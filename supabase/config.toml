@@ -459,7 +459,8 @@ entrypoint = "./functions/get-transaction-data/index.ts"
 
 [functions.scrape-transactions]
 enabled = true
-verify_jwt = true
+# The handler verifies both user JWTs and service-to-service secret keys.
+verify_jwt = false
 import_map = "./functions/scrape-transactions/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
