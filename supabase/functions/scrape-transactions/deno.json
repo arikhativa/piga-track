@@ -1,5 +1,6 @@
 {
 	"imports": {
+		"zod": "npm:zod@4.6.1",
 		"postgres": "npm:postgres@3.4.9",
 		"@piga/db/schema": "../../../packages/db/src/schema.ts",
 		"drizzle-orm": "npm:drizzle-orm@0.45.2",

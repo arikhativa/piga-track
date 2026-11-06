@@ -4,8 +4,9 @@
     "jsr:@supabase/functions-js@2": "2.116.0",
     "npm:@supabase/server@1": "1.6.0_@supabase+supabase-js@2.116.0",
     "npm:drizzle-orm@0.45.2": "0.45.2_postgres@3.4.9",
-    "npm:openai@^4.52.5": "4.104.0",
-    "npm:postgres@3.4.9": "3.4.9"
+    "npm:openai@^4.52.5": "4.104.0_zod@4.6.1",
+    "npm:postgres@3.4.9": "3.4.9",
+    "npm:zod@4.6.1": "4.6.1"
   },
   "jsr": {
     "@supabase/functions-js@2.116.0": {
@@ -260,7 +261,7 @@
         "whatwg-url"
       ]
     },
-    "openai@4.104.0": {
+    "openai@4.104.0_zod@4.6.1": {
       "integrity": "sha512-p99EFNsA/yX6UhVO93f5kJsDRLAg+CTA2RBqdHK4RtK8u5IJw32Hyb2dTGKbnnFmnuoBv5r7Z2CURI9sGZpSuA==",
       "dependencies": [
         "@types/node",
@@ -269,7 +270,11 @@
         "agentkeepalive",
         "form-data-encoder",
         "formdata-node",
-        "node-fetch"
+        "node-fetch",
+        "zod"
+      ],
+      "optionalPeers": [
+        "zod"
       ],
       "bin": true
     },
@@ -300,6 +305,9 @@
         "tr46",
         "webidl-conversions"
       ]
+    },
+    "zod@4.6.1": {
+      "integrity": "sha512-341aRWQsve0rvronKNTqZpjmzdbUDlFuzHaI/XLg/Ej82qffDJRRfBTCuv7+9q/rMjB6LSLyEBnW4InJeMtt/Q=="
     }
   },
   "workspace": {
@@ -307,7 +315,8 @@
       "jsr:@supabase/functions-js@2",
       "npm:@supabase/server@1",
       "npm:drizzle-orm@0.45.2",
-      "npm:postgres@3.4.9"
+      "npm:postgres@3.4.9",
+      "npm:zod@4.6.1"
     ]
   }
 }
