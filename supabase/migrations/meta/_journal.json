@@ -306,19 +306,21 @@
     {
       "idx": 43,
       "version": "7",
-      "when": 1793866111730,
-      "tag": "0043_youthful_talos",
+      "when": 1793978440232,
+      "tag": "0043_unique_ricochet",
       "breakpoints": true
     },
     {
       "idx": 44,
       "version": "7",
-      "when": 1793867148900,
+      "when": 1793978457357,
+      "tag": "0044_rls-v10",
+      "breakpoints": true
     },
     {
       "idx": 45,
       "version": "7",
-      "when": 1793869717988,
+      "when": 1793978477905,
       "tag": "0045_update_auto_sync_credentials",
       "breakpoints": true
     }
