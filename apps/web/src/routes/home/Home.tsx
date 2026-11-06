@@ -6,7 +6,7 @@ import GlareHover from "#/components/GlareHover";
 import PixelIcon from "#/components/icon/lord-pigafetta";
 import { Card, CardContent } from "#/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { supabaseClient } from "@/lib/supabaseClient";
 
 const scrapeCountLabels = [
@@ -39,19 +39,18 @@ function formatScrapeCounts(counts: unknown): string {
 }
 
 export function Home() {
-	const [scrapeSecret, setScrapeSecret] = useState("");
+
 	const [isScraping, setIsScraping] = useState(false);
 	const [scrapeStatus, setScrapeStatus] = useState<string | null>(null);
 
 	async function runAutoSync() {
-		if (isScraping || !scrapeSecret) return;
+		if (isScraping) return;
 		setIsScraping(true);
 		setScrapeStatus("Syncing…");
 
 		try {
 			const { data, error } = await supabaseClient.functions.invoke(
 				"scrape-transactions",
-				{ headers: { "x-cron-secret": scrapeSecret } },
 			);
 			let response: unknown = data;
 			if (error instanceof FunctionsHttpError) {
@@ -118,17 +117,7 @@ export function Home() {
 					<Plus />
 					<span>New Transaction</span>
 				</Button>
-				<Input
-					type="password"
-					aria-label="Auto-sync secret"
-					placeholder="Auto-sync secret"
-					autoComplete="off"
-					value={scrapeSecret}
-					onChange={(event) => setScrapeSecret(event.target.value)}
-					disabled={isScraping}
-					className="md:w-64"
-				/>
-				<Button onClick={runAutoSync} disabled={isScraping || !scrapeSecret}>
+				<Button onClick={runAutoSync} disabled={isScraping}>
 					<RefreshCw className={isScraping ? "animate-spin" : undefined} />
 					<span>{isScraping ? "Syncing…" : "Run auto-sync"}</span>
 				</Button>

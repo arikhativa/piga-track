@@ -1,15 +1,12 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 
 import { createDb } from "../_shared/db.ts";
-import { authenticate } from "./lib/authenticate.ts";
+import { withSupabase } from "@supabase/server";
 import { loadSources } from "./lib/loadSources.ts";
 import { syncMax } from "./sources/max/index.ts";
 
-Deno.serve(async (request: Request): Promise<Response> => {
+Deno.serve(withSupabase({ auth: ["user", "secret:secret"] }, async (request: Request): Promise<Response> => {
   try {
-		if (!(await authenticate(request))) {
-			return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
 		if (request.method !== "POST") {
 			return Response.json(
@@ -47,4 +44,4 @@ Deno.serve(async (request: Request): Promise<Response> => {
 			{ status: 500 },
 		);
 	}
-});
+}));
