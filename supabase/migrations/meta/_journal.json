@@ -323,6 +323,13 @@
       "when": 1793978477905,
       "tag": "0045_update_auto_sync_credentials",
       "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1793978550206,
+      "tag": "0046_scrape-cron",
+      "breakpoints": true
     }
   ]
 }
