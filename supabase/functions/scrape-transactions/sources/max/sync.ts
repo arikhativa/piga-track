@@ -14,7 +14,7 @@ export interface SyncEntry {
 export async function sync(
 	db: ReturnType<typeof createDb>,
 	entries: readonly SyncEntry[],
-) {
+): Promise<{ maxSyncTableId: number; importRowId: number }[]> {
 	if (entries.length === 0) return [];
 
 	return await db.transaction(async (tx) => {
@@ -40,6 +40,14 @@ export async function sync(
 
 		const importIdsByMaxId = new Map(
 			insertedImportRows.map((row) => [row.maxSyncTableId, row.id]),
-		);
+    );
+
+		return entries.map((entry) => {
+			const maxSyncTableId = maxIdsByReference.get(entry.transaction.ref_nbr)!;
+			return {
+				maxSyncTableId,
+				importRowId: importIdsByMaxId.get(maxSyncTableId)!,
+			};
+		});
 	});
 }

@@ -1,9 +1,15 @@
-import type { AutoSyncConf } from "@piga/db/schema";
+import { currency, profile, type AutoSyncConf } from "@piga/db/schema";
 import type { createDb } from "../../../_shared/db.ts";
 import { loadCredential } from "../../lib/loadCredential.ts";
 import { login } from "./login.ts";
 import { scrape } from "./scrape.ts";
+import { parseTransaction } from "./parseTransaction.ts";
+import { mapMaxTransaction } from "./mapping.ts";
+import { filterNewTransactions } from "./filterNewTransactions.ts";
+import { sync } from "./sync.ts";
 
+// TODO: this should be a generic code with a base class
+// so the paret index will be able to genercly call the main logic for all srcs
 export async function syncMax(
 	db: ReturnType<typeof createDb>,
 	config: AutoSyncConf,
@@ -38,8 +44,33 @@ export async function syncMax(
 		throw new Error("MAX password is required");
 	}
 
-	const cookie = await login(username, credentials.password);
-  const ret = await scrape({ cookie, startDate, endDate, date: endDate });
-  console.log("ret",ret  )
-	return ret
+  const cookie = await login(username, credentials.password);
+
+  const rawTransactions = await scrape({ cookie, startDate, endDate, date: endDate });
+
+  const transactions = parseTransaction(rawTransactions);
+
+  const newRows = await filterNewTransactions(db, transactions, config.lookback_days);
+
+	if (newRows.length === 0) return transactions;
+
+  const newReferences = new Set(newRows.map((row) => row.ref_nbr));
+
+	const newTransactions = transactions.filter((transaction) =>
+		newReferences.has(transaction.ref_nbr)
+  );
+
+	const [currencies, profiles] = await Promise.all([
+		db.select({ id: currency.id, iso_numeric_code: currency.iso_numeric_code }).from(currency),
+		db.select({ id: profile.id, credit_card: profile.credit_card }).from(profile),
+  ]);
+
+  const mapped = mapMaxTransaction(newTransactions, { currencies, profiles });
+
+  const importsByReference = new Map(mapped.map((row) => [row.refNbr, row.importRow]));
+
+	return sync(db, newRows.map((transaction) => ({
+		transaction,
+		mappedImportRow: importsByReference.get(transaction.ref_nbr)!,
+	})));
 }
