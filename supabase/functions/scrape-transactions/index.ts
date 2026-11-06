@@ -5,9 +5,8 @@ import { withSupabase } from "@supabase/server";
 import { loadSources } from "./lib/loadSources.ts";
 import { syncMax } from "./sources/max/index.ts";
 
-Deno.serve(withSupabase({ auth: ["user", "secret:secret"] }, async (request: Request): Promise<Response> => {
+Deno.serve(withSupabase({ auth: ["user", "secret"] }, async (request: Request): Promise<Response> => {
   try {
-
 		if (request.method !== "POST") {
 			return Response.json(
 				{ error: "Method not allowed" },
