@@ -18,6 +18,7 @@ import { ImportRowTag } from "#/routes/importBatch/ImportRowTag";
 import { DataTable, DateField } from "@/components/admin";
 
 export const ImportRowDataTable = () => {
+	// TODO: we might not need this
 	const { isSuccess, data: userProfile } = useProfile();
 
 	const navigate = useNavigate();
