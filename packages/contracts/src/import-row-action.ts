@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { serializedImportRowSchema } from "./import-records.ts";
 
+export const IMPORT_ROW_VISIBILITY_WINDOW_MS = 24 * 60 * 60 * 1000;
+
 // TODO i need to rethink this tpye api share with supabse funcs
 export const importRowActionSchema = z.object({
 	import_row_ids: z.array(z.number().int().positive()),
@@ -15,6 +17,7 @@ export const importRowActionSchema = z.object({
 		"set_project",
 		"set_tag",
 		"set_status",
+		"hide_rows",
 	]),
 
 	value: z.union([z.number().int(), z.string(), z.null()]).optional(),
@@ -38,6 +41,7 @@ export const importRowActionResultSchema = z.discriminatedUnion("action", [
 			"set_project",
 			"set_tag",
 			"set_status",
+			"hide_rows",
 		]),
 		rows: z.array(serializedImportRowSchema),
 	}),
