@@ -53,29 +53,12 @@ CREATE TABLE "max_sync_table" (
 	CONSTRAINT "max_sync_table_ref_nbr_unique" UNIQUE("ref_nbr")
 );
 --> statement-breakpoint
---
+
 -- custom logic to change the description_column_list type
-CREATE OR REPLACE FUNCTION trim_description_array(arr text[])
-RETURNS varchar(200)[]
-LANGUAGE sql
-IMMUTABLE
-AS $$
-  SELECT CASE
-    WHEN arr IS NULL THEN NULL
-    ELSE ARRAY(
-      SELECT LEFT(value, 200)::varchar(200)
-      FROM unnest(arr) WITH ORDINALITY AS t(value, ord)
-      ORDER BY ord
-    )
-  END;
-$$;
-
-ALTER TABLE "import_profile"
-ALTER COLUMN "description_column_list"
-SET DATA TYPE varchar(200)[]
-USING trim_description_array("description_column_list"::text[]);
-
-DROP FUNCTION trim_description_array(text[]);
+ALTER TABLE "import_profile" DROP COLUMN "description_column_list";
+--> statement-breakpoint
+ALTER TABLE "import_profile" ADD COLUMN "description_column_list" varchar(200)[];
+--> statement-breakpoint
 -- custom logic to change the description_column_list type END
 
 ALTER TABLE "import_row" ALTER COLUMN "import_batch_id" DROP NOT NULL;--> statement-breakpoint
