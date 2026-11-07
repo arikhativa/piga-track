@@ -3,10 +3,12 @@ import { eq } from "drizzle-orm";
 import { pgSchema, text, uuid } from "drizzle-orm/pg-core";
 import type { createDb } from "../../_shared/db.ts";
 
-const decryptedSecrets = pgSchema("vault").view("decrypted_secrets", {
-	id: uuid("id"),
-	decryptedSecret: text("decrypted_secret"),
-}).existing();
+const decryptedSecrets = pgSchema("vault")
+	.view("decrypted_secrets", {
+		id: uuid("id"),
+		decryptedSecret: text("decrypted_secret"),
+	})
+	.existing();
 
 export async function loadCredential(
 	db: ReturnType<typeof createDb>,

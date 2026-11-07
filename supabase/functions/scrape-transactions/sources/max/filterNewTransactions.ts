@@ -1,7 +1,7 @@
 import {
-	maxSyncTable,
 	type AutoSyncConf,
 	type MaxSyncTableInsert,
+	maxSyncTable,
 } from "@piga/db/schema";
 import { gte, inArray, or } from "drizzle-orm";
 import type { createDb } from "../../../_shared/db.ts";
@@ -35,12 +35,19 @@ export async function filterNewTransactions(
 	const existing = await db
 		.select()
 		.from(maxSyncTable)
-		.where(or(
-			gte(maxSyncTable.purchase_date, start),
-			inArray(maxSyncTable.ref_nbr, transactions.map((row) => row.ref_nbr)),
-    ));
+		.where(
+			or(
+				gte(maxSyncTable.purchase_date, start),
+				inArray(
+					maxSyncTable.ref_nbr,
+					transactions.map((row) => row.ref_nbr),
+				),
+			),
+		);
 
-	const existingByReference = new Map(existing.map((row) => [row.ref_nbr, row]));
+	const existingByReference = new Map(
+		existing.map((row) => [row.ref_nbr, row]),
+	);
 	const newTransactions: MaxSyncTableInsert[] = [];
 
 	for (const transaction of transactions) {
@@ -50,13 +57,15 @@ export async function filterNewTransactions(
 			continue;
 		}
 
-    const keys = Object.keys(transaction) as (keyof MaxSyncTableInsert)[];
+		const keys = Object.keys(transaction) as (keyof MaxSyncTableInsert)[];
 
-		const changedKeys = keys.filter((key) =>
-			key !== "id" && key !== "created_at" &&
-			transaction[key] !== undefined &&
-			comparable(key, stored[key]) !== comparable(key, transaction[key])
-    );
+		const changedKeys = keys.filter(
+			(key) =>
+				key !== "id" &&
+				key !== "created_at" &&
+				transaction[key] !== undefined &&
+				comparable(key, stored[key]) !== comparable(key, transaction[key]),
+		);
 
 		if (changedKeys.length > 0) {
 			console.log("MAX transaction changed", {

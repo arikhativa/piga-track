@@ -23,20 +23,25 @@ export async function scrape({
 		throw new Error("An authenticated MAX session cookie is required");
 	}
 	if (!startDate || !endDate) {
-		throw new Error("startDate and endDate are required for a date-range query");
+		throw new Error(
+			"startDate and endDate are required for a date-range query",
+		);
 	}
 
 	const url = new URL(
 		"https://www.max.co.il/api/registered/transactionDetails/getTransactionsAndGraphs",
 	);
-	url.searchParams.set("filterData", JSON.stringify({
-		userIndex: -1,
-		cardIndex: -1,
-		monthView: false,
-		date,
-		dates: { startDate, endDate },
-		bankAccount: { bankAccountIndex: -1, cards: null },
-	}));
+	url.searchParams.set(
+		"filterData",
+		JSON.stringify({
+			userIndex: -1,
+			cardIndex: -1,
+			monthView: false,
+			date,
+			dates: { startDate, endDate },
+			bankAccount: { bankAccountIndex: -1, cards: null },
+		}),
+	);
 	url.searchParams.set("firstCallCardIndex", "-1null");
 	url.searchParams.set("v", version);
 
@@ -64,14 +69,18 @@ export async function scrape({
 	}
 
 	if (!isRecord(data) || data.returnCode !== 0) {
-		throw new Error("MAX transactions request failed: invalid or unsuccessful response");
+		throw new Error(
+			"MAX transactions request failed: invalid or unsuccessful response",
+		);
 	}
 	if (
 		!isRecord(data.result) ||
 		!Array.isArray(data.result.transactions) ||
 		!data.result.transactions.every(isRecord)
 	) {
-		throw new Error("MAX transactions response has an invalid transactions list");
+		throw new Error(
+			"MAX transactions response has an invalid transactions list",
+		);
 	}
 
 	return data.result.transactions;

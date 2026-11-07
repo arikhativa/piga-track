@@ -1,8 +1,8 @@
 import {
-	importRow,
-	maxSyncTable,
 	type ImportRowInsert,
+	importRow,
 	type MaxSyncTableInsert,
+	maxSyncTable,
 } from "@piga/db/schema";
 import type { createDb } from "../../../_shared/db.ts";
 
@@ -25,14 +25,17 @@ export async function sync(
 
 		const maxIdsByReference = new Map(
 			insertedMax.map((row) => [row.refNbr, row.id]),
-    );
+		);
 
 		const insertedImportRows = await tx
 			.insert(importRow)
-			.values(entries.map((entry) => ({
-				...entry.mappedImportRow,
-				max_sync_table_id: maxIdsByReference.get(entry.transaction.ref_nbr)!,
-			})))
+			.values(
+				entries.map((entry) => ({
+					...entry.mappedImportRow,
+					// biome-ignore lint/style/noNonNullAssertion: we added a check beforehand
+					max_sync_table_id: maxIdsByReference.get(entry.transaction.ref_nbr)!,
+				})),
+			)
 			.returning({
 				id: importRow.id,
 				maxSyncTableId: importRow.max_sync_table_id,
@@ -40,12 +43,14 @@ export async function sync(
 
 		const importIdsByMaxId = new Map(
 			insertedImportRows.map((row) => [row.maxSyncTableId, row.id]),
-    );
+		);
 
 		return entries.map((entry) => {
+			// biome-ignore lint/style/noNonNullAssertion: we added a check beforehand
 			const maxSyncTableId = maxIdsByReference.get(entry.transaction.ref_nbr)!;
 			return {
 				maxSyncTableId,
+				// biome-ignore lint/style/noNonNullAssertion: we added a check beforehand
 				importRowId: importIdsByMaxId.get(maxSyncTableId)!,
 			};
 		});

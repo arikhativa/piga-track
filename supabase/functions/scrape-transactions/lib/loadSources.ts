@@ -1,4 +1,4 @@
-import { autoSyncConf, type AutoSyncConf } from "@piga/db/schema";
+import { type AutoSyncConf, autoSyncConf } from "@piga/db/schema";
 import { eq } from "drizzle-orm";
 import type { createDb } from "../../_shared/db.ts";
 
