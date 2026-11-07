@@ -12,9 +12,12 @@ export const serializedImportBatchSchema = z.object({
 
 export const serializedImportRowSchema = z.object({
 	id: z.number().int(),
-	import_batch_id: z.number().int(),
+	import_batch_id: z.number().int().nullable(),
 	profile_id: z.uuid().nullable(),
-	row_number: z.number().int(),
+	max_sync_table_id: z.number().int().nullable(),
+	currency_id: z.number().int().nullable(),
+	amount_nis: z.string().nullable(),
+	touched_by_user: z.iso.datetime().nullable(),
 	date: z.iso.date().nullable(),
 	amount: z.string(),
 	description: z.string().nullable(),

@@ -5,6 +5,7 @@ import {
 	maxSyncTable,
 } from "@piga/db/schema";
 import type { createDb } from "../../../_shared/db.ts";
+import { loadTransactionClassifier } from "../../../_shared/transactionClassification.ts";
 
 export interface SyncEntry {
 	transaction: MaxSyncTableInsert;
@@ -18,6 +19,7 @@ export async function sync(
 	if (entries.length === 0) return [];
 
 	return await db.transaction(async (tx) => {
+		const classify = await loadTransactionClassifier(tx);
 		const insertedMax = await tx
 			.insert(maxSyncTable)
 			.values(entries.map((entry) => entry.transaction))
@@ -31,7 +33,7 @@ export async function sync(
 			.insert(importRow)
 			.values(
 				entries.map((entry) => ({
-					...entry.mappedImportRow,
+					...classify(entry.mappedImportRow),
 					// biome-ignore lint/style/noNonNullAssertion: we added a check beforehand
 					max_sync_table_id: maxIdsByReference.get(entry.transaction.ref_nbr)!,
 				})),

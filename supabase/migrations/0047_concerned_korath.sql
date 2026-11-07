@@ -1,0 +1,1 @@
+ALTER TABLE "import_row" ADD COLUMN "touched_by_user" timestamp with time zone;

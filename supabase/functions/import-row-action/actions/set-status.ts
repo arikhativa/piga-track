@@ -7,10 +7,10 @@ export const setStatus: ImportRowAction = async ({ db, rows, value }) => {
 		throw new Error("Invalid status");
 	}
 
-	await bulkUpdateImportRows(
+	const updatedRows = await bulkUpdateImportRows(
 		db,
 		rows.map((row) => row.id),
-		{ status: value },
+		{ status: value, touched_by_user: new Date() },
 	);
 
 	if (value === "dropped") {
@@ -19,6 +19,6 @@ export const setStatus: ImportRowAction = async ({ db, rows, value }) => {
 
 	return {
 		action: "set_status",
-		rows,
+		rows: updatedRows,
 	};
 };

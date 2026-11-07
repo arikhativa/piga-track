@@ -1,14 +1,8 @@
-import {
-	importBatch,
-	importRow,
-	transaction,
-	transactionClassificationRule,
-} from "@piga/db/schema";
+import { importBatch, importRow, transaction } from "@piga/db/schema";
 import { and, eq, sql } from "drizzle-orm";
+import { loadTransactionClassifier } from "../_shared/transactionClassification.ts";
 import type { DB } from "../_shared/types.ts";
 import type { CreateImportBatchRequest } from "./schema.ts";
-
-const normalize = (value: string) => value.trim().toLowerCase();
 
 export function createImportBatch(db: DB, body: CreateImportBatchRequest) {
 	return db.transaction(async (tx) => {
@@ -20,29 +14,12 @@ export function createImportBatch(db: DB, body: CreateImportBatchRequest) {
 			})
 			.returning();
 
-		const rules = await tx
-			.select({
-				textToFind: transactionClassificationRule.text_to_find,
-				categoryId: transactionClassificationRule.category_id,
-				tagId: transactionClassificationRule.tag_id,
-				action: transactionClassificationRule.action,
-			})
-			.from(transactionClassificationRule);
-
-		const normalizedRules = rules.map((rule) => ({
-			...rule,
-			normalizedText: normalize(rule.textToFind),
-		}));
+		const classify = await loadTransactionClassifier(tx);
 
 		const rows = [];
 
 		for (const row of body.rows) {
-			const description = normalize(row.description ?? "");
-
-			// Case-insensitive, full-string match only.
-			const matchedRule = description
-				? normalizedRules.find((rule) => rule.normalizedText === description)
-				: undefined;
+			const classifiedRow = classify(row);
 
 			const [duplicate] = await tx
 				.select({ id: transaction.id })
@@ -59,23 +36,9 @@ export function createImportBatch(db: DB, body: CreateImportBatchRequest) {
 			const [insertedRow] = await tx
 				.insert(importRow)
 				.values({
-					...row,
+					...classifiedRow,
 					profile_id: row.profile_id ?? null,
-					category_id:
-						row.category_id ??
-						(matchedRule?.action === "addData"
-							? matchedRule.categoryId
-							: null) ??
-						null,
-					tag_id:
-						row.tag_id ??
-						(matchedRule?.action === "addData" ? matchedRule.tagId : null) ??
-						null,
-					status: duplicate
-						? "duplicates"
-						: matchedRule?.action === "dropRow"
-							? "dropped"
-							: "pending",
+					status: duplicate ? "duplicates" : classifiedRow.status,
 					import_batch_id: batch.id,
 					duplicate_transaction_id: duplicate?.id ?? null,
 				})

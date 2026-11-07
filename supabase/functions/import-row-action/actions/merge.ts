@@ -127,6 +127,7 @@ export const merge: ImportRowAction = async ({ db, rows }) => {
 		.set({
 			transaction_id: drizzleOrm.sql`CASE ${transactionCase} ELSE NULL END::integer`,
 			status: "merged",
+			touched_by_user: new Date(),
 			updated_at: new Date(),
 		})
 		.where(

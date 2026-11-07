@@ -348,6 +348,8 @@ export const importRow = pgTable(
 			.defaultNow()
 			.notNull(),
 
+		touched_by_user: timestamp("touched_by_user", { withTimezone: true }),
+
 		max_sync_table_id: integer("max_sync_table_id")
 			.unique()
 			.references(() => maxSyncTable.id),
