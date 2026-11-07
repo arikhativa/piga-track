@@ -1,4 +1,5 @@
 import { IMPORT_ROW_VISIBILITY_WINDOW_MS } from "@piga/contracts/import-row-action";
+import { DEFAULT_PER_PAGE } from "#/lib/constant";
 import { ExportButton, List } from "@/components/admin";
 import { ImportRowDataTable } from "../importBatch/ImportRowDataTable";
 import { RunAutoSyncButton } from "./RunAutoSyncButton";
@@ -11,7 +12,7 @@ export const ImportRowSyncList = () => (
 				<ExportButton />
 			</div>
 		}
-		perPage={1000}
+		perPage={DEFAULT_PER_PAGE}
 		sort={{ field: "date.desc,id", order: "DESC" }}
 		filter={{
 			"max_sync_table_id@not.is": null,
