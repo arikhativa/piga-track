@@ -302,6 +302,41 @@
       "when": 1793522651932,
       "tag": "0042_medical_imperial_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793978440232,
+      "tag": "0043_unique_ricochet",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1793978457357,
+      "tag": "0044_rls-v10",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1793978477905,
+      "tag": "0045_update_auto_sync_credentials",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1793978550206,
+      "tag": "0046_scrape-cron",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1794052752322,
+      "tag": "0047_concerned_korath",
+      "breakpoints": true
     }
   ]
 }

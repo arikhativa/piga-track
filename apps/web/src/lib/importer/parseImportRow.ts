@@ -226,7 +226,6 @@ export function parseImportRow(
 			profile_id: creditCard
 				? (profileIdsByCreditCard.get(creditCard) ?? null)
 				: null,
-			row_number: index + 1,
 			date,
 			amount,
 			description: getDescription(

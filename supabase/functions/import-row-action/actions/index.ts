@@ -1,5 +1,6 @@
 import type { ImportRowAction } from "../types.ts";
 
+import { hideRows } from "./hide-rows.ts";
 import { merge } from "./merge.ts";
 import { mergeAllPending } from "./mergeAllPending.ts";
 import { setCategory } from "./set-category.ts";
@@ -16,4 +17,5 @@ export const actions: Record<string, ImportRowAction> = {
 	set_project: setProject,
 	set_tag: setTag,
 	set_status: setStatus,
+	hide_rows: hideRows,
 };

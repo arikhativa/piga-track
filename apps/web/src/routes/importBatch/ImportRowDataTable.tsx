@@ -1,8 +1,8 @@
 import type { ImportRow } from "@piga/db/types";
 import { capitalize } from "lodash";
-import { Eye, Minus, Plus, RotateCcw } from "lucide-react";
+import { Eye, EyeOff, Minus, Plus, RotateCcw } from "lucide-react";
 import { useNavigate, useRefresh } from "ra-core";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
 import { Badge } from "#/components/ui/badge";
@@ -17,11 +17,17 @@ import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { ImportRowTag } from "#/routes/importBatch/ImportRowTag";
 import { DataTable, DateField } from "@/components/admin";
 
-export const ImportRowDataTable = () => {
+export const ImportRowDataTable = ({
+	allowHideRows = false,
+}: {
+	allowHideRows?: boolean;
+}) => {
+	// TODO: we might not need this
 	const { isSuccess, data: userProfile } = useProfile();
 
 	const navigate = useNavigate();
 	const refresh = useRefresh();
+	const [hidingRowId, setHidingRowId] = useState<number | null>(null);
 
 	const navToRealTrans = useCallback(
 		(record: ImportRow) => {
@@ -40,7 +46,12 @@ export const ImportRowDataTable = () => {
 
 	return (
 		<DataTable<ImportRow>
-			bulkActionButtons={<BulkActionButtons profileId={userProfile.id} />}
+			bulkActionButtons={
+				<BulkActionButtons
+					profileId={userProfile.id}
+					allowHideRows={allowHideRows}
+				/>
+			}
 			rowClassName={(row) => {
 				let ret = "cursor-default";
 
@@ -113,6 +124,32 @@ export const ImportRowDataTable = () => {
 				headerClassName="flex items-center justify-center"
 				cellClassName={"flex items-center justify-center py-2 gap-4"}
 				render={(record: ImportRow) => {
+					const hideButton =
+						allowHideRows && record.status !== "pending" ? (
+							<Button
+								type="button"
+								size="icon"
+								variant="outline"
+								title="Hide row"
+								aria-label="Hide row"
+								disabled={hidingRowId !== null}
+								onClick={async () => {
+									try {
+										setHidingRowId(record.id);
+										await importRowAction({
+											action: "hide_rows",
+											import_row_ids: [record.id],
+										});
+										refresh();
+									} finally {
+										setHidingRowId(null);
+									}
+								}}
+							>
+								<EyeOff />
+							</Button>
+						) : null;
+
 					if (
 						record.status === "duplicates" &&
 						record.duplicate_transaction_id
@@ -164,6 +201,7 @@ export const ImportRowDataTable = () => {
 								>
 									<Eye />
 								</Button>
+								{hideButton}
 							</>
 						);
 					}
@@ -210,25 +248,28 @@ export const ImportRowDataTable = () => {
 
 					if (record.status === "merged" || record.status === "dropped") {
 						return (
-							<Button
-								size="icon"
-								className={"text-foreground"}
-								variant="outline"
-								onClick={async () => {
-									await importRowAction({
-										profileId: userProfile.id,
-										import_row_ids: [Number(record.id)],
-										action: "undo",
-									});
-									refresh();
-								}}
-							>
-								<RotateCcw />
-							</Button>
+							<>
+								<Button
+									size="icon"
+									className={"text-foreground"}
+									variant="outline"
+									onClick={async () => {
+										await importRowAction({
+											profileId: userProfile.id,
+											import_row_ids: [Number(record.id)],
+											action: "undo",
+										});
+										refresh();
+									}}
+								>
+									<RotateCcw />
+								</Button>
+								{hideButton}
+							</>
 						);
 					}
 
-					return null;
+					return hideButton;
 				}}
 			/>
 		</DataTable>
