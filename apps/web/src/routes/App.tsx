@@ -122,7 +122,7 @@ export function App() {
 
 					<Resource
 						name="import_row"
-						options={{ importCSV: true, label: "Sync" }}
+						options={{ importCSV: true, label: "Auto Sync" }}
 						list={ImportRowSyncList}
 						icon={BookOpenCheck}
 					/>

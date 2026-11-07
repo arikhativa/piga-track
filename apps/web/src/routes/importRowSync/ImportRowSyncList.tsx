@@ -1,5 +1,4 @@
-import { IMPORT_ROW_VISIBILITY_WINDOW_MS } from "@piga/contracts/import-row-action";
-import { DEFAULT_PER_PAGE } from "#/lib/constant";
+import { importRowSyncListParams } from "#/hooks/use-import-row-sync";
 import { ExportButton, List } from "@/components/admin";
 import { ImportRowDataTable } from "../importBatch/ImportRowDataTable";
 import { RunAutoSyncButton } from "./RunAutoSyncButton";
@@ -12,12 +11,9 @@ export const ImportRowSyncList = () => (
 				<ExportButton />
 			</div>
 		}
-		perPage={DEFAULT_PER_PAGE}
-		sort={{ field: "date.desc,id", order: "DESC" }}
-		filter={{
-			"max_sync_table_id@not.is": null,
-			"or@": `(status.eq.pending,touched_by_user.is.null,touched_by_user.gte.${new Date(Date.now() - IMPORT_ROW_VISIBILITY_WINDOW_MS).toISOString()})`,
-		}}
+		perPage={importRowSyncListParams.pagination.perPage}
+		sort={importRowSyncListParams.sort}
+		filter={importRowSyncListParams.filter}
 	>
 		<ImportRowDataTable allowHideRows />
 	</List>
