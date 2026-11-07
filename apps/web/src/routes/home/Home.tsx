@@ -39,7 +39,6 @@ function formatScrapeCounts(counts: unknown): string {
 }
 
 export function Home() {
-
 	const [isScraping, setIsScraping] = useState(false);
 	const [scrapeStatus, setScrapeStatus] = useState<string | null>(null);
 
