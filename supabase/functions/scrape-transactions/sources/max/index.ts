@@ -32,6 +32,7 @@ export async function syncMax(
 	if (!Number.isFinite(start.getTime())) {
 		throw new Error("MAX lookback days exceed the supported date range");
 	}
+
 	const startDate = start.toISOString().slice(0, 10);
 	const endDate = end.toISOString().slice(0, 10);
 

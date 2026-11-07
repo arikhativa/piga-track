@@ -1,6 +1,7 @@
 import "../styles.css";
 import {
 	Bookmark,
+	BookOpenCheck,
 	ChartGantt,
 	CloudSync,
 	Coins,
@@ -56,6 +57,7 @@ import { TransactionList } from "#/routes/transaction/TransactionList";
 import { TransactionTagCreate } from "#/routes/transactionTag/TransactionTagCreate";
 import { TransactionTagEdit } from "#/routes/transactionTag/TransactionTagEdit";
 import { TransactionTagList } from "#/routes/transactionTag/TransactionTagList";
+import { ImportRowSyncList } from "./importRowSync/ImportRowSyncList";
 
 const instanceUrl = import.meta.env.VITE_SUPABASE_URL;
 const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -116,6 +118,13 @@ export function App() {
 						edit={ImportBatchEdit}
 						show={ImportBatchShow}
 						icon={Import}
+					/>
+
+					<Resource
+						name="import_row"
+						options={{ importCSV: true, label: "Sync" }}
+						list={ImportRowSyncList}
+						icon={BookOpenCheck}
 					/>
 
 					{/* Utils */}
