@@ -29,7 +29,18 @@ import {
 	useTranslateLabel,
 } from "ra-core";
 import type { ReactNode } from "react";
-import { Children, createElement, isValidElement, useCallback } from "react";
+import {
+	Children,
+	createElement,
+	isValidElement,
+	useCallback,
+	useContext,
+} from "react";
+import {
+	DataTableMobileContext,
+	ListCardOnMobileContext,
+} from "@/components/admin/list-layout-context";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
 	BulkActionsToolbar,
 	BulkActionsToolbarChildren,
@@ -41,6 +52,7 @@ import {
 import { NumberField } from "@/components/admin/number-field";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Table,
@@ -97,7 +109,11 @@ export function DataTable<RecordType extends RaRecord = RaRecord>(
 		bulkActionsToolbar,
 		...rest
 	} = props;
-	const hasBulkActions = !!bulkActionsToolbar || bulkActionButtons !== false;
+	const cardOnMobile = useContext(ListCardOnMobileContext);
+	const isMobile = useIsMobile();
+	const mobileCards = cardOnMobile && isMobile;
+	const Container = mobileCards ? "div" : Table;
+	const hasBulkActions = !mobileCards && (!!bulkActionsToolbar || bulkActionButtons !== false);
 	const resourceFromContext = useResourceContext(props);
 	const storeKey = props.storeKey || `${resourceFromContext}.datatable`;
 	const [columnRanks] = useStore<number[]>(`${storeKey}_columnRanks`);
@@ -112,24 +128,28 @@ export function DataTable<RecordType extends RaRecord = RaRecord>(
 			empty={<DataTableEmpty />}
 			{...rest}
 		>
-			<div className={cn("rounded-md border", className)}>
-				<Table>
-					<DataTableRenderContext.Provider value="header">
-						<DataTableHead>{columns}</DataTableHead>
-					</DataTableRenderContext.Provider>
-					<DataTableBody<RecordType> rowClassName={rowClassName}>
-						{columns}
-					</DataTableBody>
-				</Table>
-			</div>
-			{bulkActionsToolbar ??
+			<DataTableMobileContext.Provider value={mobileCards}>
+				<div className={cn(mobileCards ? "min-w-0" : "rounded-md border", className)}>
+					<Container>
+						{!mobileCards && (
+							<DataTableRenderContext.Provider value="header">
+								<DataTableHead>{columns}</DataTableHead>
+							</DataTableRenderContext.Provider>
+						)}
+						<DataTableBody<RecordType> rowClassName={rowClassName}>
+							{columns}
+						</DataTableBody>
+					</Container>
+				</div>
+			</DataTableMobileContext.Provider>
+			{!mobileCards && (bulkActionsToolbar ??
 				(bulkActionButtons !== false && (
 					<BulkActionsToolbar>
 						{isValidElement(bulkActionButtons)
 							? bulkActionButtons
 							: defaultBulkActionButtons}
 					</BulkActionsToolbar>
-				))}
+				)))}
 			<DataTableRenderContext.Provider value="columnsSelector">
 				<ColumnsSelector>{children}</ColumnsSelector>
 			</DataTableRenderContext.Provider>
@@ -191,9 +211,11 @@ const DataTableBody = <RecordType extends RaRecord = RaRecord>({
 	children: ReactNode;
 	rowClassName?: (record: RecordType) => string | undefined;
 }) => {
+	const mobileCards = useContext(DataTableMobileContext);
+	const Body = mobileCards ? "div" : TableBody;
 	const data = useDataTableDataContext();
 	return (
-		<TableBody>
+		<Body className={mobileCards ? "flex min-w-0 flex-col gap-6 pb-3" : undefined}>
 			{data?.map((record, rowIndex) => (
 				<RecordContextProvider
 					value={record}
@@ -204,7 +226,7 @@ const DataTableBody = <RecordType extends RaRecord = RaRecord>({
 					</DataTableRow>
 				</RecordContextProvider>
 			))}
-		</TableBody>
+		</Body>
 	);
 };
 
@@ -215,6 +237,9 @@ const DataTableRow = ({
 	children: ReactNode;
 	className?: string;
 }) => {
+	const mobileCards = useContext(DataTableMobileContext);
+	const Row = mobileCards ? Card : TableRow;
+
 	const { rowClick, handleToggleItem } = useDataTableCallbacksContext();
 	const selectedIds = useDataTableSelectedIdsContext();
 	const { hasBulkActions = false } = useDataTableConfigContext();
@@ -263,10 +288,15 @@ const DataTableRow = ({
 	}, [record, resource, rowClick, navigate, getPathForRecord]);
 
 	return (
-		<TableRow
+		<Row
 			key={record.id}
 			onClick={handleClick}
-			className={cn(rowClick !== false && "cursor-pointer", className)}
+			className={cn(
+				mobileCards && "w-full min-w-0 gap-2",
+				rowClick !== false && "cursor-pointer",
+				className,
+			)}
+
 		>
 			{hasBulkActions ? (
 				<TableCell className="flex w-8" onClick={handleToggle}>
@@ -277,7 +307,7 @@ const DataTableRow = ({
 				</TableCell>
 			) : null}
 			{children}
-		</TableRow>
+		</Row>
 	);
 };
 
@@ -439,6 +469,9 @@ function DataTableCell<
 		conditionalClassName,
 	} = props;
 
+	const mobileCards = useContext(DataTableMobileContext);
+	const Cell = mobileCards ? CardContent : TableCell;
+	const resource = useResourceContext();
 	const { storeKey, defaultHiddenColumns } = useDataTableStoreContext();
 	const [hiddenColumns] = useStore<string[]>(storeKey, defaultHiddenColumns);
 	const record = useRecordContext<RecordType>();
@@ -457,12 +490,21 @@ function DataTableCell<
 				: undefined
 			: cellClassName;
 
+	const content =
+		children ??
+		(render
+			? record && render(record)
+			: field
+				? createElement(field, { source })
+				: get(record, source!));
+
 	return (
-		<TableCell
+		<Cell
 			className={cn(
 				"py-1",
+				mobileCards && "flex items-center flex-row justify-between gap-4",
 				className,
-				resolvedCellClassName,
+				!mobileCards && resolvedCellClassName,
 				record && conditionalClassName?.(record),
 			)}
 			onClick={() => {
@@ -471,13 +513,17 @@ function DataTableCell<
 				}
 			}}
 		>
-			{children ??
-				(render
-					? record && render(record)
-					: field
-						? createElement(field, { source })
-						: get(record, source!))}
-		</TableCell>
+			{mobileCards && (
+				<div className="text-muted-foreground text-sm font-medium">
+					<FieldTitle label={props.label} source={source} resource={resource} />
+				</div>
+			)}
+			{mobileCards ? (
+							<div className={cn("min-w-0 break-words", resolvedCellClassName)}>
+								{content}
+							</div>
+						) : content}
+		</Cell>
 	);
 }
 

@@ -106,7 +106,7 @@ export const ListPagination = ({
 
   return (
     <div
-      className={`flex items-center justify-end space-x-2 gap-4 ${className}`}
+      className={cn("hidden items-center justify-end space-x-2 gap-4 md:flex", className)}
     >
       <div className="hidden md:flex items-center space-x-2 rtl:space-x-reverse">
         <p className="text-sm font-medium">

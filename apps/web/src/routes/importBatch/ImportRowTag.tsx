@@ -54,6 +54,7 @@ export function ImportRowTag({ record }: { record: ImportRow }) {
 			value={record.tag_id}
 			onCreate={handleCreate}
 			optionText="value"
+			emptyText="Content"
 			isPending={isPending}
 			onChange={handleChange}
 		/>

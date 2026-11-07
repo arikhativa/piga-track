@@ -1,4 +1,5 @@
 import type { ImportRow } from "@piga/db/types";
+import { cn } from "cn";
 import { capitalize } from "lodash";
 import { Eye, EyeOff, Minus, Plus, RotateCcw } from "lucide-react";
 import { useNavigate, useRefresh } from "ra-core";
@@ -84,7 +85,8 @@ export const ImportRowDataTable = ({
 			</DataTable.Col>
 
 			<DataTable.Col
-				cellClassName={navCellClass}
+				// TODO this should only be in rtl
+				cellClassName={cn("text-right", navCellClass)}
 				onCellClick={navToRealTrans}
 				source="description"
 			/>
@@ -121,8 +123,8 @@ export const ImportRowDataTable = ({
 
 			<DataTable.Col
 				label="Action"
-				headerClassName="flex items-center justify-center"
-				cellClassName={"flex items-center justify-center py-2 gap-4"}
+				headerClassName="md:flex md:items-center md:justify-center"
+				cellClassName="flex items-center justify-center py-2 gap-4"
 				render={(record: ImportRow) => {
 					const hideButton =
 						allowHideRows && record.status !== "pending" ? (

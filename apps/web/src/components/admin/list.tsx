@@ -21,6 +21,7 @@ import { CreateButton } from "@/components/admin/create-button";
 import { ExportButton } from "@/components/admin/export-button";
 import { ListPagination } from "@/components/admin/list-pagination";
 import { FilterButton, FilterForm } from "@/components/admin/filter-form";
+import { ListCardOnMobileContext } from "@/components/admin/list-layout-context";
 
 /**
  * A complete list page with breadcrumb, title, filters, and pagination.
@@ -102,6 +103,7 @@ export const ListView = <RecordType extends RaRecord = RaRecord>(
 ) => {
   const {
     disableBreadcrumb,
+    cardOnMobile = false,
     filters,
     pagination = defaultPagination,
     title,
@@ -156,7 +158,9 @@ export const ListView = <RecordType extends RaRecord = RaRecord>(
         </div>
         <FilterForm />
 
-        <div className={cn("my-2", props.className)}>{children}</div>
+        <ListCardOnMobileContext.Provider value={cardOnMobile}>
+          <div className={cn("my-2", cardOnMobile && "min-w-0", props.className)}>{children}</div>
+        </ListCardOnMobileContext.Provider>
         {pagination}
       </FilterContext.Provider>
     </>
@@ -204,6 +208,8 @@ export const Empty = () => {
 export interface ListViewProps<RecordType extends RaRecord = RaRecord> {
   children?: ReactNode;
   disableBreadcrumb?: boolean;
+  /** Display DataTable records as horizontally scrolling cards on mobile. */
+  cardOnMobile?: boolean;
   render?: (props: ListControllerResult<RecordType, Error>) => ReactNode;
   actions?: ReactElement | false;
   filters?: ReactNode[];

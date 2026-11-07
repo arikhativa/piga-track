@@ -5,6 +5,7 @@ import { RunAutoSyncButton } from "./RunAutoSyncButton";
 
 export const ImportRowSyncList = () => (
 	<List
+		cardOnMobile
 		actions={
 			<div className="flex items-center gap-2">
 				<RunAutoSyncButton />
