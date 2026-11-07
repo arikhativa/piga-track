@@ -17,6 +17,7 @@ import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { ImportRowTag } from "#/routes/importBatch/ImportRowTag";
 import { DataTable, DateField } from "@/components/admin";
+import { ImportRowSyncEmpty } from "../importRowSync/ImportRowSyncEmpty";
 
 export const ImportRowDataTable = ({
 	allowHideRows = false,
@@ -47,6 +48,7 @@ export const ImportRowDataTable = ({
 
 	return (
 		<DataTable<ImportRow>
+			empty={<ImportRowSyncEmpty />}
 			bulkActionButtons={
 				<BulkActionButtons
 					profileId={userProfile.id}

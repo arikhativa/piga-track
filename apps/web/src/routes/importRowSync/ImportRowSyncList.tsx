@@ -1,15 +1,15 @@
 import { importRowSyncListParams } from "#/hooks/use-import-row-sync";
-import { ExportButton, List } from "@/components/admin";
+import { List } from "@/components/admin";
 import { ImportRowDataTable } from "../importBatch/ImportRowDataTable";
 import { RunAutoSyncButton } from "./RunAutoSyncButton";
 
 export const ImportRowSyncList = () => (
 	<List
 		cardOnMobile
+		title={""}
 		actions={
-			<div className="flex items-center gap-2">
+			<div className="flex items-center justify-center md:justify-end w-full gap-2">
 				<RunAutoSyncButton />
-				<ExportButton />
 			</div>
 		}
 		perPage={importRowSyncListParams.pagination.perPage}
