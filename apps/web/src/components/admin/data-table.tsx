@@ -31,6 +31,7 @@ import {
 import type { ReactNode } from "react";
 import {
 	Children,
+	createContext,
 	createElement,
 	isValidElement,
 	useCallback,
@@ -52,7 +53,7 @@ import {
 import { NumberField } from "@/components/admin/number-field";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Table,
@@ -71,6 +72,8 @@ import {
 import { cn } from "@/lib/utils";
 
 const defaultBulkActionButtons = <BulkActionsToolbarChildren />;
+
+const MobileCardSectionContext = createContext<"header" | "content" | "footer">("content");
 
 /**
  * A powerful data table with sorting, selection, and column customization.
@@ -105,6 +108,10 @@ export function DataTable<RecordType extends RaRecord = RaRecord>(
 		children,
 		className,
 		rowClassName,
+		mobileCardHeaderClassName,
+		mobileCardHeaderDir,
+		mobileCardContentClassName,
+		mobileCardFooterClassName,
 		bulkActionButtons = defaultBulkActionButtons,
 		bulkActionsToolbar,
 		...rest
@@ -136,7 +143,13 @@ export function DataTable<RecordType extends RaRecord = RaRecord>(
 								<DataTableHead>{columns}</DataTableHead>
 							</DataTableRenderContext.Provider>
 						)}
-						<DataTableBody<RecordType> rowClassName={rowClassName}>
+						<DataTableBody<RecordType>
+													rowClassName={rowClassName}
+													mobileCardHeaderClassName={mobileCardHeaderClassName}
+																										mobileCardHeaderDir={mobileCardHeaderDir}
+													mobileCardContentClassName={mobileCardContentClassName}
+													mobileCardFooterClassName={mobileCardFooterClassName}
+												>
 							{columns}
 						</DataTableBody>
 					</Container>
@@ -207,7 +220,8 @@ const DataTableHead = ({ children }: { children: ReactNode }) => {
 const DataTableBody = <RecordType extends RaRecord = RaRecord>({
 	children,
 	rowClassName,
-}: {
+	...sectionClassNames
+}: MobileCardSectionClassNames & {
 	children: ReactNode;
 	rowClassName?: (record: RecordType) => string | undefined;
 }) => {
@@ -221,7 +235,7 @@ const DataTableBody = <RecordType extends RaRecord = RaRecord>({
 					value={record}
 					key={record.id ?? `row${rowIndex}`}
 				>
-					<DataTableRow className={rowClassName?.(record)}>
+					<DataTableRow className={rowClassName?.(record)} {...sectionClassNames}>
 						{children}
 					</DataTableRow>
 				</RecordContextProvider>
@@ -233,7 +247,11 @@ const DataTableBody = <RecordType extends RaRecord = RaRecord>({
 const DataTableRow = ({
 	children,
 	className,
-}: {
+	mobileCardHeaderClassName,
+	mobileCardHeaderDir,
+	mobileCardContentClassName,
+	mobileCardFooterClassName,
+}: MobileCardSectionClassNames & {
 	children: ReactNode;
 	className?: string;
 }) => {
@@ -306,7 +324,25 @@ const DataTableRow = ({
 					/>
 				</TableCell>
 			) : null}
-			{children}
+			{mobileCards ? (
+				<>
+					<CardHeader dir={mobileCardHeaderDir} className={cn("min-w-0 gap-2 empty:hidden", mobileCardHeaderClassName)}>
+						<MobileCardSectionContext.Provider value="header">
+							{children}
+						</MobileCardSectionContext.Provider>
+					</CardHeader>
+					<CardContent className={cn("min-w-0 gap-2 empty:hidden", mobileCardContentClassName)}>
+						<MobileCardSectionContext.Provider value="content">
+							{children}
+						</MobileCardSectionContext.Provider>
+					</CardContent>
+					<CardFooter className={cn("min-w-0 flex-col items-stretch gap-2 empty:hidden", mobileCardFooterClassName)}>
+						<MobileCardSectionContext.Provider value="footer">
+							{children}
+						</MobileCardSectionContext.Provider>
+					</CardFooter>
+				</>
+			) : children}
 		</Row>
 	);
 };
@@ -323,8 +359,15 @@ const DataTableEmpty = () => {
 	);
 };
 
+interface MobileCardSectionClassNames {
+	mobileCardHeaderClassName?: string;
+	mobileCardHeaderDir?: "ltr" | "rtl" | "auto";
+	mobileCardContentClassName?: string;
+	mobileCardFooterClassName?: string;
+}
+
 export interface DataTableProps<RecordType extends RaRecord = RaRecord>
-	extends Partial<DataTableBaseProps<RecordType>> {
+	extends Partial<DataTableBaseProps<RecordType>>, MobileCardSectionClassNames {
 	children: ReactNode;
 	className?: string;
 	rowClassName?: (record: RecordType) => string | undefined;
@@ -467,16 +510,21 @@ function DataTableCell<
 		cellClassName,
 		onCellClick,
 		conditionalClassName,
+		mobileCardHeader = false,
+		mobileCardFooter = false,
+		mobileHideLabel = false,
 	} = props;
 
 	const mobileCards = useContext(DataTableMobileContext);
-	const Cell = mobileCards ? CardContent : TableCell;
+	const mobileCardSection = useContext(MobileCardSectionContext);
+	const Cell = mobileCards ? "div" : TableCell;
 	const resource = useResourceContext();
 	const { storeKey, defaultHiddenColumns } = useDataTableStoreContext();
 	const [hiddenColumns] = useStore<string[]>(storeKey, defaultHiddenColumns);
 	const record = useRecordContext<RecordType>();
 	const isColumnHidden = hiddenColumns.includes(source!);
-	if (isColumnHidden) return null;
+	const section = mobileCardHeader ? "header" : mobileCardFooter ? "footer" : "content";
+	if (isColumnHidden || (mobileCards && section !== mobileCardSection)) return null;
 	if (!render && !field && !children && !source) {
 		throw new Error(
 			"DataTableColumn: Missing at least one of the following props: render, field, children, or source",
@@ -513,7 +561,7 @@ function DataTableCell<
 				}
 			}}
 		>
-			{mobileCards && (
+			{mobileCards && !mobileHideLabel && (
 				<div className="text-muted-foreground text-sm font-medium">
 					<FieldTitle label={props.label} source={source} resource={resource} />
 				</div>
@@ -533,6 +581,9 @@ export interface DataTableColumnProps<
 	className?: string;
 	cellClassName?: string | ((record: RecordType) => string);
 	headerClassName?: string;
+	mobileCardHeader?: boolean;
+	mobileCardFooter?: boolean;
+	mobileHideLabel?: boolean;
 	conditionalClassName?: (record: RecordType) => string | false | undefined;
 	children?: ReactNode;
 	render?: (record: RecordType) => React.ReactNode;

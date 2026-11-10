@@ -115,6 +115,13 @@ export function App() {
 
 					{/* Import */}
 					<Resource
+						name="import_row"
+						options={{ importCSV: true, label: "Auto Sync" }}
+						list={ImportRowSyncList}
+						icon={BookOpenCheck}
+					/>
+
+					<Resource
 						name="import_batch"
 						options={{ importCSV: true, label: "Batch" }}
 						create={ImportBatchCreate}
@@ -122,13 +129,6 @@ export function App() {
 						edit={ImportBatchEdit}
 						show={ImportBatchShow}
 						icon={Import}
-					/>
-
-					<Resource
-						name="import_row"
-						options={{ importCSV: true, label: "Auto Sync" }}
-						list={ImportRowSyncList}
-						icon={BookOpenCheck}
 					/>
 
 					{/* Utils */}

@@ -1,13 +1,16 @@
 import type { ImportRow } from "@piga/db/types";
 import { cn } from "cn";
 import { capitalize } from "lodash";
-import { Eye, EyeOff, Minus, Plus, RotateCcw } from "lucide-react";
+import { Check, EyeOff, RotateCcw, SquareArrowUpRight, X } from "lucide-react";
 import { useNavigate, useRefresh } from "ra-core";
 import { useCallback, useState } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
 import { Badge } from "#/components/ui/badge";
 import { Button } from "#/components/ui/button";
+import { Separator } from "#/components/ui/separator";
+import { useCurrencyList } from "#/hooks/use-currency-list";
+import { useIsMobile } from "#/hooks/use-mobile";
 import { useProfile } from "#/hooks/use-profile";
 import { formatCurrency } from "#/lib/format/formatNIS";
 import { importRowAction } from "#/lib/importer/importRowAction";
@@ -17,6 +20,7 @@ import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { ImportRowTag } from "#/routes/importBatch/ImportRowTag";
 import { DataTable, DateField } from "@/components/admin";
+import { ImportRowDescription } from "../importRow/ImportRowDescription";
 import { ImportRowSyncEmpty } from "../importRowSync/ImportRowSyncEmpty";
 
 export const ImportRowDataTable = ({
@@ -26,8 +30,10 @@ export const ImportRowDataTable = ({
 }) => {
 	// TODO: we might not need this
 	const { isSuccess, data: userProfile } = useProfile();
+	const isMobile = useIsMobile();
 
 	const navigate = useNavigate();
+	const { data } = useCurrencyList();
 	const refresh = useRefresh();
 	const [hidingRowId, setHidingRowId] = useState<number | null>(null);
 
@@ -48,6 +54,10 @@ export const ImportRowDataTable = ({
 
 	return (
 		<DataTable<ImportRow>
+			mobileCardHeaderDir="rtl"
+			mobileCardHeaderClassName="grid grid-cols-[auto_auto_1fr] items-center gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
+			mobileCardFooterClassName="border-t !p-0 m-0"
+			mobileCardContentClassName="py-4"
 			empty={<ImportRowSyncEmpty />}
 			bulkActionButtons={
 				<BulkActionButtons
@@ -56,29 +66,47 @@ export const ImportRowDataTable = ({
 				/>
 			}
 			rowClassName={(row) => {
-				let ret = "cursor-default";
+				let className = "cursor-default";
 
 				if (row.status === "dropped") {
-					ret += " text-muted-foreground/30";
+					className += " text-muted-foreground/30";
 				}
-				return ret;
+				if (isMobile) {
+					className += " pb-0";
+				}
+				return className;
 			}}
 		>
 			<DataTableSignCol
+				mobileCardHeader
+				mobileHideLabel
 				cellClassName={navCellClass}
 				onCellClick={navToRealTrans}
 			/>
 
 			<DataTable.Col
+				mobileCardHeader
+				mobileHideLabel
 				cellClassName={navCellClass}
 				onCellClick={navToRealTrans}
 				source="amount"
 				render={(record) => {
-					return <>{formatCurrency(Math.abs(Number(record.amount)))}</>;
+					const currency = data?.find(
+						(currency) => currency.id === record.currency_id,
+					);
+
+					return (
+						<>
+							{formatCurrency(Math.abs(Number(record.amount)))}{" "}
+							{currency?.symbol}
+						</>
+					);
 				}}
 			/>
 
 			<DataTable.Col
+				mobileCardHeader
+				mobileHideLabel
 				cellClassName={navCellClass}
 				onCellClick={navToRealTrans}
 				label="Date"
@@ -88,10 +116,20 @@ export const ImportRowDataTable = ({
 
 			<DataTable.Col
 				// TODO this should only be in rtl
-				cellClassName={cn("text-right", navCellClass)}
+				cellClassName={cn("text-right w-full md:w-auto", navCellClass)}
 				onCellClick={navToRealTrans}
+				mobileHideLabel
 				source="description"
-			/>
+				render={
+					isMobile
+						? (record: ImportRow) => (
+								<ImportRowDescription>
+									{record.description}
+								</ImportRowDescription>
+							)
+						: undefined
+				}
+			></DataTable.Col>
 
 			<DataTable.Col
 				label="Content"
@@ -124,16 +162,27 @@ export const ImportRowDataTable = ({
 			/>
 
 			<DataTable.Col
+				mobileCardFooter
+				mobileHideLabel
 				label="Action"
+				className="py-0"
 				headerClassName="md:flex md:items-center md:justify-center"
-				cellClassName="flex items-center justify-center py-2 gap-4"
+				cellClassName={
+					isMobile
+						? "flex w-full flex-row-reverse items-stretch gap-0 [&>button]:h-14 [&>button]:flex-1 [&>button]:rounded-none"
+						: "flex items-center justify-center py-2 gap-4"
+				}
 				render={(record: ImportRow) => {
 					const hideButton =
 						allowHideRows && record.status !== "pending" ? (
 							<Button
 								type="button"
 								size="icon"
-								variant="outline"
+								variant="ghost"
+								className={cn(
+									isMobile ? "flex-1" : undefined,
+									"text-foreground",
+								)}
 								title="Hide row"
 								aria-label="Hide row"
 								disabled={hidingRowId !== null}
@@ -163,6 +212,8 @@ export const ImportRowDataTable = ({
 								<Button
 									type="button"
 									size="icon"
+									variant="ghost"
+									className={isMobile ? "flex-1" : undefined}
 									title="Merge duplicate"
 									onClick={async () => {
 										await importRowAction({
@@ -173,13 +224,16 @@ export const ImportRowDataTable = ({
 										refresh();
 									}}
 								>
-									<Plus />
+									<Check />
 								</Button>
+
+								{isMobile && <Separator orientation="vertical" />}
 
 								<Button
 									type="button"
 									size="icon"
-									variant="destructive"
+									variant="ghost"
+									className={isMobile ? "flex-1" : undefined}
 									title="Drop duplicate"
 									onClick={async () => {
 										await importRowAction({
@@ -191,20 +245,24 @@ export const ImportRowDataTable = ({
 										refresh();
 									}}
 								>
-									<Minus />
+									<X />
 								</Button>
+
+								{isMobile && <Separator orientation="vertical" />}
 
 								<Button
 									type="button"
 									size="icon"
-									variant="outline"
+									variant="ghost"
+									className={isMobile ? "flex-1" : undefined}
 									title="View linked transaction"
 									onClick={() =>
 										navigate(`/transaction/${record.duplicate_transaction_id}`)
 									}
 								>
-									<Eye />
+									<SquareArrowUpRight />
 								</Button>
+								{isMobile && hideButton && <Separator orientation="vertical" />}
 								{hideButton}
 							</>
 						);
@@ -215,7 +273,9 @@ export const ImportRowDataTable = ({
 							<>
 								<Button
 									type="button"
+									variant={"ghost"}
 									size="icon"
+									className={isMobile ? "flex-1" : undefined}
 									onClick={async () => {
 										await importRowAction({
 											profileId: userProfile.id,
@@ -226,13 +286,16 @@ export const ImportRowDataTable = ({
 										refresh();
 									}}
 								>
-									<Plus />
+									<Check />
 								</Button>
+
+								{isMobile && <Separator orientation="vertical" />}
 
 								<Button
 									type="button"
 									size="icon"
-									variant="destructive"
+									variant={"ghost"}
+									className={isMobile ? "flex-1" : undefined}
 									onClick={async () => {
 										await importRowAction({
 											profileId: userProfile.id,
@@ -244,7 +307,7 @@ export const ImportRowDataTable = ({
 										refresh();
 									}}
 								>
-									<Minus />
+									<X />
 								</Button>
 							</>
 						);
@@ -254,9 +317,10 @@ export const ImportRowDataTable = ({
 						return (
 							<>
 								<Button
+									type="button"
 									size="icon"
-									className={"text-foreground"}
-									variant="outline"
+									className={cn("text-foreground", isMobile && "flex-1")}
+									variant="ghost"
 									onClick={async () => {
 										await importRowAction({
 											profileId: userProfile.id,
@@ -268,6 +332,7 @@ export const ImportRowDataTable = ({
 								>
 									<RotateCcw />
 								</Button>
+								{isMobile && hideButton && <Separator orientation="vertical" />}
 								{hideButton}
 							</>
 						);
