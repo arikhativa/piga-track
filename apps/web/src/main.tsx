@@ -9,7 +9,9 @@ if (!rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
 
 	root.render(
-		<BrowserRouter>
+		// NOTE: the useTransitions={false} is to fix a react rerender loop when a unauth user goes to home page
+		// if we don't set useTransitions={false} and we still have 'requireAuth' in App then we get to loop
+		<BrowserRouter useTransitions={false}>
 			<App />
 		</BrowserRouter>,
 	);

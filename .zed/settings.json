@@ -1,6 +1,17 @@
 {
 	"format_on_save": "on",
 	"lsp": {
+		"cspell": {
+			"binary": {
+				"path": "/home/yoav/.local/share/zed/extensions/work/cspell/node_modules/@vlabo/cspell-lsp/dist/cspell-lsp.js",
+				"arguments": [
+					"--stdio",
+					"--sortWords",
+					"--config",
+					"/home/yoav/.config/cspell/cspell.json"
+				]
+			}
+		},
 		"deno": {
 			"settings": {
 				"deno": {
