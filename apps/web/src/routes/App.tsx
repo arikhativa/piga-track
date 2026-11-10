@@ -74,7 +74,11 @@ export function App() {
 	return (
 		<NuqsAdapter>
 			<TooltipProvider>
-				<Admin authProvider={authProvider} dataProvider={dataProvider}>
+				<Admin
+					authProvider={authProvider}
+					dataProvider={dataProvider}
+					requireAuth
+				>
 					<CustomRoutes>
 						<Route path="/" element={<Home />} />
 						<Route path="/profile/me" element={<ProfileBaseEdit />} />

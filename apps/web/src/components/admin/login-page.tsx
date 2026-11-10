@@ -51,7 +51,8 @@ export const LoginPage = (props: { redirectTo?: string }) => {
 	};
 
 	return (
-		<div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col sm:flex-row sm:justify-start ">
+      <div className="flex-1 sm:hidden"></div>
 			<div className="container relative grid flex-col items-center justify-center sm:max-w-none lg:grid-cols-2 lg:px-0">
 				<div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-e lg:flex">
 					<div className="absolute inset-0 bg-zinc-900" />
@@ -115,7 +116,8 @@ export const LoginPage = (props: { redirectTo?: string }) => {
 					</div>
 				</div>
 			</div>
-			<Notification />
+      <Notification />
+      <div className="flex-3 sm:hidden"></div>
 		</div>
 	);
 };
