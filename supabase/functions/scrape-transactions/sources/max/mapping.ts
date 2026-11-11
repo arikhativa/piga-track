@@ -46,10 +46,10 @@ export function mapMaxTransaction(
 			importRow: {
 				// Preserve the upstream calendar date rather than shifting it across timezones.
 				date: transaction.purchase_date.toISOString().slice(0, 10),
-				amount: transaction.actual_payment_amount,
+				amount: String(-Number(transaction.actual_payment_amount)),
 				description: description || null,
 				currency_id: matchingCurrencies[0].id,
-				amount_nis: transaction.deal_amount_ils,
+				amount_nis: String(-Number(transaction.deal_amount_ils)),
 				profile_id: profileIds.size === 1 ? [...profileIds][0] : null,
 			},
 		};

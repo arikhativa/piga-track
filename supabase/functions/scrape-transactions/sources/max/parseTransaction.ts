@@ -9,7 +9,7 @@ const optionalText = z
 
 export const maxTransactionSchema = z
 	.object({
-		actualPaymentAmount: z.number().finite(),
+		actualPaymentAmount: z.number(),
 		paymentCurrency: z.number().int().min(1).max(999),
 		purchaseDate: z.union([
 			z.iso.date(),
@@ -29,7 +29,6 @@ export const maxTransactionSchema = z
 			refNbr: z.string().trim().min(1),
 			amountIls: z
 				.number()
-				.finite()
 				.nullish()
 				.transform((value) => value ?? null),
 		}),
