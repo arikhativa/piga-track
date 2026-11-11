@@ -6,6 +6,7 @@ import { useNavigate, useRefresh } from "ra-core";
 import { useCallback, useState } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
+import { DataTableTransactionTypeCol } from "#/components/custom-ui/DataTableTransactionTypeCol";
 import { Badge } from "#/components/ui/badge";
 import { Button } from "#/components/ui/button";
 import { Separator } from "#/components/ui/separator";
@@ -57,7 +58,7 @@ export const ImportRowDataTable = ({
 			mobileCardHeaderDir="rtl"
 			mobileCardHeaderClassName="grid grid-cols-[auto_auto_1fr] items-center gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
 			mobileCardFooterClassName="border-t !p-0 m-0"
-			mobileCardContentClassName="py-4"
+			mobileCardContentClassName="py-4 grid grid-cols-2"
 			empty={<ImportRowSyncEmpty />}
 			bulkActionButtons={
 				<BulkActionButtons
@@ -83,7 +84,6 @@ export const ImportRowDataTable = ({
 				cellClassName={navCellClass}
 				onCellClick={navToRealTrans}
 			/>
-
 			<DataTable.Col
 				mobileCardHeader
 				mobileHideLabel
@@ -114,11 +114,25 @@ export const ImportRowDataTable = ({
 				<DateField source="date" />
 			</DataTable.Col>
 
+			<DataTableTransactionTypeCol mobileHideLabel />
+
+			<DataTable.Col
+				mobileHideLabel
+				className={isMobile ? "flex justify-end" : undefined}
+				source="status"
+				render={(record: ImportRow) => (
+					<Badge variant={getRowStateVariant(record.status)}>
+						{capitalize(record.status)}
+					</Badge>
+				)}
+			/>
+
 			<DataTable.Col
 				// TODO this should only be in rtl
 				cellClassName={cn("text-right w-full md:w-auto", navCellClass)}
 				onCellClick={navToRealTrans}
 				mobileHideLabel
+				className="col-span-2 md:col-span-1"
 				source="description"
 				render={
 					isMobile
@@ -133,6 +147,7 @@ export const ImportRowDataTable = ({
 
 			<DataTable.Col
 				label="Content"
+				className="col-span-2 md:col-span-1"
 				render={(record: ImportRow) => {
 					return <ImportRowTag record={record} />;
 				}}
@@ -140,6 +155,7 @@ export const ImportRowDataTable = ({
 
 			<DataTable.Col
 				label="Category"
+				className="col-span-2 md:col-span-1"
 				render={(record: ImportRow) => {
 					return <ImportRowCategory record={record} />;
 				}}
@@ -147,19 +163,11 @@ export const ImportRowDataTable = ({
 
 			<DataTable.Col
 				label="Project"
+				className="col-span-2 md:col-span-1"
 				render={(record: ImportRow) => {
 					return <ImportRowProject record={record} />;
 				}}
 			></DataTable.Col>
-
-			<DataTable.Col
-				source="status"
-				render={(record: ImportRow) => (
-					<Badge variant={getRowStateVariant(record.status)}>
-						{capitalize(record.status)}
-					</Badge>
-				)}
-			/>
 
 			<DataTable.Col
 				mobileCardFooter
