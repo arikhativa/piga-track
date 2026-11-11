@@ -75,6 +75,18 @@ export const TransactionDataTable = ({
 				</DataTable.Col>
 			)}
 
+			{colToHide?.includes("category") ? null : (
+				<DataTable.Col label="Sub Category">
+					<ReferenceField
+						source="sub_category_id"
+						reference="transaction_sub_category"
+						render={({ referenceRecord }) =>
+							referenceRecord ? referenceRecord.value : null
+						}
+					></ReferenceField>
+				</DataTable.Col>
+			)}
+
 			{colToHide?.includes("project") ? null : (
 				<DataTable.Col label="Project">
 					<ReferenceField

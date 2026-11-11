@@ -1,0 +1,2 @@
+ALTER TABLE "profile" ADD COLUMN "default_sub_category_id" integer;--> statement-breakpoint
+ALTER TABLE "profile" ADD CONSTRAINT "profile_default_sub_category_id_transaction_category_id_fk" FOREIGN KEY ("default_sub_category_id") REFERENCES "public"."transaction_category"("id") ON DELETE no action ON UPDATE no action;

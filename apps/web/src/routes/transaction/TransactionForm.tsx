@@ -4,6 +4,10 @@ import {
 	SpentReceivedTabs,
 	type SpentReceivedTabsProps,
 } from "#/components/custom-ui/SpentReceivedTabs";
+import {
+	DynamicCategorySelectInput,
+	DynamicChildCategorySelectInput,
+} from "#/components/form/CategorySelectInput";
 import { DynamicSelectInput } from "#/components/form/DynamicSelectInput";
 import { ResetDateTimeButton } from "#/components/form/ResetDateTimeButton";
 import { Separator } from "#/components/ui/separator";
@@ -50,21 +54,13 @@ export function TransactionForm({
 			<Separator />
 
 			<div className="grid grid-cols-2 gap-4">
-				<ReferenceInput
-					source="tag_id"
-					reference="transaction_tag"
-					perPage={1000}
-				>
-					<DynamicSelectInput label="Content" optionText="value" />
-				</ReferenceInput>
+				<DynamicCategorySelectInput
+					defaultValue={profile?.default_category_id}
+				/>
 
-				<ReferenceInput source="category_id" reference="transaction_category">
-					<DynamicSelectInput
-						defaultValue={profile?.default_category_id}
-						label="Category"
-						optionText="value"
-					/>
-				</ReferenceInput>
+				<DynamicChildCategorySelectInput
+					defaultValue={profile?.default_sub_category_id}
+				/>
 
 				<ReferenceInput source="project_id" reference="transaction_project">
 					<DynamicSelectInput

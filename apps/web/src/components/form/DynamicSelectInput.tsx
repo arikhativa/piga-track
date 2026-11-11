@@ -9,6 +9,7 @@ type DynamicSelectInputProps = ChoicesProps &
 		label?: string;
 		optionText?: string;
 		emptyText?: string;
+		createData?: Record<string, unknown>;
 	};
 
 // TODO: there is a bug with the lookup cus we are missing some values
@@ -17,6 +18,7 @@ export function DynamicSelectInput({
 	emptyText = "",
 	label,
 	helperText,
+	createData,
 	...props
 }: DynamicSelectInputProps) {
 	const { allChoices = [], isPending, source, resource } = useChoicesContext();
@@ -35,7 +37,7 @@ export function DynamicSelectInput({
 		const record = await create(
 			resource,
 			{
-				data: { value },
+				data: { ...createData, value },
 			},
 			{
 				returnPromise: true,

@@ -344,6 +344,20 @@
       "when": 1794402940215,
       "tag": "0048_blushing_silver_surfer",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1794405604120,
+      "tag": "0049_bent_arachne",
+      "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1794405747745,
+      "tag": "0050_unique_goliath",
+      "breakpoints": true
     }
   ]
 }
