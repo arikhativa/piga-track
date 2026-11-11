@@ -1,3 +1,4 @@
+import { NIS_ID } from "@piga/db/schema";
 import type { Transaction } from "@piga/db/types";
 import type { ReactNode } from "react";
 import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
@@ -6,6 +7,12 @@ import { formatCurrency, formatNIS } from "#/lib/format/formatNIS";
 import { toSmallDate, toTime } from "#/lib/format/toSmallDate";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, ReferenceField } from "@/components/admin";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type ColToHideOptions = "project" | "category" | "tag";
 
@@ -24,38 +31,52 @@ export const TransactionDataTable = ({
 			<DataTableSignCol />
 
 			<DataTable.Col
-				source="amount"
-				render={(record) => {
-					const currency = data?.find(
-						(currency) => currency.id === record.currency_id,
-					);
+				source="amount_nis"
+				label="Amount"
+				render={(record: Transaction) => {
+					const nisAmount =
+						record.amount_nis != null
+							? formatNIS(Math.abs(Number(record.amount_nis)))
+							: null;
+					let amount: ReactNode = nisAmount ?? "--";
+
+					if (
+						record.amount_nis == null ||
+						Number(record.amount) !== Number(record.amount_nis)
+					) {
+						const currency = data?.find(
+							(currency) => currency.id === record.currency_id,
+						);
+
+						amount = (
+							<>
+								{formatCurrency(Math.abs(Number(record.amount)))}{" "}
+								{currency?.symbol}
+							</>
+						);
+					}
+
+					if (record.currency_id === NIS_ID || record.amount_nis == null)
+						return amount;
 
 					return (
-						<>
-							{formatCurrency(Math.abs(record.amount))} {currency?.symbol}
-						</>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger render={<span>{amount}</span>}></TooltipTrigger>
+								<TooltipContent>{nisAmount}</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
 					);
-				}}
-			/>
-
-			<DataTable.Col
-				source="amount_nis"
-				render={(record: Transaction) => {
-					if (record.amount_nis) {
-						return <>{formatNIS(Math.abs(Number(record.amount_nis)))}</>;
-					} else {
-						return "--";
-					}
 				}}
 			/>
 
 			<DataTable.Col source="description" />
 
-			{colToHide?.includes("tag") ? null : (
-				<DataTable.Col label="Content">
+			{colToHide?.includes("category") ? null : (
+				<DataTable.Col label="Sub Category">
 					<ReferenceField
-						source="tag_id"
-						reference="transaction_tag"
+						source="sub_category_id"
+						reference="transaction_category"
 						render={({ referenceRecord }) =>
 							referenceRecord ? referenceRecord.value : null
 						}
@@ -68,18 +89,6 @@ export const TransactionDataTable = ({
 					<ReferenceField
 						source="category_id"
 						reference="transaction_category"
-						render={({ referenceRecord }) =>
-							referenceRecord ? referenceRecord.value : null
-						}
-					></ReferenceField>
-				</DataTable.Col>
-			)}
-
-			{colToHide?.includes("category") ? null : (
-				<DataTable.Col label="Sub Category">
-					<ReferenceField
-						source="sub_category_id"
-						reference="transaction_sub_category"
 						render={({ referenceRecord }) =>
 							referenceRecord ? referenceRecord.value : null
 						}

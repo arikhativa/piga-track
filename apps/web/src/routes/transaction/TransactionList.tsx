@@ -1,8 +1,7 @@
 import { DEFAULT_PER_PAGE } from "#/lib/constant";
-import { transactionExporter } from "#/lib/exporter/transactionExporter";
 import { categoryOptionText } from "#/lib/form/categoryOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
-import { tagOptionText } from "#/lib/form/tagOptionText";
+
 import { TransactionDataTable } from "#/routes/transaction/TransactionDataTable";
 
 import {
@@ -20,6 +19,7 @@ const transactionFilters = [
 		label="From"
 	/>,
 	<DateInput key="transaction_at@lte" source="transaction_at@lte" label="To" />,
+
 	<SelectInput
 		key="amountType"
 		source="amountType"
@@ -29,6 +29,7 @@ const transactionFilters = [
 			{ id: "positive", name: "Positive" },
 		]}
 	/>,
+
 	<ReferenceInput
 		key="project"
 		source="project_id"
@@ -36,6 +37,7 @@ const transactionFilters = [
 	>
 		<SelectInput label="Project" optionText={projectOptionText} />
 	</ReferenceInput>,
+
 	<ReferenceInput
 		key="category"
 		source="category_id"
@@ -44,9 +46,6 @@ const transactionFilters = [
 		<SelectInput label="Category" optionText={categoryOptionText} />
 	</ReferenceInput>,
 
-	<ReferenceInput key="tag" source="tag_id" reference="transaction_tag">
-		<SelectInput label="Content" optionText={tagOptionText} />
-	</ReferenceInput>,
 	<NumberInput
 		key="amount_nis@gte"
 		source="amount_nis@gte"
@@ -62,7 +61,6 @@ const transactionFilters = [
 export const TransactionList = () => {
 	return (
 		<List
-			exporter={transactionExporter}
 			filters={transactionFilters}
 			sort={{ field: "transaction_at", order: "DESC" }}
 			perPage={DEFAULT_PER_PAGE}

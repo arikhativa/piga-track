@@ -17,6 +17,7 @@ import {
 	text,
 	timestamp,
 	unique,
+	uniqueIndex,
 	uuid,
 	varchar,
 } from "drizzle-orm/pg-core";
@@ -80,7 +81,7 @@ export const transactionCategory = pgTable(
 	"transaction_category",
 	{
 		id: serial("id").primaryKey(),
-		value: text("value").unique().notNull(),
+		value: text("value").notNull(),
 
 		parent_id: integer("parent_id").references(
 			(): AnyPgColumn => transactionCategory.id,
@@ -92,6 +93,12 @@ export const transactionCategory = pgTable(
 	},
 	(table) => [
 		index("transaction_category_parent_id_idx").on(table.parent_id),
+		uniqueIndex("transaction_category_parent_value_unique")
+			.on(table.parent_id, table.value)
+			.where(sql`${table.parent_id} IS NOT NULL`),
+		uniqueIndex("transaction_category_root_value_unique")
+			.on(table.value)
+			.where(sql`${table.parent_id} IS NULL`),
 		unique("transaction_category_id_parent_id_unique").on(
 			table.id,
 			table.parent_id,
@@ -367,6 +374,10 @@ export const importRow = pgTable(
 		tag_id: integer("tag_id").references(() => transactionTag.id),
 
 		category_id: integer("category_id").references(
+			() => transactionCategory.id,
+		),
+
+		sub_category_id: integer("sub_category_id").references(
 			() => transactionCategory.id,
 		),
 

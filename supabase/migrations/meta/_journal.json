@@ -358,6 +358,20 @@
       "when": 1794405747745,
       "tag": "0050_unique_goliath",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1794406943763,
+      "tag": "0051_warm_ricochet",
+      "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1794408672986,
+      "tag": "0052_clumsy_colonel_america",
+      "breakpoints": true
     }
   ]
 }

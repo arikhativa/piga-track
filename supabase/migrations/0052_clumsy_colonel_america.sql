@@ -1,0 +1,3 @@
+ALTER TABLE "transaction_category" DROP CONSTRAINT "transaction_category_value_unique";--> statement-breakpoint
+CREATE UNIQUE INDEX "transaction_category_parent_value_unique" ON "transaction_category" USING btree ("parent_id","value") WHERE "transaction_category"."parent_id" IS NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX "transaction_category_root_value_unique" ON "transaction_category" USING btree ("value") WHERE "transaction_category"."parent_id" IS NULL;

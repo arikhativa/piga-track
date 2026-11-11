@@ -41,6 +41,9 @@ export function ImportRowCategory({ record }: { record: ImportRow }) {
 			id: record.id,
 			data: {
 				category_id: value ? Number(value) : null,
+				...(record.category_id !== (value ? Number(value) : null)
+					? { sub_category_id: null }
+					: {}),
 			},
 			previousData: record,
 		});
