@@ -1,8 +1,10 @@
 import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
 import {
+	type AnyPgColumn,
 	boolean,
 	check,
 	date,
+	index,
 	integer,
 	jsonb,
 	numeric,
@@ -68,12 +70,28 @@ export const transactionProject = pgTable("transaction_project", {
 		.notNull(),
 });
 
-export const transactionCategory = pgTable("transaction_category", {
-	id: serial("id").primaryKey(),
-	value: text("value").unique().notNull(),
-	is_income: boolean("is_income").default(false).notNull(),
-	is_expense: boolean("is_expense").default(true).notNull(),
-});
+export const transactionCategory = pgTable(
+	"transaction_category",
+	{
+		id: serial("id").primaryKey(),
+		value: text("value").unique().notNull(),
+
+		parent_id: integer("parent_id").references(
+			(): AnyPgColumn => transactionCategory.id,
+			{ onDelete: "restrict" },
+		),
+
+		is_income: boolean("is_income").default(false).notNull(),
+		is_expense: boolean("is_expense").default(true).notNull(),
+	},
+	(table) => [
+		index("transaction_category_parent_id_idx").on(table.parent_id),
+		check(
+			"transaction_category_not_own_parent",
+			sql`${table.parent_id} IS NULL OR ${table.parent_id} <> ${table.id}`,
+		),
+	],
+);
 
 export const currency = pgTable("currency", {
 	id: serial("id").primaryKey(),

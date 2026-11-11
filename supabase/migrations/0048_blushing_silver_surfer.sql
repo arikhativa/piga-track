@@ -1,0 +1,4 @@
+ALTER TABLE "transaction_category" ADD COLUMN "parent_id" integer;--> statement-breakpoint
+ALTER TABLE "transaction_category" ADD CONSTRAINT "transaction_category_parent_id_transaction_category_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."transaction_category"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "transaction_category_parent_id_idx" ON "transaction_category" USING btree ("parent_id");--> statement-breakpoint
+ALTER TABLE "transaction_category" ADD CONSTRAINT "transaction_category_not_own_parent" CHECK ("transaction_category"."parent_id" IS NULL OR "transaction_category"."parent_id" <> "transaction_category"."id");
