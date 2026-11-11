@@ -20,6 +20,27 @@ export const db = drizzle(client, { schema });
 
 const profileId = randomUUID();
 
+async function syncSeedSequences() {
+	const tables = [
+		"transaction_type",
+		"transaction_project",
+		"transaction_tag",
+		"transaction_category",
+		"import_profile",
+	];
+
+	for (const table of tables) {
+		await client`
+			SELECT setval(
+				pg_get_serial_sequence(${`public.${table}`}, 'id'),
+				COALESCE(MAX(id), 1),
+				MAX(id) IS NOT NULL
+			)
+			FROM ${client(`public.${table}`)}
+		`;
+	}
+}
+
 async function seedTransactions() {
 	const categories = await db
 		.select({
@@ -222,6 +243,7 @@ async function seed() {
 		])
 		.onConflictDoNothing();
 
+	await syncSeedSequences();
 	await seedTransactions();
 
 	console.log("Seed completed");
