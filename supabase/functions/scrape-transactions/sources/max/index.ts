@@ -2,7 +2,6 @@ import { type AutoSyncConf, currency, profile } from "@piga/db/schema";
 import type { createDb } from "../../../_shared/db.ts";
 import { loadCredential } from "../../lib/loadCredential.ts";
 import { filterNewTransactions } from "./filterNewTransactions.ts";
-
 import { mapMaxTransaction } from "./mapping.ts";
 import { parseTransaction } from "./parseTransaction.ts";
 import { scrape } from "./scrape.ts";

@@ -10,5 +10,9 @@
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true
 	},
-	"include": ["**/*.ts", "**/*.tsx"]
+	"include": [
+		"**/*.ts",
+		"**/*.tsx",
+		"scrape-transactions/sources/max/browser/tes.js"
+	]
 }

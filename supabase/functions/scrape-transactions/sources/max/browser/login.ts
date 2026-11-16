@@ -1,6 +1,6 @@
 // JavaScript source executed by Browserless, not by the Edge Runtime.
 // Keep this self-contained: imported Edge Function helpers are unavailable there.
-export const browserLoginCode = String.raw`
+export const browserLoginCode = `
 async function login(page, username, password, onPhase) {
 	onPhase("login_page");
 	const navigation = await page.goto("https://www.max.co.il/login", {
