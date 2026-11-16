@@ -20,6 +20,7 @@ import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
 import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { ImportRowSubCategory } from "#/routes/importBatch/ImportRowSubCategory";
+import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, DateField } from "@/components/admin";
 import { ImportRowDescription } from "../importRow/ImportRowDescription";
 import { ImportRowSyncEmpty } from "../importRowSync/ImportRowSyncEmpty";
@@ -56,7 +57,7 @@ export const ImportRowDataTable = ({
 	return (
 		<DataTable<ImportRow>
 			mobileCardHeaderDir="rtl"
-			mobileCardHeaderClassName="grid grid-cols-[auto_auto_1fr] items-center gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
+			mobileCardHeaderClassName="grid grid-cols-[1fr_auto_auto_1fr] items-center justify-items-start gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
 			mobileCardFooterClassName="border-t !p-0 m-0"
 			mobileCardContentClassName="py-4 grid grid-cols-2"
 			empty={<ImportRowSyncEmpty />}
@@ -78,12 +79,17 @@ export const ImportRowDataTable = ({
 				return className;
 			}}
 		>
+			<DataTable.Col mobileCardHeader mobileHideLabel label="Owner">
+				<ProfileFullName />
+			</DataTable.Col>
+
 			<DataTableSignCol
 				mobileCardHeader
 				mobileHideLabel
 				cellClassName={navCellClass}
 				onCellClick={navToRealTrans}
 			/>
+
 			<DataTable.Col
 				mobileCardHeader
 				mobileHideLabel
