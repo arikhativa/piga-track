@@ -92,7 +92,6 @@ export const transactionCategory = pgTable(
 		is_expense: boolean("is_expense").default(true).notNull(),
 	},
 	(table) => [
-		index("transaction_category_parent_id_idx").on(table.parent_id),
 		uniqueIndex("transaction_category_parent_value_unique")
 			.on(table.parent_id, table.value)
 			.where(sql`${table.parent_id} IS NOT NULL`),
@@ -261,6 +260,7 @@ export const transaction = pgTable(
 			.notNull(),
 	},
 	(table) => [
+		index("transaction_transaction_at_idx").on(table.transaction_at),
 		check(
 			"transaction_sub_category_requires_category",
 			sql`${table.sub_category_id} IS NULL OR ${table.category_id} IS NOT NULL`,
@@ -412,6 +412,15 @@ export const importRow = pgTable(
 			.references(() => maxSyncTable.id),
 	},
 	(table) => [
+		index("import_row_batch_status_idx").on(
+			table.import_batch_id,
+			table.status,
+		),
+
+		index("import_row_duplicate_transaction_id_idx").on(
+			table.duplicate_transaction_id,
+		),
+		index("import_row_transaction_id_idx").on(table.transaction_id),
 		check(
 			"import_row_exactly_one_source",
 			sql`(${table.import_batch_id} IS NOT NULL) <> (${table.max_sync_table_id} IS NOT NULL)`,

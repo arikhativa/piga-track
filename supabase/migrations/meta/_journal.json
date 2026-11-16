@@ -372,6 +372,20 @@
       "when": 1794408672986,
       "tag": "0052_clumsy_colonel_america",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1794840461185,
+      "tag": "0053_fix-rls",
+      "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1794841285550,
+      "tag": "0054_special_wendigo",
+      "breakpoints": true
     }
   ]
 }
