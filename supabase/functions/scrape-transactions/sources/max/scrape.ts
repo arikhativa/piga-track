@@ -1,4 +1,4 @@
-import { browserLoginCode } from "./login.ts";
+import { browserLoginCode } from "./browser/login.ts";
 
 export interface ScrapeOptions {
 	username: string;

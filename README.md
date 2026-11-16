@@ -73,9 +73,20 @@ requests throw rather than appearing as an empty transaction list. No automatic
 credential retries, proxy purchases, CAPTCHA solving, or persisted sessions are
 configured.
 
-To undo, revert the Browserless changes in the Max `login.ts`, `scrape.ts`, and
-`index.ts` files and remove `BROWSERLESS_TOKEN` from Supabase/local secrets. No
-schema, package, lockfile, or MCP configuration changes are required.
+The scraper separates three execution boundaries:
+
+- `scrape-transactions/lib/browserless.ts`: generic provider transport, token,
+  timeouts, HTTP errors, and response envelopes; no Max-specific behavior.
+- `scrape-transactions/sources/max/browser/`: remote JavaScript source for
+  `login.ts` (form interaction), `transactions.ts` (browser-side fetching), and
+  `workflow.ts` (one session, phase tracking, sanitized errors). These source
+  strings are composed before submission; they cannot import Edge Runtime helpers.
+- `scrape-transactions/sources/max/scrape.ts`: runs the workflow and validates the
+  Max result. The adjacent `index.ts` retains parsing, mapping, and sync orchestration.
+
+To undo the Browserless integration, revert its client, Max scraper/browser files,
+and Max orchestration changes, then remove `BROWSERLESS_TOKEN` from Supabase/local
+secrets. No schema, package, lockfile, or MCP configuration changes are required.
 
 ## Render
 
