@@ -1,5 +1,6 @@
 import { required, useRecordContext } from "ra-core";
 import { useEffect } from "react";
+import { Spinner } from "#/components/admin/spinner";
 import {
 	SpentReceivedTabs,
 	type SpentReceivedTabsProps,
@@ -29,15 +30,30 @@ export function TransactionForm({
 }: SpentReceivedTabsProps & { toolbar?: React.JSX.Element }) {
 	const record = useRecordContext();
 
-	const { data: profile } = useProfile();
+	const { data: profile, isPending: isProfilePending } = useProfile();
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: this should run on init only
 	useEffect(() => {
 		setType(record?.amount > 0 ? "received" : "spent");
 	}, []);
 
+	if (isProfilePending) {
+		return <Spinner />;
+	}
+
 	return (
-		<SimpleForm toolbar={toolbar}>
+		<SimpleForm
+			toolbar={toolbar}
+			defaultValues={{
+				category_id: profile?.default_category_id,
+				sub_category_id: profile?.default_sub_category_id,
+				project_id: profile?.default_project_id,
+				profile_id: profile?.id,
+				transaction_at: new Date().toISOString(),
+				currency_id: profile?.default_currency_id,
+				transaction_type_id: profile?.default_transaction_type_id,
+			}}
+		>
 			<div className="flex justify-center items-end gap-4">
 				<SpentReceivedTabs type={type} setType={setType} />
 				<NumberInput
@@ -54,26 +70,17 @@ export function TransactionForm({
 			<Separator />
 
 			<div className="grid grid-cols-2 gap-4">
-				<DynamicCategorySelectInput
-					defaultValue={profile?.default_category_id}
-				/>
+				<DynamicCategorySelectInput />
 
-				<DynamicChildCategorySelectInput
-					defaultValue={profile?.default_sub_category_id}
-				/>
+				<DynamicChildCategorySelectInput />
 
 				<ReferenceInput source="project_id" reference="transaction_project">
-					<DynamicSelectInput
-						defaultValue={profile?.default_project_id}
-						label="Project"
-						optionText="value"
-					/>
+					<DynamicSelectInput label="Project" optionText="value" />
 				</ReferenceInput>
 
 				<ReferenceInput source="profile_id" reference="profile">
 					<SelectInput
 						label="Owner"
-						defaultValue={profile?.id}
 						optionText={(profile) =>
 							`${profile.first_name} ${profile.last_name}`
 						}
@@ -88,14 +95,12 @@ export function TransactionForm({
 					<DateTimeInput
 						className="flex-1"
 						source="transaction_at"
-						defaultValue={new Date().toISOString()}
 						validate={required()}
 					/>
 					<ResetDateTimeButton />
 				</div>
 				<ReferenceInput source="currency_id" reference="currency">
 					<SelectInput
-						defaultValue={profile?.default_currency_id}
 						label="Currency"
 						optionText={currencyOptionText}
 						validate={required()}
@@ -105,11 +110,7 @@ export function TransactionForm({
 					source="transaction_type_id"
 					reference="transaction_type"
 				>
-					<SelectInput
-						defaultValue={profile?.default_transaction_type_id}
-						label="Type"
-						validate={required()}
-					/>
+					<SelectInput label="Type" validate={required()} />
 				</ReferenceInput>
 			</div>
 
