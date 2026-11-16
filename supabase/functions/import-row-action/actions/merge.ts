@@ -94,6 +94,7 @@ export const merge: ImportRowAction = async ({ db, rows }) => {
 			transaction_at: new Date(`${row.date}T00:00:00.000Z`),
 			project_id: row.project_id,
 			category_id: row.category_id,
+			sub_category_id: row.sub_category_id,
 			currency_id: currencyId,
 			transaction_type_id: transactionTypeId,
 			amount: row.amount,

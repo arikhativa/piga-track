@@ -5,6 +5,7 @@ import type { DB } from "../../_shared/types.ts";
 
 type BulkUpdateData = {
 	category_id?: number | null;
+	sub_category_id?: number | null;
 	project_id?: number | null;
 	tag_id?: number | null;
 	status?: ImportRowStatusEnum;

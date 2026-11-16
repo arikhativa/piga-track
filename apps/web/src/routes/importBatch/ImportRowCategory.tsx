@@ -10,6 +10,7 @@ export function ImportRowCategory({ record }: { record: ImportRow }) {
 	const { data: categories = [], isPending } = useGetList<TransactionCategory>(
 		"transaction_category",
 		{
+			filter: { "parent_id@is": null },
 			pagination: {
 				page: 1,
 				perPage: 1000,
@@ -40,6 +41,9 @@ export function ImportRowCategory({ record }: { record: ImportRow }) {
 			id: record.id,
 			data: {
 				category_id: value ? Number(value) : null,
+				...(record.category_id !== (value ? Number(value) : null)
+					? { sub_category_id: null }
+					: {}),
 			},
 			previousData: record,
 		});

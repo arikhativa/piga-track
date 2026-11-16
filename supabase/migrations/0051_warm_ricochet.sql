@@ -1,0 +1,2 @@
+ALTER TABLE "import_row" ADD COLUMN "sub_category_id" integer;--> statement-breakpoint
+ALTER TABLE "import_row" ADD CONSTRAINT "import_row_sub_category_id_transaction_category_id_fk" FOREIGN KEY ("sub_category_id") REFERENCES "public"."transaction_category"("id") ON DELETE no action ON UPDATE no action;

@@ -14,6 +14,7 @@ export const importRowActionSchema = z.object({
 		"merge",
 		"undo",
 		"set_category",
+		"set_sub_category",
 		"set_project",
 		"set_tag",
 		"set_status",
@@ -38,6 +39,7 @@ export const importRowActionResultSchema = z.discriminatedUnion("action", [
 		action: z.enum([
 			"undo",
 			"set_category",
+			"set_sub_category",
 			"set_project",
 			"set_tag",
 			"set_status",

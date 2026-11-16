@@ -41,6 +41,53 @@ Open the repository root in one Zed window. Root editor settings start vtsls and
 
 `supabase/functions/tsconfig.json` uses `noCheck` to delegate semantic checking to Deno instead of letting vtsls report Node-resolution errors for Deno imports and globals. This requires TypeScript 5.6 or newer in vtsls. It does not disable Deno checks, but `tsc -p supabase/functions` intentionally does not validate functions: use `pnpm check:functions`. Both servers can still offer editor features; syntax diagnostics may overlap. Root `tsconfig.json` selects Node tooling; the app and shared packages retain normal TypeScript checking in their separate configs.
 
+## Max scraping with Browserless
+
+The `scrape-transactions` Edge Function uses Browserless's shared-cloud
+`https://production-sfo.browserless.io/function` API. Max login and transaction
+fetching run in the same remote browser, allowing Max's page scripts to execute.
+No local browser installation or additional npm package is required.
+
+Before running:
+
+1. Configure `BROWSERLESS_TOKEN` in the Supabase project's **Edge Functions →
+   Secrets** dashboard. For local development, put it in an ignored environment
+   file and pass that file to `supabase functions serve --env-file .env.local`.
+   Never use a `VITE_*` variable or commit the token.
+2. Keep the Max username in the enabled `auto_sync_conf.public_config.username`
+   and its password in the existing Vault secret referenced by
+   `credentials_secret_id`, as a JSON object with a `password` field.
+3. Review Browserless's data-retention settings before supplying banking
+   credentials. The provider processes credentials, session state, and financial
+   data. This integration does not enable recording/replay and does not return
+   cookies or log raw provider responses. The Function API does not accept
+   `record`/`replay` query flags; review account-level retention settings separately.
+4. Serve or deploy the function explicitly, then trigger the existing scraper.
+   Check the Browserless dashboard's request/session history as well as Supabase
+   logs. A configured secret is not proof that Max login works; verification or
+   provider-IP restrictions may still prevent login.
+
+Each request has a 90-second browser-session limit and a 100-second client timeout.
+Browserless's Function API closes the browser after execution. Failed login/fetch
+requests throw rather than appearing as an empty transaction list. No automatic
+credential retries, proxy purchases, CAPTCHA solving, or persisted sessions are
+configured.
+
+The scraper separates three execution boundaries:
+
+- `scrape-transactions/lib/browserless.ts`: generic provider transport, token,
+  timeouts, HTTP errors, and response envelopes; no Max-specific behavior.
+- `scrape-transactions/sources/max/browser/`: remote JavaScript source for
+  `login.ts` (form interaction), `transactions.ts` (browser-side fetching), and
+  `workflow.ts` (one session, phase tracking, sanitized errors). These source
+  strings are composed before submission; they cannot import Edge Runtime helpers.
+- `scrape-transactions/sources/max/scrape.ts`: runs the workflow and validates the
+  Max result. The adjacent `index.ts` retains parsing, mapping, and sync orchestration.
+
+To undo the Browserless integration, revert its client, Max scraper/browser files,
+and Max orchestration changes, then remove `BROWSERLESS_TOKEN` from Supabase/local
+secrets. No schema, package, lockfile, or MCP configuration changes are required.
+
 ## Render
 
 `render.yaml` configures a static site with the repository root as its build root. The build is `pnpm install --frozen-lockfile && pnpm build`, publication is `apps/web/dist`, and all routes rewrite to `/index.html` for SPA navigation. Workspace packages and root dependency/configuration files participate in build filters. Configure public Vite environment values in Render; do not add database secrets. Do not set the Render root directory to `apps/web` because shared sources must remain available.

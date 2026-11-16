@@ -19,7 +19,7 @@ import { getRowStateVariant } from "#/lib/variant/getRowStateVariant";
 import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
 import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
-import { ImportRowTag } from "#/routes/importBatch/ImportRowTag";
+import { ImportRowSubCategory } from "#/routes/importBatch/ImportRowSubCategory";
 import { DataTable, DateField } from "@/components/admin";
 import { ImportRowDescription } from "../importRow/ImportRowDescription";
 import { ImportRowSyncEmpty } from "../importRowSync/ImportRowSyncEmpty";
@@ -146,18 +146,18 @@ export const ImportRowDataTable = ({
 			></DataTable.Col>
 
 			<DataTable.Col
-				label="Content"
-				className="col-span-2 md:col-span-1"
-				render={(record: ImportRow) => {
-					return <ImportRowTag record={record} />;
-				}}
-			></DataTable.Col>
-
-			<DataTable.Col
 				label="Category"
 				className="col-span-2 md:col-span-1"
 				render={(record: ImportRow) => {
 					return <ImportRowCategory record={record} />;
+				}}
+			></DataTable.Col>
+
+			<DataTable.Col
+				label="Sub Category"
+				className="col-span-2 md:col-span-1"
+				render={(record: ImportRow) => {
+					return <ImportRowSubCategory record={record} />;
 				}}
 			></DataTable.Col>
 

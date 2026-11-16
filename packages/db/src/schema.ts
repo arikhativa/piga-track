@@ -1,8 +1,11 @@
 import { type InferInsertModel, type InferSelectModel, sql } from "drizzle-orm";
 import {
+	type AnyPgColumn,
 	boolean,
 	check,
 	date,
+	foreignKey,
+	index,
 	integer,
 	jsonb,
 	numeric,
@@ -13,6 +16,8 @@ import {
 	serial,
 	text,
 	timestamp,
+	unique,
+	uniqueIndex,
 	uuid,
 	varchar,
 } from "drizzle-orm/pg-core";
@@ -49,6 +54,10 @@ export const profile = pgTable("profile", {
 		() => transactionCategory.id,
 	),
 
+	default_sub_category_id: integer("default_sub_category_id").references(
+		() => transactionCategory.id,
+	),
+
 	default_project_id: integer("default_project_id").references(
 		() => transactionProject.id,
 	),
@@ -68,12 +77,38 @@ export const transactionProject = pgTable("transaction_project", {
 		.notNull(),
 });
 
-export const transactionCategory = pgTable("transaction_category", {
-	id: serial("id").primaryKey(),
-	value: text("value").unique().notNull(),
-	is_income: boolean("is_income").default(false).notNull(),
-	is_expense: boolean("is_expense").default(true).notNull(),
-});
+export const transactionCategory = pgTable(
+	"transaction_category",
+	{
+		id: serial("id").primaryKey(),
+		value: text("value").notNull(),
+
+		parent_id: integer("parent_id").references(
+			(): AnyPgColumn => transactionCategory.id,
+			{ onDelete: "restrict" },
+		),
+
+		is_income: boolean("is_income").default(false).notNull(),
+		is_expense: boolean("is_expense").default(true).notNull(),
+	},
+	(table) => [
+		index("transaction_category_parent_id_idx").on(table.parent_id),
+		uniqueIndex("transaction_category_parent_value_unique")
+			.on(table.parent_id, table.value)
+			.where(sql`${table.parent_id} IS NOT NULL`),
+		uniqueIndex("transaction_category_root_value_unique")
+			.on(table.value)
+			.where(sql`${table.parent_id} IS NULL`),
+		unique("transaction_category_id_parent_id_unique").on(
+			table.id,
+			table.parent_id,
+		),
+		check(
+			"transaction_category_not_own_parent",
+			sql`${table.parent_id} IS NULL OR ${table.parent_id} <> ${table.id}`,
+		),
+	],
+);
 
 export const currency = pgTable("currency", {
 	id: serial("id").primaryKey(),
@@ -175,50 +210,68 @@ export const maxSyncTable = pgTable("max_sync_table", {
 		.notNull(),
 });
 
-export const transaction = pgTable("transaction", {
-	id: serial("id").primaryKey(),
+export const transaction = pgTable(
+	"transaction",
+	{
+		id: serial("id").primaryKey(),
 
-	max_sync_table_id: integer("max_sync_table_id").references(
-		() => maxSyncTable.id,
-	),
+		max_sync_table_id: integer("max_sync_table_id").references(
+			() => maxSyncTable.id,
+		),
 
-	profile_id: uuid("profile_id").references(() => profile.id),
+		profile_id: uuid("profile_id").references(() => profile.id),
 
-	tag_id: integer("tag_id").references(() => transactionTag.id),
+		tag_id: integer("tag_id").references(() => transactionTag.id),
 
-	project_id: integer("project_id").references(() => transactionProject.id),
+		project_id: integer("project_id").references(() => transactionProject.id),
 
-	category_id: integer("category_id")
-		.default(MARKET_ID)
-		.references(() => transactionCategory.id),
+		category_id: integer("category_id")
+			.default(MARKET_ID)
+			.references(() => transactionCategory.id),
 
-	currency_id: integer("currency_id")
-		.notNull()
-		.default(NIS_ID)
-		.references(() => currency.id),
+		sub_category_id: integer("sub_category_id").references(
+			() => transactionCategory.id,
+		),
 
-	transaction_type_id: integer("transaction_type_id")
-		.notNull()
-		.default(CASH_ID)
-		.references(() => transactionType.id),
+		currency_id: integer("currency_id")
+			.notNull()
+			.default(NIS_ID)
+			.references(() => currency.id),
 
-	amount: numeric("amount", AMOUNT_PRECISION).notNull(),
-	amount_nis: numeric("amount_nis", AMOUNT_PRECISION),
+		transaction_type_id: integer("transaction_type_id")
+			.notNull()
+			.default(CASH_ID)
+			.references(() => transactionType.id),
 
-	description: text("description"),
+		amount: numeric("amount", AMOUNT_PRECISION).notNull(),
+		amount_nis: numeric("amount_nis", AMOUNT_PRECISION),
 
-	transaction_at: timestamp("transaction_at", {
-		withTimezone: true,
-	}).notNull(),
+		description: text("description"),
 
-	created_at: timestamp("created_at", { withTimezone: true })
-		.defaultNow()
-		.notNull(),
+		transaction_at: timestamp("transaction_at", {
+			withTimezone: true,
+		}).notNull(),
 
-	updated_at: timestamp("updated_at", { withTimezone: true })
-		.defaultNow()
-		.notNull(),
-});
+		created_at: timestamp("created_at", { withTimezone: true })
+			.defaultNow()
+			.notNull(),
+
+		updated_at: timestamp("updated_at", { withTimezone: true })
+			.defaultNow()
+			.notNull(),
+	},
+	(table) => [
+		check(
+			"transaction_sub_category_requires_category",
+			sql`${table.sub_category_id} IS NULL OR ${table.category_id} IS NOT NULL`,
+		),
+		foreignKey({
+			name: "transaction_sub_category_parent_fk",
+			columns: [table.sub_category_id, table.category_id],
+			foreignColumns: [transactionCategory.id, transactionCategory.parent_id],
+		}),
+	],
+);
 
 // ============================================================================
 //	Import
@@ -321,6 +374,10 @@ export const importRow = pgTable(
 		tag_id: integer("tag_id").references(() => transactionTag.id),
 
 		category_id: integer("category_id").references(
+			() => transactionCategory.id,
+		),
+
+		sub_category_id: integer("sub_category_id").references(
 			() => transactionCategory.id,
 		),
 

@@ -1,5 +1,8 @@
 import { required } from "ra-core";
-import { categoryOptionText } from "#/lib/form/categoryOptionText";
+import {
+	CategorySelectInput,
+	ChildCategorySelectInput,
+} from "#/components/form/CategorySelectInput";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
 import { ReferenceInput, SelectInput, SimpleForm } from "@/components/admin";
@@ -22,12 +25,16 @@ export function DefaultsForm() {
 				<SelectInput label="Default transaction_type" validate={required()} />
 			</ReferenceInput>
 
-			<ReferenceInput
+			<CategorySelectInput
 				source="default_category_id"
-				reference="transaction_category"
-			>
-				<SelectInput label="Default Category" optionText={categoryOptionText} />
-			</ReferenceInput>
+				label="Default Category"
+			/>
+
+			<ChildCategorySelectInput
+				source="default_sub_category_id"
+				parentSource="default_category_id"
+				label="Default Sub Category"
+			/>
 
 			<ReferenceInput
 				source="default_project_id"

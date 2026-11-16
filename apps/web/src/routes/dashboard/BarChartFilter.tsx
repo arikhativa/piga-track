@@ -21,6 +21,7 @@ const selectionParsers = {
 	tagId: parseAsInteger,
 };
 
+// TODO remove tag logic
 export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 	const isCategory = filterType === "category";
 	const extraFilter = isCategory ? "category_id" : "tag_id";

@@ -2,6 +2,7 @@ import type { ImportRow, TransactionTag } from "@piga/db/types";
 import { useCreate, useDataProvider, useGetList, useRefresh } from "ra-core";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
 
+// TODO delete this
 export function ImportRowTag({ record }: { record: ImportRow }) {
 	const dataProvider = useDataProvider();
 	const refresh = useRefresh();
