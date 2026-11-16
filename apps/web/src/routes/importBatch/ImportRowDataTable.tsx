@@ -20,6 +20,7 @@ import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
 import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { ImportRowSubCategory } from "#/routes/importBatch/ImportRowSubCategory";
+import { useOptimisticMerge } from "#/routes/importBatch/use-optimistic-merge";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, DateField } from "@/components/admin";
 import { ImportRowDescription } from "../importRow/ImportRowDescription";
@@ -38,10 +39,12 @@ export const ImportRowDataTable = ({
 	const { data } = useCurrencyList();
 	const refresh = useRefresh();
 	const [hidingRowId, setHidingRowId] = useState<number | null>(null);
+	const { displayedRows, optimisticMerges, hasOptimisticMerges, mergeRow } =
+		useOptimisticMerge(userProfile?.id);
 
 	const navToRealTrans = useCallback(
 		(record: ImportRow) => {
-			if (record.status === "merged") {
+			if (record.status === "merged" && record.transaction_id != null) {
 				navigate(`/transaction/${record.transaction_id}`);
 			}
 		},
@@ -49,23 +52,30 @@ export const ImportRowDataTable = ({
 	);
 
 	const navCellClass = (record: ImportRow) => {
-		return record.status === "merged" ? "cursor-pointer" : "cursor-default";
+		return record.status === "merged" && record.transaction_id != null
+			? "cursor-pointer"
+			: "cursor-default";
 	};
 
 	if (!isSuccess) return <Spinner />;
 
 	return (
 		<DataTable<ImportRow>
+			data={displayedRows}
 			mobileCardHeaderDir="rtl"
 			mobileCardHeaderClassName="grid grid-cols-[1fr_auto_auto_1fr] items-center justify-items-start gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
 			mobileCardFooterClassName="border-t !p-0 m-0"
 			mobileCardContentClassName="py-4 grid grid-cols-2"
 			empty={<ImportRowSyncEmpty />}
 			bulkActionButtons={
-				<BulkActionButtons
-					profileId={userProfile.id}
-					allowHideRows={allowHideRows}
-				/>
+				hasOptimisticMerges ? (
+					false
+				) : (
+					<BulkActionButtons
+						profileId={userProfile.id}
+						allowHideRows={allowHideRows}
+					/>
+				)
 			}
 			rowClassName={(row) => {
 				let className = "cursor-default";
@@ -199,7 +209,7 @@ export const ImportRowDataTable = ({
 								)}
 								title="Hide row"
 								aria-label="Hide row"
-								disabled={hidingRowId !== null}
+								disabled={hidingRowId !== null || !!optimisticMerges[record.id]}
 								onClick={async () => {
 									try {
 										setHidingRowId(record.id);
@@ -229,14 +239,7 @@ export const ImportRowDataTable = ({
 									variant="ghost"
 									className={isMobile ? "flex-1" : undefined}
 									title="Merge duplicate"
-									onClick={async () => {
-										await importRowAction({
-											profileId: userProfile.id,
-											import_row_ids: [Number(record.id)],
-											action: "merge",
-										});
-										refresh();
-									}}
+									onClick={() => mergeRow(record)}
 								>
 									<Check />
 								</Button>
@@ -290,15 +293,9 @@ export const ImportRowDataTable = ({
 									variant={"ghost"}
 									size="icon"
 									className={isMobile ? "flex-1" : undefined}
-									onClick={async () => {
-										await importRowAction({
-											profileId: userProfile.id,
-											import_row_ids: [Number(record.id)],
-											action: "merge",
-										});
-
-										refresh();
-									}}
+									title="Merge row"
+									aria-label="Merge row"
+									onClick={() => mergeRow(record)}
 								>
 									<Check />
 								</Button>
@@ -335,6 +332,11 @@ export const ImportRowDataTable = ({
 									size="icon"
 									className={cn("text-foreground", isMobile && "flex-1")}
 									variant="ghost"
+									title={optimisticMerges[record.id] ? "Saving merge…" : "Undo"}
+									aria-label={
+										optimisticMerges[record.id] ? "Saving merge" : "Undo"
+									}
+									disabled={!!optimisticMerges[record.id]}
 									onClick={async () => {
 										await importRowAction({
 											profileId: userProfile.id,
