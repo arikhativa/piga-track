@@ -4,9 +4,9 @@ import {
 	transaction,
 	transactionCategory,
 	transactionProject,
-	transactionTag,
 	transactionType,
 } from "@piga/db/schema";
+import { eq, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import "dotenv/config";
 import * as schema from "@piga/db/schema";
@@ -24,7 +24,6 @@ async function syncSeedSequences() {
 	const tables = [
 		"transaction_type",
 		"transaction_project",
-		"transaction_tag",
 		"transaction_category",
 		"import_profile",
 	];
@@ -41,17 +40,92 @@ async function syncSeedSequences() {
 	}
 }
 
+async function seedCategoryTree() {
+	await db
+		.update(transactionCategory)
+		.set({
+			value: "אוכל לבית ופארם",
+			parent_id: null,
+			is_income: false,
+			is_expense: true,
+		})
+		.where(eq(transactionCategory.id, 1));
+
+	await db
+		.insert(transactionCategory)
+		.values([
+			{ id: 1, value: "אוכל לבית ופארם", is_income: false, is_expense: true },
+			{ id: 2, value: "בילויים", is_income: false, is_expense: true },
+			{ id: 4, value: "בריאות", is_income: false, is_expense: true },
+			{ id: 5, value: "חשבונות", is_income: false, is_expense: true },
+			{ id: 6, value: "רכב", is_income: false, is_expense: true },
+			{ id: 7, value: "תחבצ", is_income: false, is_expense: true },
+			{ id: 8, value: "תחזוקת בית", is_income: false, is_expense: true },
+			{ id: 9, value: "קפה, מסעדות וברים", is_income: false, is_expense: true },
+			{ id: 10, value: "טיפוח ופנאי", is_income: false, is_expense: true },
+			{ id: 11, value: "קניות", is_income: false, is_expense: true },
+			{ id: 12, value: "מתנות", is_income: true, is_expense: true },
+			{ id: 13, value: "שונות", is_income: false, is_expense: true },
+			{ id: 14, value: "משכורת", is_income: true, is_expense: false },
+			{ id: 15, value: "שכר דירה", is_income: true, is_expense: true },
+		])
+		.onConflictDoNothing();
+
+	// Explicit root IDs must be reflected in the sequence before inserting children.
+	await syncSeedSequences();
+
+	const subcategories: Record<string, string[]> = {
+		"אוכל לבית ופארם": ["סופר", "שוק", "פארם"],
+		בריאות: ["טיפולים", "ביטוחים", "תרופות"],
+		חשבונות: ["חשמל", "מים", "ארנונוה", "גז", "מנויים", "סלולר", "אינטרנט"],
+		רכב: ["דלק", "טיפולים", "חניה", "ביטוחים"],
+		תחבצ: ["רב קו", "מונית"],
+		משכורת: ["סופי", "קידום", "שיעורים פרטיים"],
+		"תחזוקת בית": ["קניות", "תיקונים"],
+		"קפה, מסעדות וברים": ["קפה", "מסעדות", "ברים", "נשנושים"],
+	};
+
+	const roots = await db
+		.select()
+		.from(transactionCategory)
+		.where(isNull(transactionCategory.parent_id));
+
+	const children = roots.flatMap((category) =>
+		(subcategories[category.value] ?? []).map((value) => ({
+			value,
+			parent_id: category.id,
+			is_income: category.is_income,
+			is_expense: category.is_expense,
+		})),
+	);
+
+	if (children.length > 0) {
+		await db.insert(transactionCategory).values(children).onConflictDoNothing();
+	}
+}
+
 async function seedTransactions() {
-	const categories = await db
+	const allCategories = await db
 		.select({
 			id: transactionCategory.id,
+			parentId: transactionCategory.parent_id,
 			isIncome: transactionCategory.is_income,
 			isExpense: transactionCategory.is_expense,
 		})
 		.from(transactionCategory);
+	const categories = allCategories.filter(
+		(category) => category.parentId === null,
+	);
 
 	const transactions = Array.from({ length: 200 }, () => {
 		const category = categories[randomInt(0, categories.length)];
+		const subcategories = allCategories.filter(
+			(subcategory) => subcategory.parentId === category.id,
+		);
+		const subcategory =
+			subcategories.length > 0
+				? subcategories[randomInt(0, subcategories.length)]
+				: null;
 
 		let isPositive: boolean;
 
@@ -79,7 +153,7 @@ async function seedTransactions() {
 			currency_id: 7,
 			transaction_type_id: randomInt(1, 6),
 			category_id: category.id,
-			tag_id: null,
+			sub_category_id: subcategory?.id ?? null,
 			project_id: null,
 			description: `Test transaction ${randomUUID().slice(0, 8)}`,
 			transaction_at: transactionAt,
@@ -120,65 +194,7 @@ async function seed() {
 		])
 		.onConflictDoNothing();
 
-	await db
-		.insert(transactionTag)
-		.values([
-			{ id: 1, value: "ירקות" },
-			{ id: 2, value: "פירות" },
-			{ id: 3, value: "ביצים" },
-			{ id: 4, value: "יבשים" },
-			{ id: 5, value: "טיסה" },
-			{ id: 6, value: "ביטוח" },
-			{ id: 7, value: "השכרת רכב" },
-			{ id: 8, value: "גוד פארם" },
-			{ id: 9, value: "סים" },
-			{ id: 10, value: "מטרו" },
-			{ id: 11, value: "מסעדה" },
-			{ id: 12, value: "קפה" },
-			{ id: 13, value: "לינה" },
-			{ id: 14, value: "אוכל" },
-			{ id: 15, value: "קרם" },
-			{ id: 16, value: "בירה" },
-			{ id: 17, value: "מים" },
-			{ id: 18, value: "מתנה" },
-			{ id: 19, value: "חטיף" },
-			{ id: 20, value: "כביש אגרה" },
-			{ id: 21, value: "אביזרי ים" },
-			{ id: 22, value: "סופר" },
-			{ id: 23, value: "כובע" },
-			{ id: 24, value: "בית מרקחת" },
-			{ id: 25, value: "אתר תיירות" },
-			{ id: 26, value: "שופינג" },
-			{ id: 27, value: "דלק" },
-			{ id: 28, value: "גבינות" },
-			{ id: 29, value: "ירקות" },
-			{ id: 30, value: "פירות" },
-			{ id: 31, value: "ביצים" },
-			{ id: 32, value: "שיעור פרטי" },
-			{ id: 33, value: "יין" },
-			{ id: 34, value: "וולט" },
-		])
-		.onConflictDoNothing();
-
-	await db
-		.insert(transactionCategory)
-		.values([
-			{ id: 1, value: "אוכל לבית ופארם", is_income: false, is_expense: true },
-			{ id: 2, value: "בילויים", is_income: false, is_expense: true },
-			{ id: 4, value: "בריאות", is_income: false, is_expense: true },
-			{ id: 5, value: "חשבונות", is_income: false, is_expense: true },
-			{ id: 6, value: "רכב", is_income: false, is_expense: true },
-			{ id: 7, value: "תחבצ", is_income: false, is_expense: true },
-			{ id: 8, value: "תחזוקת בית", is_income: false, is_expense: true },
-			{ id: 9, value: "קפה, מסעדות וברים", is_income: false, is_expense: true },
-			{ id: 10, value: "טיפוח ופנאי", is_income: false, is_expense: true },
-			{ id: 11, value: "קניות", is_income: false, is_expense: true },
-			{ id: 12, value: "מתנות", is_income: true, is_expense: true },
-			{ id: 13, value: "שונות", is_income: false, is_expense: true },
-			{ id: 14, value: "משכורת", is_income: true, is_expense: false },
-			{ id: 15, value: "שכר דירה", is_income: true, is_expense: true },
-		])
-		.onConflictDoNothing();
+	await seedCategoryTree();
 
 	await db.insert(profile).values({
 		id: profileId,

@@ -35,9 +35,6 @@ export function Dashboard() {
 					<DashboardSection title="Category">
 						<BarChartFilter filterType="category" dateRange={dateRange} />
 					</DashboardSection>
-					<DashboardSection title="Content">
-						<BarChartFilter filterType="tag" dateRange={dateRange} />
-					</DashboardSection>
 				</div>
 			</article>
 		</>
