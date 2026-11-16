@@ -2,7 +2,7 @@ import { type AutoSyncConf, currency, profile } from "@piga/db/schema";
 import type { createDb } from "../../../_shared/db.ts";
 import { loadCredential } from "../../lib/loadCredential.ts";
 import { filterNewTransactions } from "./filterNewTransactions.ts";
-import { login } from "./login.ts";
+
 import { mapMaxTransaction } from "./mapping.ts";
 import { parseTransaction } from "./parseTransaction.ts";
 import { scrape } from "./scrape.ts";
@@ -45,10 +45,9 @@ export async function syncMax(
 		throw new Error("MAX password is required");
 	}
 
-	const cookie = await login(username, credentials.password);
-
 	const rawTransactions = await scrape({
-		cookie,
+		username,
+		password: credentials.password,
 		startDate,
 		endDate,
 		date: endDate,

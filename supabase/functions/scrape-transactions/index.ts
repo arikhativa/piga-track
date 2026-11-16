@@ -40,7 +40,12 @@ Deno.serve(
 				} finally {
 					await db.$client.end({ timeout: 5 });
 				}
-			} catch {
+			} catch (error) {
+				console.error(
+					"Unable to scrape sources",
+					error instanceof Error ? error.message : "Unknown error",
+				);
+
 				return Response.json(
 					{ error: "Unable to scrape sources" },
 					{ status: 500 },
