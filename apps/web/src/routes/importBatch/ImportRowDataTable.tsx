@@ -5,15 +5,15 @@ import { Check, EyeOff, RotateCcw, SquareArrowUpRight, X } from "lucide-react";
 import { useNavigate, useRefresh } from "ra-core";
 import { useCallback, useState } from "react";
 import { Spinner } from "#/components/admin/spinner";
-import { DataTableSignCol } from "#/components/custom-ui/DataTableSignCol";
+import { DataTableAmount } from "#/components/custom-ui/DataTableAmount";
 import { DataTableTransactionTypeCol } from "#/components/custom-ui/DataTableTransactionTypeCol";
 import { Badge } from "#/components/ui/badge";
 import { Button } from "#/components/ui/button";
 import { Separator } from "#/components/ui/separator";
-import { useCurrencyList } from "#/hooks/use-currency-list";
+
 import { useIsMobile } from "#/hooks/use-mobile";
 import { useProfile } from "#/hooks/use-profile";
-import { formatCurrency } from "#/lib/format/formatNIS";
+
 import { importRowAction } from "#/lib/importer/importRowAction";
 import { getRowStateVariant } from "#/lib/variant/getRowStateVariant";
 import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
@@ -36,7 +36,7 @@ export const ImportRowDataTable = ({
 	const isMobile = useIsMobile();
 
 	const navigate = useNavigate();
-	const { data } = useCurrencyList();
+
 	const refresh = useRefresh();
 	const [hidingRowId, setHidingRowId] = useState<number | null>(null);
 	const { displayedRows, optimisticMerges, hasOptimisticMerges, mergeRow } =
@@ -63,7 +63,7 @@ export const ImportRowDataTable = ({
 		<DataTable<ImportRow>
 			data={displayedRows}
 			mobileCardHeaderDir="rtl"
-			mobileCardHeaderClassName="grid grid-cols-[1fr_auto_auto_1fr] items-center justify-items-start gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
+			mobileCardHeaderClassName="grid grid-cols-[1fr_auto_1fr] items-center justify-items-start gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
 			mobileCardFooterClassName="border-t !p-0 m-0"
 			mobileCardContentClassName="py-4 grid grid-cols-2"
 			empty={<ImportRowSyncEmpty />}
@@ -93,31 +93,11 @@ export const ImportRowDataTable = ({
 				<ProfileFullName />
 			</DataTable.Col>
 
-			<DataTableSignCol
+			<DataTableAmount<ImportRow>
 				mobileCardHeader
 				mobileHideLabel
 				cellClassName={navCellClass}
 				onCellClick={navToRealTrans}
-			/>
-
-			<DataTable.Col
-				mobileCardHeader
-				mobileHideLabel
-				cellClassName={navCellClass}
-				onCellClick={navToRealTrans}
-				source="amount"
-				render={(record) => {
-					const currency = data?.find(
-						(currency) => currency.id === record.currency_id,
-					);
-
-					return (
-						<>
-							{formatCurrency(Math.abs(Number(record.amount)))}{" "}
-							{currency?.symbol}
-						</>
-					);
-				}}
 			/>
 
 			<DataTable.Col

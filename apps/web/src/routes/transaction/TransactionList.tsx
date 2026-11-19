@@ -1,5 +1,8 @@
+import {
+	CategorySelectInput,
+	ChildCategorySelectInput,
+} from "#/components/form/CategorySelectInput";
 import { DEFAULT_PER_PAGE } from "#/lib/constant";
-import { categoryOptionText } from "#/lib/form/categoryOptionText";
 import { projectOptionText } from "#/lib/form/projectOptionText";
 
 import { TransactionDataTable } from "#/routes/transaction/TransactionDataTable";
@@ -9,10 +12,18 @@ import {
 	List,
 	NumberInput,
 	ReferenceInput,
+	SearchInput,
 	SelectInput,
 } from "@/components/admin";
 
 const transactionFilters = [
+	<SearchInput
+		key="description"
+		source="description@ilike"
+		placeholder="Search description..."
+		alwaysOn
+	/>,
+
 	<DateInput
 		key="transaction_at@gte"
 		source="transaction_at@gte"
@@ -38,13 +49,13 @@ const transactionFilters = [
 		<SelectInput label="Project" optionText={projectOptionText} />
 	</ReferenceInput>,
 
-	<ReferenceInput
-		key="category"
-		source="category_id"
-		reference="transaction_category"
-	>
-		<SelectInput label="Category" optionText={categoryOptionText} />
-	</ReferenceInput>,
+	<CategorySelectInput key="category" source="category_id" label="Category" />,
+
+	<ChildCategorySelectInput
+		key="sub_category"
+		source="sub_category_id"
+		label="Subcategory"
+	/>,
 
 	<NumberInput
 		key="amount_nis@gte"
@@ -61,6 +72,7 @@ const transactionFilters = [
 export const TransactionList = () => {
 	return (
 		<List
+			title={""}
 			filters={transactionFilters}
 			sort={{ field: "transaction_at", order: "DESC" }}
 			perPage={DEFAULT_PER_PAGE}

@@ -1,12 +1,13 @@
 import { ReferenceField } from "#/components/admin";
 import { Badge } from "#/components/ui/badge";
+import { NO_VALUE } from "#/lib/constant";
 
 export function ProfileFullName() {
 	return (
 		<ReferenceField
 			source="profile_id"
 			reference="profile"
-			empty="--"
+			empty={NO_VALUE}
 			render={({ referenceRecord }) =>
 				referenceRecord ? (
 					<Badge

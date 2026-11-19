@@ -1,4 +1,4 @@
-import { DEFAULT_PER_PAGE } from "#/lib/constant";
+import { DEFAULT_PER_PAGE, NO_VALUE } from "#/lib/constant";
 import { DataTable, List } from "@/components/admin";
 
 export const ProfileList = () => (
@@ -10,7 +10,7 @@ export const ProfileList = () => (
 			<DataTable.Col
 				source="credit_card"
 				label="Credit cards"
-				render={(record) => record.credit_card?.join(", ") || "--"}
+				render={(record) => record.credit_card?.join(", ") || NO_VALUE}
 			/>
 		</DataTable>
 	</List>
