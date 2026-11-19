@@ -17,6 +17,7 @@ import {
 	type CreateImportBatchInput,
 	createImportBatch,
 } from "#/lib/importer/createImportBatch";
+import { transactionSearchFilter } from "#/lib/transaction/searchFilter";
 
 type WithApiKey = {
 	instanceUrl: string;
@@ -90,11 +91,17 @@ export const supabaseDataProvider = ({
 		...baseProvider,
 
 		getList: (resource, params) => {
-			if (resource !== "transaction" || !("amountType" in params.filter)) {
+			if (resource !== "transaction") {
 				return baseProvider.getList(resource, params);
 			}
 
-			const { amountType, ...filter } = params.filter;
+			const {
+				amountType,
+				"description@ilike": search,
+				...filter
+			} = params.filter;
+			const searchFilter =
+				typeof search === "string" ? transactionSearchFilter(search) : {};
 			const amountFilter =
 				amountType === "negative"
 					? { "amount_nis@lt": 0 }
@@ -104,7 +111,7 @@ export const supabaseDataProvider = ({
 
 			return baseProvider.getList(resource, {
 				...params,
-				filter: { ...filter, ...amountFilter },
+				filter: { ...filter, ...amountFilter, ...searchFilter },
 			});
 		},
 

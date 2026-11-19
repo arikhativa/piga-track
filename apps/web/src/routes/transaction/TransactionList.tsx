@@ -20,7 +20,7 @@ const transactionFilters = [
 	<SearchInput
 		key="description"
 		source="description@ilike"
-		placeholder="Search description..."
+		placeholder="Smart search"
 		alwaysOn
 	/>,
 
@@ -29,15 +29,16 @@ const transactionFilters = [
 		source="transaction_at@gte"
 		label="From"
 	/>,
+
 	<DateInput key="transaction_at@lte" source="transaction_at@lte" label="To" />,
 
 	<SelectInput
 		key="amountType"
 		source="amountType"
-		label="Amount type"
+		label="Income / Expense"
 		choices={[
-			{ id: "negative", name: "Negative" },
-			{ id: "positive", name: "Positive" },
+			{ id: "negative", name: "Expense" },
+			{ id: "positive", name: "Income" },
 		]}
 	/>,
 
