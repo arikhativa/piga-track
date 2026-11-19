@@ -1,5 +1,5 @@
 import { required, useRecordContext } from "ra-core";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import {
 	SpentReceivedTabs,
@@ -32,6 +32,19 @@ export function TransactionForm({
 
 	const { data: profile, isPending: isProfilePending } = useProfile();
 
+	const defaultValues = useMemo(
+		() => ({
+			category_id: profile?.default_category_id,
+			sub_category_id: profile?.default_sub_category_id,
+			project_id: profile?.default_project_id,
+			profile_id: profile?.id,
+			transaction_at: new Date().toISOString(),
+			currency_id: profile?.default_currency_id,
+			transaction_type_id: profile?.default_transaction_type_id,
+		}),
+		[profile],
+	);
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: this should run on init only
 	useEffect(() => {
 		setType(record?.amount > 0 ? "received" : "spent");
@@ -42,18 +55,7 @@ export function TransactionForm({
 	}
 
 	return (
-		<SimpleForm
-			toolbar={toolbar}
-			defaultValues={{
-				category_id: profile?.default_category_id,
-				sub_category_id: profile?.default_sub_category_id,
-				project_id: profile?.default_project_id,
-				profile_id: profile?.id,
-				transaction_at: new Date().toISOString(),
-				currency_id: profile?.default_currency_id,
-				transaction_type_id: profile?.default_transaction_type_id,
-			}}
-		>
+		<SimpleForm toolbar={toolbar} defaultValues={defaultValues}>
 			<div className="flex justify-center items-end gap-4">
 				<SpentReceivedTabs type={type} setType={setType} />
 				<NumberInput
