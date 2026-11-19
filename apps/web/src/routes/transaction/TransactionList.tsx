@@ -21,8 +21,9 @@ const transactionFilters = [
 		key="description"
 		source="description@ilike"
 		placeholder="Smart search"
+		className="max-sm:w-full max-sm:[.filter-field:has(&)]:w-full"
 		alwaysOn
-	/>,
+	></SearchInput>,
 
 	<DateInput
 		key="transaction_at@gte"
