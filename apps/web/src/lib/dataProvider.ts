@@ -1,3 +1,4 @@
+import type { TransactionCategory } from "@piga/db/types";
 import postgrestRestProvider, {
 	defaultPrimaryKeys,
 	defaultSchema,
@@ -5,6 +6,7 @@ import postgrestRestProvider, {
 } from "@raphiniert/ra-data-postgrest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
+import type { QueryClient } from "@tanstack/react-query";
 import {
 	type CreateParams,
 	type CreateResult,
@@ -14,10 +16,19 @@ import {
 	type RaRecord,
 } from "ra-core";
 import {
+	categoryListParams,
+	categoryListQueryKey,
+	categoryListStaleTime,
+} from "#/lib/category-list";
+import {
 	type CreateImportBatchInput,
 	createImportBatch,
 } from "#/lib/importer/createImportBatch";
-import { transactionSearchFilter } from "#/lib/transaction/searchFilter";
+import {
+	type SearchCategory,
+	transactionSearchCategoryNames,
+	transactionSearchFilter,
+} from "#/lib/transaction/searchFilter";
 
 type WithApiKey = {
 	instanceUrl: string;
@@ -56,14 +67,16 @@ type WithSupabaseClient = {
 export const supabaseDataProvider = ({
 	instanceUrl,
 	apiKey,
+	queryClient,
 	supabaseClient: supabaseClientParam,
 	httpClient: httpClientParam,
 	defaultListOp = "eq",
 	primaryKeys = defaultPrimaryKeys,
 	schema = defaultSchema,
 	...rest
-}: (WithApiKey | WithSupabaseClient) &
-	Partial<Omit<IDataProviderConfig, "apiUrl">>): DataProvider => {
+}: (WithApiKey | WithSupabaseClient) & { queryClient: QueryClient } & Partial<
+		Omit<IDataProviderConfig, "apiUrl">
+	>): DataProvider => {
 	const supabaseClient =
 		supabaseClientParam ??
 		(apiKey
@@ -90,7 +103,7 @@ export const supabaseDataProvider = ({
 	return {
 		...baseProvider,
 
-		getList: (resource, params) => {
+		getList: async (resource, params) => {
 			if (resource !== "transaction") {
 				return baseProvider.getList(resource, params);
 			}
@@ -100,8 +113,29 @@ export const supabaseDataProvider = ({
 				"description@ilike": search,
 				...filter
 			} = params.filter;
+			let categories: SearchCategory[] = [];
+			if (typeof search === "string" && search.trim()) {
+				const meta = params.meta?.schema
+					? { schema: params.meta.schema }
+					: undefined;
+				const result = await queryClient.fetchQuery({
+					queryKey: categoryListQueryKey(meta),
+					queryFn: () =>
+						baseProvider.getList<TransactionCategory>("transaction_category", {
+							...categoryListParams,
+							meta,
+						}),
+					staleTime: categoryListStaleTime,
+				});
+				const names = new Set(transactionSearchCategoryNames(search));
+				categories = result.data.filter((category) =>
+					names.has(category.value),
+				);
+			}
 			const searchFilter =
-				typeof search === "string" ? transactionSearchFilter(search) : {};
+				typeof search === "string"
+					? transactionSearchFilter(search, categories)
+					: {};
 			const amountFilter =
 				amountType === "negative"
 					? { "amount_nis@lt": 0 }

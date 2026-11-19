@@ -1,26 +1,17 @@
-import type { ImportRow, TransactionCategory } from "@piga/db/types";
-import { useCreate, useDataProvider, useGetList, useRefresh } from "ra-core";
+import type { ImportRow } from "@piga/db/types";
+import { useCreate, useDataProvider, useRefresh } from "ra-core";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
+import { useCategoryList } from "#/hooks/use-category-list";
 
 export function ImportRowSubCategory({ record }: { record: ImportRow }) {
 	const dataProvider = useDataProvider();
 	const refresh = useRefresh();
 	const [create] = useCreate();
 
-	const { data: categories = [], isPending } = useGetList<TransactionCategory>(
-		"transaction_category",
-		{
-			filter: { parent_id: record.category_id ?? -1 },
-			pagination: {
-				page: 1,
-				perPage: 1000,
-			},
-			sort: {
-				field: "value",
-				order: "ASC",
-			},
-		},
-		{ enabled: record.category_id != null },
+	const { data: categories = [], isPending } = useCategoryList();
+	const subCategories = categories.filter(
+		(category) =>
+			record.category_id != null && category.parent_id === record.category_id,
 	);
 
 	const handleCreate = async (value: string) => {
@@ -53,7 +44,7 @@ export function ImportRowSubCategory({ record }: { record: ImportRow }) {
 	return (
 		<DynamicSelect
 			disabled={record.status !== "pending" || record.category_id == null}
-			choices={categories}
+			choices={subCategories}
 			value={record.sub_category_id}
 			optionText="value"
 			emptyText={

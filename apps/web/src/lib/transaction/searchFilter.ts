@@ -24,6 +24,10 @@ const reversedOperators = {
 } as const;
 
 const descriptionFields = new Set(["description", "desc", "d"]);
+const categoryFields = new Set(["category", "cate", "c"]);
+const textFields = new Set([...descriptionFields, ...categoryFields]);
+
+export type SearchCategory = { id: number; value: string };
 const logicalOperators: Record<string, string> = {
 	"&": "&&",
 	"&&": "&&",
@@ -33,7 +37,7 @@ const logicalOperators: Record<string, string> = {
 	or: "||",
 };
 
-// Keep quoted literals and whole identifiers intact. Bare description values
+// Keep quoted literals and whole identifiers intact. Bare text values
 // extend to the next logical operator or closing parenthesis, not just one word.
 const normalizeSearchExpression = (text: string) => {
 	const tokens =
@@ -49,7 +53,7 @@ const normalizeSearchExpression = (text: string) => {
 
 	for (let index = 0; index < tokens.length; index++) {
 		const token = tokens[index];
-		if (descriptionFields.has(token)) {
+		if (textFields.has(token)) {
 			const operatorIndex = nextNonWhitespace(index + 1);
 			const operator = tokens[operatorIndex];
 			if (operator === "==" || operator === "!=") {
@@ -105,8 +109,67 @@ const amountKind = (node: ASTNode) => {
 	}
 };
 
-const isDescription = (node: ASTNode) =>
-	node.op === "id" && descriptionFields.has(node.args);
+const textComparison = (node: ASTNode) => {
+	if (node.op !== "==" && node.op !== "!=") return undefined;
+	const [left, right] = node.args;
+	const [field, literal] =
+		left.op === "id" && textFields.has(left.args)
+			? [left, right]
+			: [right, left];
+	if (
+		field.op !== "id" ||
+		!textFields.has(field.args) ||
+		literal.op !== "value" ||
+		typeof literal.args !== "string"
+	)
+		return undefined;
+	return { field: field.args, value: literal.args, operator: node.op };
+};
+
+const categoryPredicate = (
+	name: string,
+	categories: readonly SearchCategory[],
+	negated = false,
+) => {
+	const ids = categories
+		.filter((category) => category.value === name)
+		.map((category) => category.id);
+	// Transaction IDs are non-null: an unknown category must never match.
+	if (!ids.length) return negated ? "id.not.is.null" : "id.is.null";
+	const list = `(${ids.join(",")})`;
+	if (negated) {
+		return (
+			"and(or(category_id.is.null,category_id.not.in." +
+			list +
+			"),or(sub_category_id.is.null,sub_category_id.not.in." +
+			list +
+			"))"
+		);
+	}
+	return `or(category_id.in.${list},sub_category_id.in.${list})`;
+};
+
+export const transactionSearchCategoryNames = (search: string): string[] => {
+	const text = search.trim();
+	if (!text) return [];
+	const names = new Set([text]);
+	const collect = (node: ASTNode) => {
+		if (node.op === "&&" || node.op === "||") {
+			collect(node.args[0]);
+			collect(node.args[1]);
+			return;
+		}
+		const comparison = textComparison(node);
+		if (comparison && categoryFields.has(comparison.field))
+			names.add(comparison.value);
+	};
+	try {
+		collect(searchEnvironment.parse(normalizeSearchExpression(text)).ast);
+	} catch {
+		// Plain text still participates in exact category-name matching.
+	}
+	return [...names];
+};
 
 const numericLiteral = (node: ASTNode): number | bigint | undefined => {
 	if (node.op === "-_") {
@@ -123,14 +186,29 @@ const numericLiteral = (node: ASTNode): number | bigint | undefined => {
 
 // Translate only the supported CEL subset, never execute user expressions or
 // filter a single page locally: PostgREST must compute the count and pagination.
-const searchPredicate = (node: ASTNode): string | undefined => {
+const searchPredicate = (
+	node: ASTNode,
+	categories: readonly SearchCategory[],
+): string | undefined => {
+	const comparison = textComparison(node);
+	if (comparison && categoryFields.has(comparison.field)) {
+		return categoryPredicate(
+			comparison.value,
+			categories,
+			comparison.operator === "!=",
+		);
+	}
+	if (comparison && descriptionFields.has(comparison.field)) {
+		const operator = comparison.operator === "==" ? "ilike" : "not.ilike";
+		return `description.${operator}.${JSON.stringify(`*${comparison.value}*`)}`;
+	}
 	const kind = amountKind(node);
 	if (kind === "expense") return "amount_nis.lt.0";
 	if (kind === "income") return "amount_nis.gt.0";
 
 	if (node.op === "&&" || node.op === "||") {
-		const left = searchPredicate(node.args[0]);
-		const right = searchPredicate(node.args[1]);
+		const left = searchPredicate(node.args[0], categories);
+		const right = searchPredicate(node.args[1], categories);
 		if (!left || !right) return undefined;
 		return `${node.op === "&&" ? "and" : "or"}(${left},${right})`;
 	}
@@ -143,19 +221,6 @@ const searchPredicate = (node: ASTNode): string | undefined => {
 		case "<":
 		case "<=": {
 			const [left, right] = node.args;
-			if (node.op === "==" || node.op === "!=") {
-				const [field, literal] = isDescription(left)
-					? [left, right]
-					: [right, left];
-				if (
-					isDescription(field) &&
-					literal.op === "value" &&
-					typeof literal.args === "string"
-				) {
-					const operator = node.op === "==" ? "ilike" : "not.ilike";
-					return `description.${operator}.${JSON.stringify(`*${literal.args}*`)}`;
-				}
-			}
 
 			const reversed = amountKind(right) !== undefined;
 			const fieldKind = amountKind(reversed ? right : left);
@@ -186,6 +251,7 @@ const searchPredicate = (node: ASTNode): string | undefined => {
 
 export const transactionSearchFilter = (
 	search: string,
+	categories: readonly SearchCategory[] = [],
 ): Record<string, string> => {
 	const text = search.trim();
 	if (!text) return {};
@@ -195,7 +261,7 @@ export const transactionSearchFilter = (
 		const { ast } = searchEnvironment.parse(normalizeSearchExpression(text));
 		const value = numericLiteral(ast);
 		if (value === undefined) {
-			predicate = searchPredicate(ast);
+			predicate = searchPredicate(ast, categories);
 		} else if (typeof value === "bigint" || Number.isInteger(value)) {
 			// Match amounts whose floor or ceiling equals the searched magnitude.
 			const magnitude = value < 0 ? -value : value;
@@ -220,7 +286,10 @@ export const transactionSearchFilter = (
 		// Plain text and unfinished expressions remain description searches.
 	}
 
-	if (!predicate) return { "description@ilike": text };
+	const categoryMatch = categoryPredicate(text, categories);
+	if (!predicate && categoryMatch === "id.is.null") {
+		return { "description@ilike": text };
+	}
 
 	// Preserve the provider's all-words description search. Quote each value so
 	// commas, parentheses, quotes and backslashes cannot alter the filter tree.
@@ -229,6 +298,10 @@ export const transactionSearchFilter = (
 		.map((word) => `description.ilike.${JSON.stringify(`*${word}*`)}`)
 		.join(",");
 
+	const alternatives = [`and(${description})`];
+	if (predicate) alternatives.push(predicate);
+	if (categoryMatch !== "id.is.null") alternatives.push(categoryMatch);
+
 	// An empty operator passes the complete logical filter through unchanged.
-	return { "or@": `(and(${description}),${predicate})` };
+	return { "or@": `(${alternatives.join(",")})` };
 };

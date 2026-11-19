@@ -1,4 +1,5 @@
 import "../styles.css";
+import { QueryClient } from "@tanstack/react-query";
 import {
 	Bookmark,
 	BookOpenCheck,
@@ -62,7 +63,9 @@ import { ImportRowSyncList } from "./importRowSync/ImportRowSyncList";
 const instanceUrl = import.meta.env.VITE_SUPABASE_URL;
 const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+const queryClient = new QueryClient();
 const dataProvider = supabaseDataProvider({
+	queryClient,
 	instanceUrl,
 	apiKey,
 	supabaseClient,
@@ -77,6 +80,7 @@ export function App() {
 				<Admin
 					authProvider={authProvider}
 					dataProvider={dataProvider}
+					queryClient={queryClient}
 					requireAuth
 				>
 					<CustomRoutes>

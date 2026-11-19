@@ -1,4 +1,4 @@
-import type { TransactionCategory, TransactionTag } from "@piga/db/types";
+import type { TransactionTag } from "@piga/db/types";
 import { parseAsInteger, useQueryStates } from "nuqs";
 import { useGetList } from "ra-core";
 import { useMemo } from "react";
@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { BarChartMultiple } from "#/components/charts/BarChartMultiple";
 import { BarChartSingle } from "#/components/charts/BarChartSingle";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
+import { useCategoryList } from "#/hooks/use-category-list";
 import type { DateRange } from "#/hooks/use-dashboard-date-range";
 import { useTransactionData } from "#/hooks/use-transaction-data";
 
@@ -31,10 +32,7 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 	const selectedId = isCategory ? queryState.categoryId : queryState.tagId;
 
 	const { data: categories = [], isPending: isCategoriesPending } =
-		useGetList<TransactionCategory>("transaction_category", {
-			pagination: { page: 1, perPage: 1000 },
-			sort: { field: "value", order: "ASC" },
-		});
+		useCategoryList();
 
 	const { data: tags = [], isPending: isTagsPending } =
 		useGetList<TransactionTag>("transaction_tag", {

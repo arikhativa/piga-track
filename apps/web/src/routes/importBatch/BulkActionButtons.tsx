@@ -1,8 +1,4 @@
-import type {
-	Profile,
-	TransactionCategory,
-	TransactionProject,
-} from "@piga/db/types";
+import type { Profile, TransactionProject } from "@piga/db/types";
 import { Loader2 } from "lucide-react";
 import { useGetList, useListContext, useNotify, useRefresh } from "ra-core";
 import { useState } from "react";
@@ -10,6 +6,7 @@ import { SelectAllButton } from "#/components/admin";
 import { DynamicSelect } from "#/components/custom-ui/DynamicSelect";
 import { Button } from "#/components/ui/button";
 import { Separator } from "#/components/ui/separator";
+import { useCategoryList } from "#/hooks/use-category-list";
 import { importRowAction } from "#/lib/importer/importRowAction";
 
 export function BulkActionButtons({
@@ -30,16 +27,7 @@ export function BulkActionButtons({
 	const [isSubmittingProject, setIsSubmittingProject] = useState(false);
 
 	const { data: categories = [], isPending: isCategoriesPending } =
-		useGetList<TransactionCategory>("transaction_category", {
-			pagination: {
-				page: 1,
-				perPage: 1000,
-			},
-			sort: {
-				field: "value",
-				order: "ASC",
-			},
-		});
+		useCategoryList();
 
 	const { data: projects = [], isPending: isProjectsPending } =
 		useGetList<TransactionProject>("transaction_project", {
