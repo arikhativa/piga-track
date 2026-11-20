@@ -14,9 +14,8 @@ export function ProjectShow() {
 					sort={{ field: "created_at", order: "DESC" }}
 				>
 					<TransactionDataTable
-						disableSortCreatedAt
 						bulkActionButtons={false}
-						colToHide={["project", "category"]}
+						hiddenColumns={["project_id"]}
 					/>
 				</ReferenceManyField>
 			</article>
