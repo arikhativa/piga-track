@@ -1,5 +1,5 @@
-import { required, useRecordContext } from "ra-core";
-import { useEffect, useMemo } from "react";
+import { required } from "ra-core";
+import { useMemo } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import {
 	SpentReceivedTabs,
@@ -11,6 +11,12 @@ import {
 } from "#/components/form/CategorySelectInput";
 import { DynamicSelectInput } from "#/components/form/DynamicSelectInput";
 import { ResetDateTimeButton } from "#/components/form/ResetDateTimeButton";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "#/components/ui/accordion";
 import { Separator } from "#/components/ui/separator";
 import { useProfile } from "#/hooks/use-profile";
 import { currencyOptionText } from "#/lib/form/currencyOptionText";
@@ -27,9 +33,11 @@ export function TransactionForm({
 	type,
 	setType,
 	toolbar,
-}: SpentReceivedTabsProps & { toolbar?: React.JSX.Element }) {
-	const record = useRecordContext();
-
+	readOnly = false,
+}: SpentReceivedTabsProps & {
+	toolbar?: React.JSX.Element;
+	readOnly?: boolean;
+}) {
 	const { data: profile, isPending: isProfilePending } = useProfile();
 
 	const defaultValues = useMemo(
@@ -45,22 +53,28 @@ export function TransactionForm({
 		[profile],
 	);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: this should run on init only
-	useEffect(() => {
-		setType(record?.amount > 0 ? "received" : "spent");
-	}, []);
-
 	if (isProfilePending) {
 		return <Spinner />;
 	}
 
 	return (
-		<SimpleForm toolbar={toolbar} defaultValues={defaultValues}>
+		<SimpleForm
+			toolbar={readOnly ? null : toolbar}
+			defaultValues={readOnly ? undefined : defaultValues}
+			onSubmit={readOnly ? () => {} : undefined}
+		>
 			<div className="flex justify-center items-end gap-4">
-				<SpentReceivedTabs type={type} setType={setType} />
+				<SpentReceivedTabs type={type} setType={setType} disabled={readOnly} />
+				<ReferenceInput
+					source="transaction_type_id"
+					reference="transaction_type"
+				>
+					<SelectInput label="Type" validate={required()} disabled={readOnly} />
+				</ReferenceInput>
+
 				<NumberInput
-					autoFocus
-					className="flex-1"
+					autoFocus={!readOnly}
+					disabled={readOnly}
 					source="amount"
 					label="Amount"
 					type="number"
@@ -71,54 +85,62 @@ export function TransactionForm({
 
 			<Separator />
 
-			<div className="grid grid-cols-2 gap-4">
-				<DynamicCategorySelectInput />
+			<DynamicCategorySelectInput disabled={readOnly} />
 
-				<DynamicChildCategorySelectInput />
-
-				<ReferenceInput source="project_id" reference="transaction_project">
-					<DynamicSelectInput label="Project" optionText="value" />
-				</ReferenceInput>
-
-				<ReferenceInput source="profile_id" reference="profile">
-					<SelectInput
-						label="Owner"
-						optionText={(profile) =>
-							`${profile.first_name} ${profile.last_name}`
-						}
-					/>
-				</ReferenceInput>
-			</div>
+			<DynamicChildCategorySelectInput disabled={readOnly} />
 
 			<Separator />
 
-			<div className="grid grid-cols-2 gap-4">
-				<div className="col-span-2 flex items-end gap-4">
-					<DateTimeInput
-						className="flex-1"
-						source="transaction_at"
-						validate={required()}
-					/>
-					<ResetDateTimeButton />
-				</div>
-				<ReferenceInput source="currency_id" reference="currency">
-					<SelectInput
-						label="Currency"
-						optionText={currencyOptionText}
-						validate={required()}
-					/>
-				</ReferenceInput>
-				<ReferenceInput
-					source="transaction_type_id"
-					reference="transaction_type"
-				>
-					<SelectInput label="Type" validate={required()} />
-				</ReferenceInput>
-			</div>
+			<TextInput
+				source="description"
+				label="Description"
+				multiline
+				disabled={readOnly}
+			/>
 
-			<Separator />
+			<Accordion>
+				<AccordionItem value="advanced">
+					<AccordionTrigger>Advanced</AccordionTrigger>
+					<AccordionContent keepMounted className="space-y-4">
+						<ReferenceInput source="profile_id" reference="profile">
+							<SelectInput
+								label="Owner"
+								disabled={readOnly}
+								optionText={(profile) =>
+									`${profile.first_name} ${profile.last_name}`
+								}
+							/>
+						</ReferenceInput>
 
-			<TextInput source="description" label="Description" multiline />
+						<ReferenceInput source="currency_id" reference="currency">
+							<SelectInput
+								label="Currency"
+								disabled={readOnly}
+								optionText={currencyOptionText}
+								validate={required()}
+							/>
+						</ReferenceInput>
+
+						<div className="col-span-2 flex items-end gap-4">
+							<DateTimeInput
+								className="flex-1"
+								source="transaction_at"
+								disabled={readOnly}
+								validate={required()}
+							/>
+							{readOnly ? null : <ResetDateTimeButton />}
+						</div>
+
+						<ReferenceInput source="project_id" reference="transaction_project">
+							<DynamicSelectInput
+								label="Project"
+								optionText="value"
+								disabled={readOnly}
+							/>
+						</ReferenceInput>
+					</AccordionContent>
+				</AccordionItem>
+			</Accordion>
 		</SimpleForm>
 	);
 }

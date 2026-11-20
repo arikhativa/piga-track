@@ -55,6 +55,7 @@ import { ProjectShow } from "#/routes/project/ProjectShow";
 import { TransactionCreate } from "#/routes/transaction/TransactionCreate";
 import { TransactionEdit } from "#/routes/transaction/TransactionEdit";
 import { TransactionList } from "#/routes/transaction/TransactionList";
+import { TransactionShow } from "#/routes/transaction/TransactionShow";
 import { TransactionTagCreate } from "#/routes/transactionTag/TransactionTagCreate";
 import { TransactionTagEdit } from "#/routes/transactionTag/TransactionTagEdit";
 import { TransactionTagList } from "#/routes/transactionTag/TransactionTagList";
@@ -95,10 +96,12 @@ export function App() {
 						name="transaction"
 						list={TransactionList}
 						edit={TransactionEdit}
+						show={TransactionShow}
 						create={TransactionCreate}
 						options={{ table: true }}
 						icon={HandCoins}
 					/>
+
 					<Resource
 						name="transaction_category"
 						options={{ label: "Categories", table: true }}
