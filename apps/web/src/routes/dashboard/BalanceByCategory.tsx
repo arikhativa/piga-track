@@ -74,7 +74,7 @@ function BalanceCard({
 } & React.ComponentProps<"div">) {
 	return (
 		<Card className={className}>
-			<CardHeader className="flex justify-between  ">
+			<CardHeader className="flex justify-between">
 				<CardTitle>{title}</CardTitle>
 				{icon}
 			</CardHeader>
@@ -111,7 +111,7 @@ export function BalanceByCategory({
 		));
 
 	const expenseList = [...expenseCategories]
-		.sort((a, b) => b.amount - a.amount)
+		.sort((a, b) => a.amount - b.amount)
 		.map(({ category, amount, categoryId, isBoth }) => (
 			<CategoryItem
 				isIncome={false}

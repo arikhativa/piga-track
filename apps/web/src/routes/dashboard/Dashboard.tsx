@@ -7,6 +7,7 @@ import { BarChartFilter } from "#/routes/dashboard/BarChartFilter";
 import { BarChartSection } from "#/routes/dashboard/BarChartSection";
 import { DashboardFilters } from "#/routes/dashboard/DashboardFilters";
 import { DashboardSection } from "#/routes/dashboard/DashboardSection";
+import { PieChartByCategories } from "#/routes/dashboard/PieChartByCategories";
 
 export function Dashboard() {
 	const [dateRange, setDateRange] = useDashboardDateRange();
@@ -24,6 +25,10 @@ export function Dashboard() {
 					<div className="flex flex-col md:flex-1 gap-4 max-w-3xl">
 						<Balance dateRange={dateRange} />
 						<BarChartSection dateRange={dateRange} />
+					</div>
+					<div className="grid gap-4 md:grid-cols-2">
+						<PieChartByCategories dateRange={dateRange} type="expenses" />
+						<PieChartByCategories dateRange={dateRange} type="income" />
 					</div>
 					<BalanceByCategory
 						className={"md:flex-1 md:min-w-fit"}

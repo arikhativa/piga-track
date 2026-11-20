@@ -1,25 +1,20 @@
-import { LabelList, Pie, PieChart } from "recharts";
+import { useState } from "react";
+import { Pie, PieChart } from "recharts";
 import { cn } from "#/lib/utils";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	type ChartConfig,
 	ChartContainer,
+	ChartLegend,
+	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
 	getColorKey,
 } from "@/components/ui/chart";
 
-export const description = "A pie chart with a custom label";
-
 interface PieChartCardProps {
 	title: string;
-	desc?: string;
+	icon?: React.ReactNode;
 	data: Record<string, number>;
 	className?: string;
 }
@@ -28,10 +23,13 @@ const MAX_ITEMS = 5;
 
 export function PieChartCard({
 	title,
-	desc,
+	icon,
 	data,
 	className,
 }: PieChartCardProps) {
+	const [tooltipTrigger, setTooltipTrigger] = useState<"hover" | "click">(
+		"hover",
+	);
 	const entries = Object.entries(data).sort(
 		([, a], [, b]) => Math.abs(b) - Math.abs(a),
 	);
@@ -67,34 +65,32 @@ export function PieChartCard({
 		};
 	});
 
-	top.forEach(([name], index) => {
-		chartConfig[name] = {
-			label: name,
-			color: `var(--chart-${index + 1})`,
-		};
-	});
-
 	return (
 		<Card className={cn("flex flex-col", className)}>
-			<CardHeader>
+			<CardHeader className="flex justify-between">
 				<CardTitle>{title}</CardTitle>
-				{desc ? <CardDescription>{desc}</CardDescription> : null}
+				{icon}
 			</CardHeader>
 
 			<CardContent className="flex-1 pb-0">
 				<ChartContainer
 					config={chartConfig}
-					className="mx-auto aspect-square w-full max-w-62.5 min-w-0"
+					className="mx-auto aspect-square w-full max-w-100 min-w-0"
+					onPointerDown={() => setTooltipTrigger("click")}
+					onPointerMove={(event) => {
+						if (event.pointerType === "mouse") setTooltipTrigger("hover");
+					}}
 				>
-					<PieChart>
+					<PieChart accessibilityLayer>
 						<ChartTooltip
-							content={<ChartTooltipContent nameKey="value" hideLabel />}
+							trigger={tooltipTrigger}
+							content={<ChartTooltipContent nameKey="name" labelKey="name" />}
 						/>
 
 						<Pie
 							data={chartData}
 							dataKey="value"
-							labelLine={false}
+							outerRadius="65%"
 							label={({ payload, ...props }) => (
 								<text
 									className="text-md"
@@ -106,18 +102,21 @@ export function PieChartCard({
 									dominantBaseline={props.dominantBaseline}
 									fill="var(--foreground)"
 								>
-									{payload.name}
+									{payload.value.toLocaleString("he-IL", {
+										maximumFractionDigits: 0,
+									})}
 								</text>
 							)}
 							nameKey="name"
-						>
-							<LabelList
-								dataKey="value"
-								className="fill-background"
-								stroke="none"
-								fontSize={12}
-							/>
-						</Pie>
+						/>
+						<ChartLegend
+							content={
+								<ChartLegendContent
+									nameKey="name"
+									className="flex-wrap gap-2"
+								/>
+							}
+						/>
 					</PieChart>
 				</ChartContainer>
 			</CardContent>
