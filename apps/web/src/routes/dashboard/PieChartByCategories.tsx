@@ -20,6 +20,7 @@ export function PieChartByCategories({
 
 	return (
 		<PieChartCard
+			palette={type}
 			title={type === "income" ? "Income" : "Expenses"}
 			icon={
 				type === "income" ? (

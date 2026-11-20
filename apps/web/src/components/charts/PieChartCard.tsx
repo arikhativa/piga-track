@@ -9,7 +9,6 @@ import {
 	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
-	getColorKey,
 } from "@/components/ui/chart";
 
 interface PieChartCardProps {
@@ -17,15 +16,35 @@ interface PieChartCardProps {
 	icon?: React.ReactNode;
 	data: Record<string, number>;
 	className?: string;
+	palette?: "income" | "expenses";
 }
 
 const MAX_ITEMS = 5;
+
+// Tailwind 200, 400, 600, 800, 950; explicit values avoid theme-variable pruning.
+const PALETTES = {
+	income: [
+		"oklch(92.5% 0.084 155.995)",
+		"oklch(79.2% 0.209 151.711)",
+		"oklch(62.7% 0.194 149.214)",
+		"oklch(44.8% 0.119 151.328)",
+		"oklch(26.6% 0.065 152.934)",
+	],
+	expenses: [
+		"oklch(89.9% 0.061 343.231)",
+		"oklch(71.8% 0.202 349.761)",
+		"oklch(59.2% 0.249 0.584)",
+		"oklch(45.9% 0.187 3.815)",
+		"oklch(28.4% 0.109 3.907)",
+	],
+} as const;
 
 export function PieChartCard({
 	title,
 	icon,
 	data,
 	className,
+	palette,
 }: PieChartCardProps) {
 	const [tooltipTrigger, setTooltipTrigger] = useState<"hover" | "click">(
 		"hover",
@@ -40,15 +59,17 @@ export function PieChartCard({
 	const rest = entries.slice(hasOther ? MAX_ITEMS - 1 : MAX_ITEMS);
 
 	const chartData = [
-		...top.map(([name, value]) => ({
+		...top.map(([name, value], index) => ({
 			name,
+			colorKey: `category-${index}`,
 			value: Math.abs(value),
-			fill: `var(--color-${getColorKey(name)})`,
+			fill: `var(--color-category-${index})`,
 		})),
 		...(rest.length > 0
 			? [
 					{
-						name: "other",
+						name: "Other",
+						colorKey: "other",
 						value: rest.reduce((sum, [, value]) => sum + Math.abs(value), 0),
 						fill: "var(--color-other)",
 					},
@@ -58,10 +79,10 @@ export function PieChartCard({
 
 	const chartConfig: ChartConfig = {};
 
-	chartData.forEach(({ name }, index) => {
-		chartConfig[name] = {
-			label: name === "other" ? "Other" : name,
-			color: `var(--chart-${index + 1})`,
+	chartData.forEach(({ name, colorKey }, index) => {
+		chartConfig[colorKey] = {
+			label: name,
+			color: palette ? PALETTES[palette][index] : `var(--chart-${index + 1})`,
 		};
 	});
 
@@ -84,7 +105,9 @@ export function PieChartCard({
 					<PieChart accessibilityLayer>
 						<ChartTooltip
 							trigger={tooltipTrigger}
-							content={<ChartTooltipContent nameKey="name" labelKey="name" />}
+							content={
+								<ChartTooltipContent nameKey="colorKey" labelKey="colorKey" />
+							}
 						/>
 
 						<Pie
@@ -112,7 +135,7 @@ export function PieChartCard({
 						<ChartLegend
 							content={
 								<ChartLegendContent
-									nameKey="name"
+									nameKey="colorKey"
 									className="flex-wrap gap-2"
 								/>
 							}
