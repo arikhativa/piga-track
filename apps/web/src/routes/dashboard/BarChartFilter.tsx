@@ -1,6 +1,5 @@
-import type { TransactionTag } from "@piga/db/types";
 import { parseAsInteger, useQueryStates } from "nuqs";
-import { useGetList } from "ra-core";
+
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarChartMultiple } from "#/components/charts/BarChartMultiple";
@@ -10,38 +9,21 @@ import { useCategoryList } from "#/hooks/use-category-list";
 import type { DateRange } from "#/hooks/use-dashboard-date-range";
 import { useTransactionData } from "#/hooks/use-transaction-data";
 
-type FilterType = "category" | "tag";
-
 type BarChartFilterProps = {
 	dateRange: DateRange;
-	filterType: FilterType;
 };
 
 const selectionParsers = {
-	categoryId: parseAsInteger,
-	tagId: parseAsInteger,
+	categoryId: parseAsInteger.withDefault(1),
 };
 
-// TODO remove tag logic
-export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
-	const isCategory = filterType === "category";
-	const extraFilter = isCategory ? "category_id" : "tag_id";
-
+export function BarChartFilter({ dateRange }: BarChartFilterProps) {
 	const [queryState, setQueryState] = useQueryStates(selectionParsers);
 
-	const selectedId = isCategory ? queryState.categoryId : queryState.tagId;
+	const selectedId = queryState.categoryId;
 
 	const { data: categories = [], isPending: isCategoriesPending } =
 		useCategoryList();
-
-	const { data: tags = [], isPending: isTagsPending } =
-		useGetList<TransactionTag>("transaction_tag", {
-			pagination: { page: 1, perPage: 1000 },
-			sort: { field: "value", order: "ASC" },
-		});
-
-	const choices = isCategory ? categories : tags;
-	const isChoicesPending = isCategory ? isCategoriesPending : isTagsPending;
 
 	const transactionDateRange = useMemo(
 		() => ({
@@ -58,8 +40,7 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 	const { data } = useTransactionData({
 		dateRange: transactionDateRange,
 		bucket: "calendar_month",
-		category_list: isCategory && selectedId !== null ? [selectedId] : [],
-		tag_list: !isCategory && selectedId !== null ? [selectedId] : [],
+		category_list: selectedId !== null ? [selectedId] : [],
 		enabled: selectedId !== null,
 	});
 
@@ -111,13 +92,13 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 		const filter = {
 			"transaction_at@gte": from,
 			"transaction_at@lte": to,
-			[extraFilter]: String(selectedId),
+			category_id: String(selectedId),
 		};
 
 		const displayedFilters = {
 			"transaction_at@gte": true,
 			"transaction_at@lte": true,
-			[extraFilter]: true,
+			category_id: true,
 		};
 
 		const params = new URLSearchParams({
@@ -136,15 +117,15 @@ export function BarChartFilter({ dateRange, filterType }: BarChartFilterProps) {
 		<>
 			<DynamicSelect
 				className="max-w-lg"
-				choices={choices}
+				choices={categories}
 				optionText="value"
 				value={selectedId ?? undefined}
-				isPending={isChoicesPending}
+				isPending={isCategoriesPending}
 				onChange={(value) => {
 					const id = value ? Number(value) : null;
 
 					void setQueryState({
-						[isCategory ? "categoryId" : "tagId"]: id,
+						categoryId: id,
 					});
 				}}
 			/>

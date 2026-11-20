@@ -38,7 +38,7 @@ export function Dashboard() {
 
 				<div className="flex flex-col md:grid grid-cols-2 md:gap-8 ">
 					<DashboardSection title="Category">
-						<BarChartFilter filterType="category" dateRange={dateRange} />
+						<BarChartFilter dateRange={dateRange} />
 					</DashboardSection>
 				</div>
 			</article>
