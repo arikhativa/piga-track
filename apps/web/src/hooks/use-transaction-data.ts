@@ -17,6 +17,7 @@ export function useTransactionData({
 	enabled,
 	bucket,
 	category_list = [],
+	sub_category_list = [],
 	tag_list = [],
 	project_list = [],
 }: UseTransactionDataOptions) {
@@ -27,6 +28,7 @@ export function useTransactionData({
 			dateRange.to.getTime(),
 			bucket,
 			category_list,
+			sub_category_list,
 			tag_list,
 			project_list,
 		],
@@ -39,6 +41,7 @@ export function useTransactionData({
 				},
 				bucket,
 				category_list,
+				sub_category_list,
 				tag_list,
 				project_list,
 			}),

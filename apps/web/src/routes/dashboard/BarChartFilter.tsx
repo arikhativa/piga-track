@@ -14,16 +14,29 @@ type BarChartFilterProps = {
 };
 
 const selectionParsers = {
-	categoryId: parseAsInteger.withDefault(1),
+	categoryId: parseAsInteger,
+	subCategoryId: parseAsInteger,
 };
 
 export function BarChartFilter({ dateRange }: BarChartFilterProps) {
 	const [queryState, setQueryState] = useQueryStates(selectionParsers);
 
-	const selectedId = queryState.categoryId;
+	const subCategoryId = queryState.subCategoryId;
+	const categoryId =
+		subCategoryId !== null ? null : (queryState.categoryId ?? 1);
+	const selectedId = subCategoryId ?? categoryId;
+	const categoryFilter =
+		subCategoryId !== null ? "sub_category_id" : "category_id";
 
 	const { data: categories = [], isPending: isCategoriesPending } =
 		useCategoryList();
+
+	const parentCategories = categories.filter(
+		(category) => category.parent_id === null,
+	);
+	const subCategories = categories.filter(
+		(category) => category.parent_id !== null,
+	);
 
 	const transactionDateRange = useMemo(
 		() => ({
@@ -40,7 +53,8 @@ export function BarChartFilter({ dateRange }: BarChartFilterProps) {
 	const { data } = useTransactionData({
 		dateRange: transactionDateRange,
 		bucket: "calendar_month",
-		category_list: selectedId !== null ? [selectedId] : [],
+		category_list: categoryId !== null ? [categoryId] : [],
+		sub_category_list: subCategoryId !== null ? [subCategoryId] : [],
 		enabled: selectedId !== null,
 	});
 
@@ -92,13 +106,13 @@ export function BarChartFilter({ dateRange }: BarChartFilterProps) {
 		const filter = {
 			"transaction_at@gte": from,
 			"transaction_at@lte": to,
-			category_id: String(selectedId),
+			[categoryFilter]: String(selectedId),
 		};
 
 		const displayedFilters = {
 			"transaction_at@gte": true,
 			"transaction_at@lte": true,
-			category_id: true,
+			[categoryFilter]: true,
 		};
 
 		const params = new URLSearchParams({
@@ -117,15 +131,32 @@ export function BarChartFilter({ dateRange }: BarChartFilterProps) {
 		<>
 			<DynamicSelect
 				className="max-w-lg"
-				choices={categories}
+				choices={parentCategories}
 				optionText="value"
-				value={selectedId ?? undefined}
+				emptyText="Category"
+				value={categoryId}
 				isPending={isCategoriesPending}
 				onChange={(value) => {
 					const id = value ? Number(value) : null;
 
 					void setQueryState({
 						categoryId: id,
+						subCategoryId: null,
+					});
+				}}
+			/>
+
+			<DynamicSelect
+				className="max-w-lg"
+				choices={subCategories}
+				optionText="value"
+				emptyText="Sub category"
+				value={subCategoryId}
+				isPending={isCategoriesPending}
+				onChange={(value) => {
+					void setQueryState({
+						categoryId: null,
+						subCategoryId: value ? Number(value) : null,
 					});
 				}}
 			/>

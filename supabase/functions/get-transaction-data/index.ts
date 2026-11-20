@@ -30,8 +30,14 @@ Deno.serve(async (req) => {
 			);
 		}
 
-		const { dateRange, bucket, category_list, tag_list, project_list } =
-			result.data;
+		const {
+			dateRange,
+			bucket,
+			category_list,
+			sub_category_list,
+			tag_list,
+			project_list,
+		} = result.data;
 
 		const conditions = [
 			gte(transaction.transaction_at, new Date(dateRange.from)),
@@ -40,6 +46,10 @@ Deno.serve(async (req) => {
 
 		if (category_list.length > 0) {
 			conditions.push(inArray(transaction.category_id, category_list));
+		}
+
+		if (sub_category_list.length > 0) {
+			conditions.push(inArray(transaction.sub_category_id, sub_category_list));
 		}
 
 		if (tag_list.length > 0) {

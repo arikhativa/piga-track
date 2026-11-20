@@ -9,6 +9,7 @@ export const transactionDataRequestSchema = z.object({
 	bucket: z.enum(["none", "calendar_month"]),
 
 	category_list: z.array(z.number().int()).default([]),
+	sub_category_list: z.array(z.number().int()).default([]),
 	tag_list: z.array(z.number().int()).default([]),
 	project_list: z.array(z.number().int()).default([]),
 });
