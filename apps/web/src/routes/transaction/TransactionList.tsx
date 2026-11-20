@@ -8,7 +8,10 @@ import { projectOptionText } from "#/lib/form/projectOptionText";
 import { TransactionDataTable } from "#/routes/transaction/TransactionDataTable";
 
 import {
+	ColumnsButton,
+	CreateButton,
 	DateInput,
+	FilterButton,
 	List,
 	NumberInput,
 	ReferenceInput,
@@ -74,6 +77,15 @@ const transactionFilters = [
 export const TransactionList = () => {
 	return (
 		<List
+			actions={
+				<div className="flex w-full justify-between ">
+					<ColumnsButton />
+					<div>
+						<FilterButton />
+						<CreateButton />
+					</div>
+				</div>
+			}
 			title={""}
 			filters={transactionFilters}
 			sort={{ field: "transaction_at", order: "DESC" }}

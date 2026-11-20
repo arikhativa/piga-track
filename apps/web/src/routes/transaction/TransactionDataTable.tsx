@@ -23,7 +23,7 @@ export const TransactionDataTable = ({
 			<DataTable.Col source="description" />
 
 			{colToHide?.includes("category") ? null : (
-				<DataTable.Col label="Sub Category">
+				<DataTable.Col source="sub_category_id" label="Sub Category">
 					<ReferenceField
 						source="sub_category_id"
 						reference="transaction_category"
@@ -35,7 +35,7 @@ export const TransactionDataTable = ({
 			)}
 
 			{colToHide?.includes("category") ? null : (
-				<DataTable.Col label="Category">
+				<DataTable.Col source="category_id" label="Category" disableSort>
 					<ReferenceField
 						source="category_id"
 						reference="transaction_category"
@@ -47,7 +47,7 @@ export const TransactionDataTable = ({
 			)}
 
 			{colToHide?.includes("project") ? null : (
-				<DataTable.Col label="Project">
+				<DataTable.Col source="project_id" label="Project" disableSort>
 					<ReferenceField
 						source="project_id"
 						reference="transaction_project"
@@ -66,7 +66,7 @@ export const TransactionDataTable = ({
 				)}
 			/>
 
-			<DataTable.Col label="Owner">
+			<DataTable.Col source="profile_id" label="Owner" disableSort>
 				<ProfileFullName />
 			</DataTable.Col>
 		</DataTable>
