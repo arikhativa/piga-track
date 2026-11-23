@@ -180,7 +180,7 @@ export const supabaseDataProvider = ({
 		getSchema: async (): Promise<any> => {
 			const { json } = await httpClient(`${config.apiUrl}/`, {});
 
-			if (!json || !json.swagger) {
+			if (!json?.swagger) {
 				throw new Error("The Open API schema is not readable");
 			}
 

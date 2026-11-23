@@ -67,11 +67,11 @@ export async function fixAmountNisNull({
 	if (ratesNeeded.length) {
 		const isoCodes = [...new Set(ratesNeeded.map(({ isoCode }) => isoCode))];
 
-		const dates = ratesNeeded.map(({ date }) => date);
+		const dates = ratesNeeded.map(({ date }) => date).sort();
 
-		const fromDate = dates.reduce((a, b) => (a < b ? a : b));
+		const fromDate = dates[0];
 
-		const toDate = dates.reduce((a, b) => (a > b ? a : b));
+		const toDate = dates[dates.length - 1];
 
 		existingRates = await getExchangeRatesFromDB(isoCodes, fromDate, toDate);
 	}
@@ -93,11 +93,11 @@ export async function fixAmountNisNull({
 	if (missingRates.length) {
 		const isoCodes = [...new Set(missingRates.map(({ isoCode }) => isoCode))];
 
-		const dates = missingRates.map(({ date }) => date);
+		const dates = missingRates.map(({ date }) => date).sort();
 
-		const fromDate = dates.reduce((a, b) => (a < b ? a : b));
+		const fromDate = dates[0];
 
-		const toDate = dates.reduce((a, b) => (a > b ? a : b));
+		const toDate = dates[dates.length - 1];
 
 		try {
 			const providerRates = await callExchangeRateProviderRange({

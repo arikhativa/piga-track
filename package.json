@@ -28,14 +28,14 @@
 		"@piga/db": "workspace:*",
 		"@supabase/supabase-js": "^2.119.2",
 		"dotenv": "^18.0.10",
-		"drizzle-orm": "0.45.4",
+		"drizzle-orm": "0.45.2",
 		"drizzle-seed": "^0.3.1",
 		"postgres": "^4.1.1"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.6.8",
 		"@types/node": "^26.6.6",
-		"drizzle-kit": "0.31.11",
+		"drizzle-kit": "0.31.10",
 		"supabase": "3.3.0",
 		"tsx": "^4.23.15",
 		"typescript": "^7.0.2"
