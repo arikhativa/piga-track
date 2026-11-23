@@ -1,7 +1,7 @@
 import type { ImportRow } from "@piga/db/types";
 import { cn } from "cn";
 import { capitalize } from "lodash";
-import { Check, EyeOff, RotateCcw, SquareArrowUpRight, X } from "lucide-react";
+import { Check, EyeOff, SquareArrowUpRight, Undo, X } from "lucide-react";
 import { useNavigate, useRefresh } from "ra-core";
 import { useCallback, useState } from "react";
 import { Spinner } from "#/components/admin/spinner";
@@ -21,6 +21,7 @@ import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { ImportRowSubCategory } from "#/routes/importBatch/ImportRowSubCategory";
 import { useOptimisticMerge } from "#/routes/importBatch/use-optimistic-merge";
+import { ImportRowStatusAlert } from "#/routes/importRow/ImportRowStatusAlert";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, DateField } from "@/components/admin";
 import { ImportRowDescription } from "../importRow/ImportRowDescription";
@@ -63,7 +64,7 @@ export const ImportRowDataTable = ({
 		<DataTable<ImportRow>
 			data={displayedRows}
 			mobileCardHeaderDir="rtl"
-			mobileCardHeaderClassName="grid grid-cols-[1fr_auto_1fr] items-center justify-items-start gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
+			mobileCardHeaderClassName="!pb-3 grid grid-cols-[1fr_auto_1fr] items-center justify-items-start gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
 			mobileCardFooterClassName="border-t !p-0 m-0"
 			mobileCardContentClassName="py-4 grid grid-cols-2"
 			empty={<ImportRowSyncEmpty />}
@@ -84,7 +85,7 @@ export const ImportRowDataTable = ({
 					className += " text-muted-foreground/30";
 				}
 				if (isMobile) {
-					className += " pb-0";
+					className += " pb-0 pt-3";
 				}
 				return className;
 			}}
@@ -100,17 +101,17 @@ export const ImportRowDataTable = ({
 				onCellClick={navToRealTrans}
 			/>
 
+			<DataTableTransactionTypeCol mobileHideLabel />
+
 			<DataTable.Col
+				className="flex flex-col items-start gap-.5"
 				mobileCardHeader
-				mobileHideLabel
 				cellClassName={navCellClass}
 				onCellClick={navToRealTrans}
-				label="Date"
+				label={<span className="text-sm md:text-base">Date</span>}
 			>
-				<DateField source="date" />
+				<DateField locales="he-IL" source="date" />
 			</DataTable.Col>
-
-			<DataTableTransactionTypeCol mobileHideLabel />
 
 			<DataTable.Col
 				mobileHideLabel
@@ -140,6 +141,17 @@ export const ImportRowDataTable = ({
 						: undefined
 				}
 			></DataTable.Col>
+
+			{isMobile && (
+				<DataTable.Col
+					mobileHideLabel
+					source="status"
+					className="col-span-2"
+					render={(record: ImportRow) => (
+						<ImportRowStatusAlert status={record.status} />
+					)}
+				/>
+			)}
 
 			<DataTable.Col
 				label="Category"
@@ -326,7 +338,7 @@ export const ImportRowDataTable = ({
 										refresh();
 									}}
 								>
-									<RotateCcw />
+									<Undo />
 								</Button>
 								{isMobile && hideButton && <Separator orientation="vertical" />}
 								{hideButton}

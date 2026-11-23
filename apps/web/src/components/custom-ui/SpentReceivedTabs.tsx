@@ -21,7 +21,7 @@ export function SpentReceivedTabs({
 				<TabsTrigger
 					value="spent"
 					disabled={disabled}
-					className="dark:hover:text-pink-700 hover:text-pink-700 data-active:bg-pink-100 data-active:text-pink-700 dark:data-active:bg-pink-950 dark:data-active:text-pink-300"
+					className="hover:text-light-pink data-active:bg-dark-pink data-active:text-light-pink"
 				>
 					Expense
 				</TabsTrigger>
@@ -29,7 +29,7 @@ export function SpentReceivedTabs({
 				<TabsTrigger
 					value="received"
 					disabled={disabled}
-					className="dark:hover:text-green-700 hover:text-green-700 data-active:bg-green-100 data-active:text-green-700 dark:data-active:bg-green-950 dark:data-active:text-green-300"
+					className="hover:text-light-green data-active:bg-dark-green data-active:text-light-green"
 				>
 					Income
 				</TabsTrigger>

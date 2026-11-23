@@ -1,6 +1,13 @@
 {
 	"format_on_save": "on",
 	"lsp": {
+		"tailwindcss-language-server": {
+			"settings": {
+				"lint": {
+					"cssConflict": "ignore"
+				}
+			}
+		},
 		"deno": {
 			"settings": {
 				"deno": {

@@ -5,7 +5,7 @@ export function ImportRowDescription({ children }: PropsWithChildren) {
 	return (
 		<Item className=" bg-accent">
 			<ItemContent>
-				<ItemDescription className="text-inherit text-center">
+				<ItemDescription className="text-inherit text-right">
 					{children}
 				</ItemDescription>
 			</ItemContent>

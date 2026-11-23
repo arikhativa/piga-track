@@ -23,7 +23,7 @@ export function TransactionShow() {
 						<div className="mx-auto flex max-w-4xl flex-col gap-6">
 							<Card>
 								<CardHeader className="gap-4">
-									<Badge variant={isReceived ? "received" : "spent"}>
+									<Badge variant={isReceived ? "pink" : "green"}>
 										{isReceived ? <Plus /> : <Minus />}
 										{isReceived ? "Received" : "Spent"}
 									</Badge>

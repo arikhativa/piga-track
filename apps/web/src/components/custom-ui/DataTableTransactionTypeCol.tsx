@@ -8,7 +8,7 @@ function MaxBadge() {
 	return (
 		<Badge
 			className={
-				"bg-[#69ecd5] text-[#182957] dark:bg-[#182957] dark:text-[#69ecd5] font-extrabold p-3 "
+				"bg-[#82D9EE] text-[#183544] dark:bg-[#183544] dark:text-[#82D9EE] font-extrabold p-3 "
 			}
 		>
 			Max

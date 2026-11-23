@@ -1,5 +1,4 @@
 import { NIS_ID } from "@piga/db/schema";
-import { Minus, Plus } from "lucide-react";
 import type { RaRecord } from "ra-core";
 import type { ReactNode } from "react";
 import { DataTable, type DataTableColumnProps } from "#/components/admin";
@@ -65,15 +64,15 @@ export function DataTableAmount<RecordType extends AmountRecord = AmountRecord>(
 				}
 
 				return (
-					<span className="inline-flex items-center gap-2 whitespace-nowrap">
+					<div className="flex flex-col justify-center items-center gap-1">
 						<Badge
-							className="aspect-square h-fit w-fit rounded-full p-1 m-0 [&>svg]:size-2.5!"
-							variant={Number(record.amount) < 0 ? "spent" : "received"}
+							className="rounded-sm font-semibold"
+							variant={Number(record.amount) < 0 ? "pink" : "green"}
 						>
-							{Number(record.amount) < 0 ? <Minus /> : <Plus />}
+							{Number(record.amount) < 0 ? "Expense" : "Income"}
 						</Badge>
-						{amount}
-					</span>
+						<span className=" text-lg font-semibold">{amount}</span>
+					</div>
 				);
 			}}
 		/>

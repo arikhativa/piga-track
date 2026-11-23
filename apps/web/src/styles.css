@@ -61,6 +61,15 @@ body {
     --radius-4xl: calc(var(--radius) * 2.6);
 
     /* custom */
+    --color-dark-green: var(--dark-green);
+    --color-light-green: var(--light-green);
+    --color-dark-pink: var(--dark-pink);
+    --color-light-pink: var(--light-pink);
+    --color-dark-purple: var(--dark-purple);
+    --color-light-purple: var(--light-purple);
+    --color-dark-yellow: var(--dark-yellow);
+    --color-light-yellow: var(--light-yellow);
+
     --color-expense: var(--color-pink-300);
     --color-income: var(--color-green-300);
     --color-balance: var(--color-blue-300);
@@ -70,6 +79,15 @@ body {
 }
 
 :root {
+    --dark-green: #86ddb1;
+    --light-green: #17372b;
+    --dark-pink: #f1a6b2;
+    --light-pink: #3e252d;
+    --dark-purple: #cbb5ff;
+    --light-purple: #322647;
+    --dark-yellow: #f1ca80;
+    --light-yellow: #3d3020;
+
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0.008 326);
     --card: oklch(0.985 0 0);
@@ -107,6 +125,15 @@ body {
 }
 
 .dark {
+    --dark-green: #17372b;
+    --light-green: #86ddb1;
+    --dark-pink: #3e252d;
+    --light-pink: #f1a6b2;
+    --dark-purple: #322647;
+    --light-purple: #cbb5ff;
+    --dark-yellow: #3d3020;
+    --light-yellow: #f1ca80;
+
     --background: oklch(0.145 0.008 326);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.212 0.019 322.12);

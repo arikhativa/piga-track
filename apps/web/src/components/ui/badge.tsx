@@ -19,20 +19,18 @@ const badgeVariants = cva(
 					"hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
 				link: "text-primary underline-offset-4 hover:underline",
 				// Custom
-				spent:
-					"border-transparent bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300",
-				received:
-					"border-transparent bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+				pink:
+					"border-transparent bg-dark-pink text-light-pink",
+				green:
+					"border-transparent bg-dark-green text-light-green",
 				slate:
 					"border-transparent bg-slate-100 text-slate-700 dark:bg-slate-900 dark:text-slate-300",
 				blue: "border-transparent bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-300",
-				green:
-					"border-transparent bg-green-100 text-green-600 dark:bg-green-950 dark:text-green-300",
 				red: "border-transparent bg-red-100 text-red-600 dark:bg-red-950 dark:text-red-300",
 				yellow:
-					"border-transparent bg-yellow-100 text-yellow-600 dark:bg-yellow-950 dark:text-yellow-300",
+					"border-transparent bg-dark-yellow text-light-yellow",
 				purple:
-					"border-transparent bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300",
+					"border-transparent bg-dark-purple text-light-purple",
 			},
 		},
 		defaultVariants: {
