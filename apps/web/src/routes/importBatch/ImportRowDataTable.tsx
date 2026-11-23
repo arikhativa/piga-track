@@ -1,26 +1,23 @@
 import type { ImportRow } from "@piga/db/types";
 import { cn } from "cn";
 import { capitalize } from "lodash";
-import { Check, EyeOff, SquareArrowUpRight, Undo, X } from "lucide-react";
-import { useNavigate, useRefresh } from "ra-core";
+import { useNavigate } from "ra-core";
 import { useCallback, useState } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import { DataTableAmount } from "#/components/custom-ui/DataTableAmount";
 import { DataTableTransactionTypeCol } from "#/components/custom-ui/DataTableTransactionTypeCol";
 import { Badge } from "#/components/ui/badge";
-import { Button } from "#/components/ui/button";
-import { Separator } from "#/components/ui/separator";
 
 import { useIsMobile } from "#/hooks/use-mobile";
 import { useProfile } from "#/hooks/use-profile";
 
-import { importRowAction } from "#/lib/importer/importRowAction";
 import { getRowStateVariant } from "#/lib/variant/getRowStateVariant";
 import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
 import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
 import { ImportRowProject } from "#/routes/importBatch/ImportRowProject";
 import { ImportRowSubCategory } from "#/routes/importBatch/ImportRowSubCategory";
 import { useOptimisticMerge } from "#/routes/importBatch/use-optimistic-merge";
+import { ImportRowAction } from "#/routes/importRow/ImportRowAction";
 import { ImportRowStatusAlert } from "#/routes/importRow/ImportRowStatusAlert";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, DateField } from "@/components/admin";
@@ -38,7 +35,6 @@ export const ImportRowDataTable = ({
 
 	const navigate = useNavigate();
 
-	const refresh = useRefresh();
 	const [hidingRowId, setHidingRowId] = useState<number | null>(null);
 	const { displayedRows, optimisticMerges, hasOptimisticMerges, mergeRow } =
 		useOptimisticMerge(userProfile?.id);
@@ -65,8 +61,8 @@ export const ImportRowDataTable = ({
 			data={displayedRows}
 			mobileCardHeaderDir="rtl"
 			mobileCardHeaderClassName="!pb-3 grid grid-cols-[1fr_auto_1fr] items-center justify-items-start gap-x-2 border-b *:[direction:ltr] [&>:last-child]:justify-self-end"
-			mobileCardFooterClassName="border-t !p-0 m-0"
-			mobileCardContentClassName="py-4 grid grid-cols-2"
+			mobileCardFooterClassName="border-t !pt-2"
+			mobileCardContentClassName="py-3 grid grid-cols-2"
 			empty={<ImportRowSyncEmpty />}
 			bulkActionButtons={
 				hasOptimisticMerges ? (
@@ -85,7 +81,7 @@ export const ImportRowDataTable = ({
 					className += " text-muted-foreground/30";
 				}
 				if (isMobile) {
-					className += " pb-0 pt-3";
+					className += " pb-3 pt-3";
 				}
 				return className;
 			}}
@@ -147,6 +143,7 @@ export const ImportRowDataTable = ({
 					mobileHideLabel
 					source="status"
 					className="col-span-2"
+					cellClassName="w-full"
 					render={(record: ImportRow) => (
 						<ImportRowStatusAlert status={record.status} />
 					)}
@@ -181,173 +178,25 @@ export const ImportRowDataTable = ({
 				mobileCardFooter
 				mobileHideLabel
 				label="Action"
-				className="py-0"
+				// className="py-0"
 				headerClassName="md:flex md:items-center md:justify-center"
 				cellClassName={
 					isMobile
-						? "flex w-full flex-row-reverse items-stretch gap-0 [&>button]:h-14 [&>button]:flex-1 [&>button]:rounded-none"
+						? "flex w-full flex-row-reverse gap-2"
 						: "flex items-center justify-center py-2 gap-4"
 				}
-				render={(record: ImportRow) => {
-					const hideButton =
-						allowHideRows && record.status !== "pending" ? (
-							<Button
-								type="button"
-								size="icon"
-								variant="ghost"
-								className={cn(
-									isMobile ? "flex-1" : undefined,
-									"text-foreground",
-								)}
-								title="Hide row"
-								aria-label="Hide row"
-								disabled={hidingRowId !== null || !!optimisticMerges[record.id]}
-								onClick={async () => {
-									try {
-										setHidingRowId(record.id);
-										await importRowAction({
-											action: "hide_rows",
-											import_row_ids: [record.id],
-										});
-										refresh();
-									} finally {
-										setHidingRowId(null);
-									}
-								}}
-							>
-								<EyeOff />
-							</Button>
-						) : null;
-
-					if (
-						record.status === "duplicates" &&
-						record.duplicate_transaction_id
-					) {
-						return (
-							<>
-								<Button
-									type="button"
-									size="icon"
-									variant="ghost"
-									className={isMobile ? "flex-1" : undefined}
-									title="Merge duplicate"
-									onClick={() => mergeRow(record)}
-								>
-									<Check />
-								</Button>
-
-								{isMobile && <Separator orientation="vertical" />}
-
-								<Button
-									type="button"
-									size="icon"
-									variant="ghost"
-									className={isMobile ? "flex-1" : undefined}
-									title="Drop duplicate"
-									onClick={async () => {
-										await importRowAction({
-											profileId: userProfile.id,
-											import_row_ids: [Number(record.id)],
-											action: "set_status",
-											value: "dropped",
-										});
-										refresh();
-									}}
-								>
-									<X />
-								</Button>
-
-								{isMobile && <Separator orientation="vertical" />}
-
-								<Button
-									type="button"
-									size="icon"
-									variant="ghost"
-									className={isMobile ? "flex-1" : undefined}
-									title="View linked transaction"
-									onClick={() =>
-										navigate(`/transaction/${record.duplicate_transaction_id}`)
-									}
-								>
-									<SquareArrowUpRight />
-								</Button>
-								{isMobile && hideButton && <Separator orientation="vertical" />}
-								{hideButton}
-							</>
-						);
-					}
-
-					if (record.status === "pending") {
-						return (
-							<>
-								<Button
-									type="button"
-									variant={"ghost"}
-									size="icon"
-									className={isMobile ? "flex-1" : undefined}
-									title="Merge row"
-									aria-label="Merge row"
-									onClick={() => mergeRow(record)}
-								>
-									<Check />
-								</Button>
-
-								{isMobile && <Separator orientation="vertical" />}
-
-								<Button
-									type="button"
-									size="icon"
-									variant={"ghost"}
-									className={isMobile ? "flex-1" : undefined}
-									onClick={async () => {
-										await importRowAction({
-											profileId: userProfile.id,
-											import_row_ids: [Number(record.id)],
-											action: "set_status",
-											value: "dropped",
-										});
-
-										refresh();
-									}}
-								>
-									<X />
-								</Button>
-							</>
-						);
-					}
-
-					if (record.status === "merged" || record.status === "dropped") {
-						return (
-							<>
-								<Button
-									type="button"
-									size="icon"
-									className={cn("text-foreground", isMobile && "flex-1")}
-									variant="ghost"
-									title={optimisticMerges[record.id] ? "Saving merge…" : "Undo"}
-									aria-label={
-										optimisticMerges[record.id] ? "Saving merge" : "Undo"
-									}
-									disabled={!!optimisticMerges[record.id]}
-									onClick={async () => {
-										await importRowAction({
-											profileId: userProfile.id,
-											import_row_ids: [Number(record.id)],
-											action: "undo",
-										});
-										refresh();
-									}}
-								>
-									<Undo />
-								</Button>
-								{isMobile && hideButton && <Separator orientation="vertical" />}
-								{hideButton}
-							</>
-						);
-					}
-
-					return hideButton;
-				}}
+				render={(record: ImportRow) => (
+					<ImportRowAction
+						record={record}
+						profileId={userProfile.id}
+						isMobile={isMobile}
+						allowHideRows={allowHideRows}
+						isMerging={!!optimisticMerges[record.id]}
+						hidingRowId={hidingRowId}
+						setHidingRowId={setHidingRowId}
+						mergeRow={mergeRow}
+					/>
+				)}
 			/>
 		</DataTable>
 	);
