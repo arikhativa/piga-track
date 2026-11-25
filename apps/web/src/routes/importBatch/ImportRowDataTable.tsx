@@ -5,7 +5,7 @@ import { useNavigate } from "ra-core";
 import { useCallback, useState } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import { DataTableAmount } from "#/components/custom-ui/DataTableAmount";
-import { DataTableTransactionTypeCol } from "#/components/custom-ui/DataTableTransactionTypeCol";
+import { ImportRowTransactionTypeCol } from "#/components/custom-ui/ImportRowTransactionTypeCol.1";
 import { Badge } from "#/components/ui/badge";
 
 import { useIsMobile } from "#/hooks/use-mobile";
@@ -97,7 +97,7 @@ export const ImportRowDataTable = ({
 				onCellClick={navToRealTrans}
 			/>
 
-			<DataTableTransactionTypeCol mobileHideLabel />
+			<ImportRowTransactionTypeCol mobileHideLabel />
 
 			<DataTable.Col
 				className="flex flex-col items-start gap-.5"

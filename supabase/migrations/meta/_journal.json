@@ -386,6 +386,13 @@
       "when": 1794841285550,
       "tag": "0054_special_wendigo",
       "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1795605725383,
+      "tag": "0055_static-transaction-type",
+      "breakpoints": true
     }
   ]
 }

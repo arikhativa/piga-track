@@ -23,8 +23,15 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const NIS_ID = 7 as const; // NOTE: this is nis - it will be in DB cus there is a mig before this
-const CASH_ID = 1 as const; // NOTE: this is cash - there is a custom mig for this
 const MARKET_ID = 1 as const; // NOTE: defend here supabase/migrations/0013_init_category.sql
+
+// Defined in supabase/migrations/0055_static-transaction-type.sql.
+export const CASH_ID = 1 as const;
+export const BIT_ID = 2 as const;
+export const CAL_ID = 3 as const;
+export const FIBI_ID = 4 as const;
+export const PAYBOX_ID = 5 as const;
+export const MAX_ID = 6 as const;
 
 const AMOUNT_PRECISION = {
 	precision: 12,
@@ -141,7 +148,6 @@ export const exchangeRate = pgTable(
 export const transactionType = pgTable("transaction_type", {
 	id: serial("id").primaryKey(),
 	name: text("name").notNull(),
-	base: integer("base").default(0).notNull(),
 });
 
 // Supabase manages Vault; migrations must not create or modify this table.

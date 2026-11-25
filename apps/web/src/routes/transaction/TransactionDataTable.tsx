@@ -1,5 +1,6 @@
 import type { Transaction } from "@piga/db/types";
 import { DataTableAmount } from "#/components/custom-ui/DataTableAmount";
+import { DataTableTransactionTypeCol } from "#/components/custom-ui/DataTableTransactionTypeCol";
 import { toSmallDate } from "#/lib/format/toSmallDate";
 import { ProfileFullName } from "#/routes/profile/ProfileFullName";
 import { DataTable, ReferenceField } from "@/components/admin";
@@ -10,9 +11,12 @@ export const TransactionDataTable = ({
 }: Omit<DataTableProps<Transaction>, "children"> & {}) => {
 	return (
 		<DataTable<Transaction> {...props}>
+			<DataTable.Col
+				source="transaction_at"
+				label="Date"
+				render={(record) => toSmallDate(record.transaction_at)}
+			/>
 			<DataTableAmount<Transaction> source="amount_nis" />
-
-			<DataTable.Col source="description" />
 
 			<DataTable.Col source="sub_category_id" label="Sub Category">
 				<ReferenceField
@@ -24,9 +28,12 @@ export const TransactionDataTable = ({
 				></ReferenceField>
 			</DataTable.Col>
 
-			<DataTable.Col source="category_id" label="Category" disableSort>
+			<DataTable.Col source="description" />
+
+			<DataTable.Col source="category_id" label="Category">
 				<ReferenceField
 					source="category_id"
+					link={false}
 					reference="transaction_category"
 					render={({ referenceRecord }) =>
 						referenceRecord ? referenceRecord.value : null
@@ -44,11 +51,7 @@ export const TransactionDataTable = ({
 				></ReferenceField>
 			</DataTable.Col>
 
-			<DataTable.Col
-				source="transaction_at"
-				label="Date"
-				render={(record) => toSmallDate(record.transaction_at)}
-			/>
+			<DataTableTransactionTypeCol />
 
 			<DataTable.Col source="profile_id" label="Owner" disableSort>
 				<ProfileFullName />

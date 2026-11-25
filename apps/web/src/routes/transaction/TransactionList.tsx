@@ -57,6 +57,14 @@ const transactionFilters = [
 	/>,
 
 	<ReferenceInput
+		key="transaction_type"
+		source="transaction_type_id"
+		reference="transaction_type"
+	>
+		<SelectInput label="Type" optionText="name" />
+	</ReferenceInput>,
+
+	<ReferenceInput
 		key="project"
 		source="project_id"
 		reference="transaction_project"

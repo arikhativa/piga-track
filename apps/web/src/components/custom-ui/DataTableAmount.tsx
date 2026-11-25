@@ -64,14 +64,16 @@ export function DataTableAmount<RecordType extends AmountRecord = AmountRecord>(
 				}
 
 				return (
-					<div className="flex flex-col justify-center items-center gap-1">
+					<div className="flex flex-col md:flex-row justify-center md:justify-between items-center gap-1 md:gap-4">
 						<Badge
 							className="rounded-sm font-semibold"
 							variant={Number(record.amount) < 0 ? "pink" : "green"}
 						>
 							{Number(record.amount) < 0 ? "Expense" : "Income"}
 						</Badge>
-						<span className=" text-lg font-semibold">{amount}</span>
+						<span className="text-lg md:text-base font-semibold md:font-normal">
+							{amount}
+						</span>
 					</div>
 				);
 			}}

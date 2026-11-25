@@ -4,7 +4,6 @@ import {
 	transaction,
 	transactionCategory,
 	transactionProject,
-	transactionType,
 } from "@piga/db/schema";
 import { eq, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
@@ -22,7 +21,6 @@ const profileId = randomUUID();
 
 async function syncSeedSequences() {
 	const tables = [
-		"transaction_type",
 		"transaction_project",
 		"transaction_category",
 		"import_profile",
@@ -151,7 +149,7 @@ async function seedTransactions() {
 			amount,
 			amount_nis: amount,
 			currency_id: 7,
-			transaction_type_id: randomInt(1, 6),
+			transaction_type_id: randomInt(1, 6), // the min and max of transaction types
 			category_id: category.id,
 			sub_category_id: subcategory?.id ?? null,
 			project_id: null,
@@ -165,17 +163,6 @@ async function seedTransactions() {
 
 async function seed() {
 	await seedUser();
-
-	await db
-		.insert(transactionType)
-		.values([
-			{ id: 1, name: "Cash", base: 0 },
-			{ id: 2, name: "Bit", base: 0 },
-			{ id: 3, name: "Credit Card", base: 0 },
-			{ id: 4, name: "Bank Transfer", base: 0 },
-			{ id: 5, name: "Paybox", base: 0 },
-		])
-		.onConflictDoNothing();
 
 	await db
 		.insert(transactionProject)
@@ -224,7 +211,7 @@ async function seed() {
 				updated_at: new Date("2026-09-13T10:38:57.675792Z"),
 				positive_amount_sign: false,
 				negative_amount_sign: true,
-				transaction_type_id: 3,
+				transaction_type_id: 6,
 			},
 			{
 				id: 2,
@@ -254,7 +241,7 @@ async function seed() {
 				updated_at: new Date("2026-10-14T17:21:57.533924Z"),
 				positive_amount_sign: false,
 				negative_amount_sign: true,
-				transaction_type_id: 4,
+				transaction_type_id: 3,
 			},
 		])
 		.onConflictDoNothing();
