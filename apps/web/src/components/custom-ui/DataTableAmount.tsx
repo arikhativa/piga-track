@@ -27,6 +27,7 @@ export function DataTableAmount<RecordType extends AmountRecord = AmountRecord>(
 	return (
 		<DataTable.Col
 			{...props}
+			className="md:max-w-24"
 			source={props.source ?? "amount"}
 			label={props.label ?? "Amount"}
 			render={(record) => {

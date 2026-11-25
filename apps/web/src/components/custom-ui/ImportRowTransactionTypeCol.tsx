@@ -1,5 +1,4 @@
 import {
-	FIBI_ID,
 	type ImportBatch,
 	type ImportProfile,
 	type ImportRow,
@@ -8,10 +7,8 @@ import {
 import type { Identifier, RaRecord } from "ra-core";
 import type { DataTableColumnProps } from "#/components/admin";
 import { DataTable, ReferenceField } from "#/components/admin";
-import { FibiBadge } from "#/components/transaction-type-badges/FibiBadge";
-import { MaxBadge } from "#/components/transaction-type-badges/MaxBadge";
+import { TransactionTypeBadge } from "#/components/transaction-type-badges/TransactionTypeBadge";
 
-// TODO: the Ids should not be dynamic
 export function ImportRowTransactionTypeCol<
 	RecordType extends RaRecord<Identifier> & ImportRow,
 >(props: DataTableColumnProps<RecordType>) {
@@ -21,7 +18,7 @@ export function ImportRowTransactionTypeCol<
 			label="Provider"
 			render={(record: ImportRow) => {
 				if (record.max_sync_table_id) {
-					return <MaxBadge />;
+					return <TransactionTypeBadge typeId={MAX_ID} />;
 				}
 				if (record.import_batch_id == null) {
 					return null;
@@ -36,15 +33,11 @@ export function ImportRowTransactionTypeCol<
 							source="import_profile_id"
 							reference="import_profile"
 							link={false}
-							render={({ referenceRecord }) => {
-								if (referenceRecord?.transaction_type_id === MAX_ID) {
-									return <MaxBadge />;
-								}
-								if (referenceRecord?.transaction_type_id === FIBI_ID) {
-									return <FibiBadge />;
-								}
-								return null;
-							}}
+							render={({ referenceRecord }) => (
+								<TransactionTypeBadge
+									typeId={referenceRecord?.transaction_type_id}
+								/>
+							)}
 						></ReferenceField>
 					</ReferenceField>
 				);

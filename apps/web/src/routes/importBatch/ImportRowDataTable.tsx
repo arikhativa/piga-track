@@ -5,12 +5,10 @@ import { useNavigate } from "ra-core";
 import { useCallback, useState } from "react";
 import { Spinner } from "#/components/admin/spinner";
 import { DataTableAmount } from "#/components/custom-ui/DataTableAmount";
-import { ImportRowTransactionTypeCol } from "#/components/custom-ui/ImportRowTransactionTypeCol.1";
+import { ImportRowTransactionTypeCol } from "#/components/custom-ui/ImportRowTransactionTypeCol";
 import { Badge } from "#/components/ui/badge";
-
 import { useIsMobile } from "#/hooks/use-mobile";
 import { useProfile } from "#/hooks/use-profile";
-
 import { getRowStateVariant } from "#/lib/variant/getRowStateVariant";
 import { BulkActionButtons } from "#/routes/importBatch/BulkActionButtons";
 import { ImportRowCategory } from "#/routes/importBatch/ImportRowCategory";
