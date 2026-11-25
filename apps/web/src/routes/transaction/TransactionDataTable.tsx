@@ -22,6 +22,7 @@ export const TransactionDataTable = ({
 				<ReferenceField
 					source="sub_category_id"
 					reference="transaction_category"
+					link={false}
 					render={({ referenceRecord }) =>
 						referenceRecord ? referenceRecord.value : null
 					}
@@ -44,6 +45,7 @@ export const TransactionDataTable = ({
 			<DataTable.Col source="project_id" label="Project" disableSort>
 				<ReferenceField
 					source="project_id"
+					link={false}
 					reference="transaction_project"
 					render={({ referenceRecord }) =>
 						referenceRecord ? referenceRecord.value : null

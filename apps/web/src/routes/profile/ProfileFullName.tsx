@@ -8,6 +8,7 @@ export function ProfileFullName() {
 			source="profile_id"
 			reference="profile"
 			empty={NO_VALUE}
+			link={false}
 			render={({ referenceRecord }) =>
 				referenceRecord ? (
 					<Badge
